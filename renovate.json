@@ -1,6 +1,41 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "depTypeList": ["ruby", "bundler", "Gemfile", "Gemfile.lock"],
+      "addLabels": ["bundler"]
+    },
+    {
+      "depTypeList": [".ruby-version"],
+      "addLabels": ["ruby-version"]
+    }
+  ],
+  "docker": {
+    "enabled": false
+  },
+  "ignorePaths": [
+    "Dockerfile", "Dockerfile.*"
+  ],
+  "rangeStrategy": "replace",
+  "separateMajorMinor": true,
+  "prCreation": "immediate",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "ignoreUnstable": true,
+  "dependencyDashboard": true,
+  "rebaseWhen": "behind-base-branch",
+  "labels": [
+    "dependencies"
+  ],
+  "schedule": [
+    "before 2am"
   ]
 }
