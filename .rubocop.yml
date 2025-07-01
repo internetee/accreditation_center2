@@ -1,5 +1,20 @@
+# RuboCop configuration for Accreditation Center
+#
+# This project inherits Ruby and Rails style rules from the shared EIF style guide.
+#
+# To update the style guide, edit the files in ../style-guide/ or pull the latest changes from:
+#   https://github.com/internetee/style-guide
+#
+# If you move this project, adjust the relative path below as needed.
+
+inherit_from:
+  - ../style-guide/.rubocop-rails.yml
+  - ../style-guide/.rubocop-ruby.yml
+
+# Project-specific overrides can be added below
+
 # Omakase Ruby styling for Rails
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+# inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 # Overwrite or add rules to create your own house style
 #
