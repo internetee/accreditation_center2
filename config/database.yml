@@ -84,8 +84,6 @@ production:
   primary: &primary_production
     <<: *default
     database: accreditation_center_production
-    username: accreditation_center
-    password: <%= ENV["MYAPP_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: accreditation_center_production_cache

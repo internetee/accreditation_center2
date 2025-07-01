@@ -34,11 +34,19 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.log_tags = [ :request_id, :remote_ip ]
+  # Use default logging formatter so that PID and timestamp are not suppressed.
+  config.log_formatter = JsonLogFormatter.new
+
+  # Configure logging to always use STDOUT for containerized environments
+  logger = ActiveSupport::Logger.new($stdout)
+  logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(logger)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  config.colorize_logging = false
 
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/up"
