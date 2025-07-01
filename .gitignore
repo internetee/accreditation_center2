@@ -34,3 +34,5 @@
 /config/master.key
 
 Dockerfile.dev
+
+application.yml
