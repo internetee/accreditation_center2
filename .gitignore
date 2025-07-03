@@ -35,4 +35,6 @@
 
 Dockerfile.dev
 
-application.yml
+/config/application.yml
+
+TODO
