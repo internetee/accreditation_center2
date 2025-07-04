@@ -1,0 +1,138 @@
+@use "variables";
+@use "sass:color";
+
+@mixin h2 {
+    font-size: 30px;
+    line-height: 30px;
+    font-weight: 900;
+    span {
+        font-weight: 500;
+        color: #A7A8AA;
+    }
+}
+
+@mixin h3 {
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 900;
+    span {
+        font-weight: 500;
+        color: #A7A8AA;
+    }
+}
+
+@mixin h4 {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 900;
+    span {
+        font-weight: 500;
+        color: #A7A8AA;
+    }
+}
+
+@mixin gradient-gray($dir) {
+    background: linear-gradient(to $dir, #EEEEF0 0%, #FCFCFC 100%);
+}
+
+@mixin article-content {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 30px;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        margin: 40px 0 20px 0;
+        &:first-child {
+            margin-top: 0;
+        }
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+@mixin screen($res-min, $res-max, $orientation: false) {
+    @if $orientation {
+        @media screen and (min-width: $res-min) and (max-width: $res-max) and (orientation:#{$orientation}) {
+            @content;
+        }
+    }
+    @else {
+        @media screen and (min-width: $res-min) and (max-width: $res-max) {
+            @content;
+        }
+    }
+}
+@mixin max-screen($res) {
+    @media only screen and (max-width: $res) {
+        @content;
+    }
+}
+@mixin min-screen($res) {
+    @media only screen and (min-width: $res) {
+        @content;
+    }
+}
+
+@mixin container {
+    width: 1440px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 50px;
+    @include max-screen(991px){
+        padding: 0 20px;
+    }
+    @include max-screen(767px){
+        padding: 0 10px;
+    }
+}
+
+@mixin fa {
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+@mixin input {
+    appearance: none;
+    margin: 0;
+    outline: 0;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 2px solid variables.$grey;
+    font-weight: 500;
+    padding: 13px;
+    height: 50px;
+    font-size: 18px;
+    line-height: 30px;
+    background: #fff;
+    border-radius: 5px;
+    transition: all .3s ease-in-out;
+    &:focus {
+        border-color: variables.$blue;
+    }
+}
+
+// Labels
+
+@mixin label-variant($color) {
+  background-color: $color;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: color.adjust($color, $lightness: -10%);
+    }
+  }
+}

@@ -1,0 +1,25 @@
+@use "../general/variables";
+
+.textarea {
+    appearance: none;
+    margin: 0;
+    outline: 0;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 2px solid variables.$grey;
+    font-weight: 500;
+    padding: 13px;
+    font-size: 18px;
+    line-height: 20px;
+    background: #fff;
+    border-radius: 5px;
+    transition: all .3s ease-in-out;
+    overflow: auto;
+    &:focus {
+        border-color: variables.$blue;
+    }
+    .form--input.error & {
+        border-color: variables.$orange;
+    }
+}

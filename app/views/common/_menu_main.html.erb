@@ -1,0 +1,10 @@
+<nav class="menu--main">
+    <ul>
+        <li><%= link_to t('common.header.homepage'), dashboard_url if can? :show, 'dashboard' %></li>
+        <li><%= link_to t('common.header.domains'), domains_url  if can? :info, 'Epp::Domain' %></li>
+        <li><%= link_to t('common.header.contacts'), contacts_url if can? :check, 'Epp::Contact' %></li>
+        <li><%= link_to t('common.header.invoices'), invoices_url if can? :manage, 'Invoice' %></li>
+        <li><%= link_to t('common.header.stats'), market_share_path %></li>
+        <li><%= link_to t('common.header.xml_console'), xml_console_path if can? :create, 'Epp::Server' %></li>
+    </ul>
+</nav>

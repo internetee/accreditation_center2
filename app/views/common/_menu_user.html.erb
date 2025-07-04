@@ -1,0 +1,8 @@
+<nav class="menu--user">
+    <% if current_user %>
+        <strong><%= link_to "<i class='fas fa-user'></i>#{login_with_role(current_user)}".html_safe, account_path %></strong>
+        <%= link_to t(:sign_out), logout_url, data: { turbo: false } %>
+    <% else %>
+        <%= link_to t(:sign_in), login_url %>
+    <% end %>
+</nav>

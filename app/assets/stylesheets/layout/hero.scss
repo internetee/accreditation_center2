@@ -1,0 +1,92 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.layout--hero {
+    position: relative;
+    z-index: 2;
+    padding: 100px 20px 40px;
+    color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    background: url("hero-orange.jpg") no-repeat 50% 50% / cover;
+    background-blend-mode: overlay;
+    box-shadow: 0 0 40px rgba(0,0,0,.2);
+    h1 {
+        font-size: 24px;
+        line-height: 25px;
+        margin-bottom: 10px;
+        word-break: break-word;
+        &:last-child {
+            margin-bottom: 0;
+        }
+        span {
+            font-weight: 500;
+        }
+    }
+    a {
+        color: #fff;
+    }
+    .back-link {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        font-size: 12px;
+        line-height: 20px;
+        background: variables.$orange;
+        &:hover {
+            span {
+                text-decoration: none;
+            }
+            i {
+                transform: translateX(-5px)
+            }
+        }
+        i {
+            margin-right: 5px;
+            height: 20px;
+            line-height: 20px;
+            transition: all .3s ease-in-out;
+        }
+        span {
+            text-decoration: underline;
+        }
+    }
+    &.subtitle {
+        display: block;
+        font-weight: 900;
+        font-size: 20px;
+        line-height: 40px;
+    }
+    @include mixins.min-screen(768px) {
+        margin: 0 20px;
+        padding: 120px 20px 40px;
+        font-size: 16px;
+        .back-link {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        h1 {
+            font-size: 30px;
+            line-height: 30px;
+        }
+    }
+    @include mixins.min-screen(1224px) {
+        margin: 0 50px;
+        padding: 180px 40px 40px;
+        font-size: 18px;
+        h1 {
+            font-size: 40px;
+            line-height: 40px;
+            margin-bottom: 20px;
+            &:last-child {
+                margin-top: 40px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+}
+

@@ -1,0 +1,43 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.steps {
+    &--item {
+        text-align: center;
+        color: variables.$grey;
+        i {
+            width: 60px;
+            height: 60px;
+            border-radius: 100%;
+            background-color: variables.$grey;
+            line-height: 60px;
+            font-size: 28px;
+            text-align: center;
+            color: variables.$white;
+        }
+        p {
+            margin-top: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 14px;
+            line-height: 20px;
+        }
+        &__active {
+            color: variables.$black;
+            i {
+                background-color: variables.$black;
+            }
+        }
+    }
+    &--description {
+        padding: 20px 0;
+        text-align: left;
+        h3 {
+            margin-bottom: 20px;
+        }
+        @include mixins.min-screen(768px) {
+            padding: 40px 0 20px;
+        }
+
+    }
+}

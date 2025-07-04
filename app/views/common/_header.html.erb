@@ -1,0 +1,23 @@
+<header class="layout--header">
+    <div class="layout--header-top">
+        <nav class="menu--portal">
+            <a href="https://internet.ee"><span><%= t('.open_portal') %></span></a>
+            <a href="https://auction.internet.ee/"><%= t('.auction_portal') %></a>
+            <a href="https://registrar.internet.ee" class="active"><span><%= t('.registrar_portal') %></span></a>
+            <a href="https://registrant.internet.ee"><span><%= t('.registrant_portal') %></span></a>
+        </nav>
+        <%= render 'common/menu_language' %>
+        <%= render 'common/menu_user' %>
+    </div>
+    <div class="layout--header-bottom">
+        <%= render 'common/logo' %>
+        <% if current_user %>
+            <%= render 'common/menu_main' %>
+            <div class="actions">
+                <%= button_tag class: 'button button--menu', data: { 'menu-toggle': '' } do %>
+                    <i aria-hidden="true" class="fas fa-bars"></i>
+                <% end %>
+            </div>
+        <% end %>
+    </div>
+</header>

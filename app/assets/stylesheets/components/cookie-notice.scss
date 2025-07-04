@@ -1,0 +1,37 @@
+/* Cookie Notice */
+.cookie-notice {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    color: #fff;
+    background: $green;
+    z-index: 99999;
+    a {
+        color: #fff;
+        text-decoration: underline;
+    }
+    .content {
+        margin-bottom: 10px;
+    }
+    @include min-screen(768px) {
+        .container {
+            display: flex;
+            align-items: center;
+        }
+        .content {
+            margin: 0 20px 0 0;
+        }
+    }
+    @include min-screen(1224px) {
+        position: static;
+        padding: 20px 50px;
+        .actions {
+            margin-left: auto;
+        }
+        .content {
+            margin-right: 40px;
+        }
+    }
+}

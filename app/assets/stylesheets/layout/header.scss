@@ -1,0 +1,141 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.layout--header {
+    position: relative;
+    z-index: 200;
+    &-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        background: #fff;
+    }
+    &-bottom {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px;
+        transition: background .3s ease-in-out;
+        z-index: 2;
+        &.scrolling {
+            background-color: variables.$orange;
+            box-shadow: 0 0 20px rgba(0,0,0,.2);
+        }
+    }
+    .logo {
+        display: block;
+        margin-right: 20px;
+        transition: all .3s ease-in-out;
+        &:hover {
+            transform: scale(1.1);
+        }
+        svg {
+            display: none;
+            pointer-events: none;
+        }
+    }
+    .actions {
+        display: flex;
+        align-items: flex-start;
+        margin: 0 0 0 auto;
+        position: relative;
+        z-index: 3;
+        .button {
+            position: relative;
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin-left: 20px;
+            font-size: 28px;
+            line-height: 40px;
+            background: none;
+            box-shadow: none;
+            z-index: 3;
+            &:first-child {
+                margin-left: 0;
+            }
+            i {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 40px;
+                text-align: center;
+                color: #fff;
+                transition: all .3s ease-in-out;
+                &.times {
+                    transform: scale(0);
+                }
+            }
+            &--menu {
+                display: none;
+                i {
+                    transition-delay: .5s;
+                    .menu-open & {
+                        transition-delay: 0s;
+                        transform: scale(0);
+                    }
+                }
+            }
+        }
+        @include mixins.max-screen(1223px) {
+            .button--menu {
+                display: block;
+            }
+        }
+    }
+    @include mixins.min-screen(768px) {
+        &-bottom {
+            padding: 20px 40px;
+            align-items: center;
+        }
+        .logo {
+            background: none;
+            margin-right: 40px;
+        }
+    }
+    @include mixins.screen(768px,1223px) {
+        .logo {
+            svg {
+                width: 85px;
+                height: 80px;
+            }
+        }
+    }
+    @include mixins.max-screen(1223px) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        transition: all .5s ease-in-out;
+        &.fixed {
+            background: variables.$green;
+            box-shadow: 0 0 20px rgba(0,0,0,.2);
+        }
+        .menu-open & {
+            left: -320px;
+            right: 320px;
+        }
+        .logo {
+            height: 40px;
+            width: 155px;
+            transition: all .3s ease-in-out;
+            background: url('logo-m.svg') no-repeat 0 0;
+        }
+    }
+    @include mixins.min-screen(1224px) {
+        margin: 0 50px;
+        .logo {
+            svg {
+                display: block;
+            }
+        }
+        &-bottom {
+            margin-bottom: -200px;
+        }
+    }
+}
+

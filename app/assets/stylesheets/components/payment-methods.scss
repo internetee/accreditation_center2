@@ -1,0 +1,65 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.payment-methods {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -20px;
+    margin-bottom: -20px;
+    &--item {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin: 0 0 20px;
+        padding-left: 20px;
+        a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 15px;
+            text-align: center;
+            color: variables.$black;
+            padding: 10px 20px;
+            background-color: variables.$white;
+            box-shadow: 0 0 20px 0 rgba(33,34,36,.1), inset 0 -4px 0 0 rgba(33,34,36,.1);
+            border-radius: 5px;
+            height: 100%;
+            transition: all .2s ease;
+            i {
+                display: block;
+                font-size: 20px;
+                line-height: 30px;
+                margin-bottom: 10px;
+            }
+            img {
+                display: block;
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            &:hover,
+            &:focus {
+                transform: scale(1.05);
+            }
+        }
+    }
+    @include mixins.min-screen(480px) {
+        margin-left: -40px;
+        margin-bottom: -40px;
+        &--item {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+            margin: 0 0 40px;
+            padding-left: 40px;
+        }
+    }
+    @include mixins.min-screen(768px) {
+        &--item {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+    }
+}

@@ -1,0 +1,49 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.checkbox {
+    cursor: pointer;
+    input {
+        display: none;
+        &:checked {
+            + label {
+                &:before {
+                    content: "\f00c";
+                    border-color: variables.$base-blue;
+                }
+            }
+        }
+    }
+    label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        &:hover {
+            &:before {
+                border-color: variables.$base-blue;
+            }
+        }
+        &:before {
+            @include mixins.fa();
+            display: block;
+            content: '';
+            flex: 0 0 20px;
+            width: 20px;
+            height: 20px;
+            line-height: 16px;
+            border: 2px solid variables.$grey;
+            text-align: center;
+            color: variables.$base-blue;
+            background: #fff;
+            border-radius: 5px;
+            transition: all .3s ease-in-out;
+        }
+        span {
+            display: block;
+            min-width: 1px;
+            max-width: 100%;
+            flex: 1 1 auto;
+            margin-left: 10px;
+        }
+    }
+}

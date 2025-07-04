@@ -1,0 +1,61 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.message {
+    text-align: center;
+    background-color: variables.$black;
+    color: variables.$white;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 0;
+    margin-bottom: 40px;
+    animation: appear-then-fade 40s both;
+
+    @include mixins.min-screen(768px) {
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+
+    @include mixins.min-screen(1224px) {
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+
+    &:before {
+        @include mixins.fa();
+        margin-right: 10px;
+    }
+    &__info {
+        &:before {
+            content: "\f05a";
+        }
+    }
+    &__alert {
+        background-color: variables.$orange;
+        &:before {
+            content: "\f071";
+        }
+    }
+    &__notice {
+        background-color: variables.$green;
+        &:before {
+            content: '\f00c';
+        }
+    }
+    &--dialog {
+        &__alert {
+            background: none;
+            color: variables.$orange;
+            &:before {
+                content: "\f071";
+            }
+        }
+        &__notice {
+            background: none;
+            color: variables.$green;
+            &:before {
+                content: '\f00c';
+            }
+        }
+    }
+}

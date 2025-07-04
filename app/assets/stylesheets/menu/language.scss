@@ -1,0 +1,44 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.menu--language {
+    padding: 15px 20px;
+    margin: 0 auto;
+    font-size: 14px;
+    &:last-child {
+        margin-right: 0;
+    }
+    ul {
+        display: flex;
+        align-items: stretch;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            &.active {
+                display: none;
+            }
+            a {
+                display: block;
+                padding: 5px 10px;
+                font-weight: 500;
+                color: variables.$black;
+                cursor: pointer;
+                &:hover {
+                    color: variables.$blue;
+                }
+            }
+        }
+    }
+    @include mixins.max-screen(1223px) {
+        display: none;
+        .menu--mobile & {
+            display: block;
+        }
+    }
+    @include mixins.min-screen(1440px) {
+        padding: 15px 0;
+        font-size: 16px;
+        line-height: 25px;
+    }
+}

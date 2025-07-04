@@ -1,0 +1,27 @@
+@use "../general/variables";
+
+.tooltip {
+    position: relative;
+    margin-left: 10px;
+    flex: 0 0 20px;
+    z-index: 1;
+    &:hover,
+    &:focus {
+        i {
+            background: variables.$base-blue;
+        }
+    }
+    i {
+        display: block;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        text-align: center;
+        line-height: 20px;
+        background: variables.$grey;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: all .3s ease-in-out;
+    }
+}

@@ -1,0 +1,43 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.user-data {
+    padding: 20px;
+    text-align: center;
+    line-height: 25px;
+    @include mixins.gradient-gray(right);
+    h2 {
+        margin-bottom: 40px;
+    }
+    h4 {
+        @include mixins.h4();
+        margin-bottom: 10px;
+    }
+    &--link {
+        color: variables.$black;
+        i {
+            display: block;
+            height: 50px;
+            font-size: 50px;
+            line-height: 50px;
+            margin: 0 auto 20px;
+            transition: all .3s ease-in-out;
+        }
+    }
+    a.user-data--link {
+        &:hover {
+            i {
+                transform: scale(1.1)
+            }
+            h4 {
+                text-decoration: underline;
+            }
+        }
+    }
+    @include mixins.min-screen(768px) {
+        padding: 40px 20px;
+    }
+    @include mixins.min-screen(1224px) {
+        padding: 40px 50px;
+    }
+}

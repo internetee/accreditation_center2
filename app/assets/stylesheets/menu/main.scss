@@ -1,0 +1,190 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.menu--main {
+    flex: 1 1 auto;
+    transition: all .3s ease-in-out;
+    .site-search-open & {
+        opacity: 0;
+        visibility: hidden;
+    }
+    > ul {
+        padding: 0;
+        list-style: none;
+        margin: 0;
+        > li {
+            position: relative;
+            &.submenu-open {
+                .button--submenu-toggle {
+                    i {
+                        color: variables.$green;
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+            .button--submenu-toggle {
+                display: flex;
+                align-items: center;
+                width: 40px;
+                min-height: 50px;
+                font-size: 18px;
+                line-height: 40px;
+                background: #fff;
+                border: 0;
+                outline: none;
+                border-left: 1px solid #EAEBED;
+                i {
+                    margin: auto;
+                    line-height: 18px;
+                    transition: all .3s ease-in-out;
+                }
+            }
+            > a {
+                display: block;
+                padding: 10px 20px;
+                color: variables.$black;
+                font-size: 14px;
+                font-weight: 900;
+                text-transform: uppercase;
+                transition: all .3s ease-in-out;
+            }
+            > ul {
+                display: none;
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                > li {
+                    a {
+                        display: block;
+                        padding: 10px 20px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        transition: all .3s ease-in-out;
+                    }
+                }
+            }
+        }
+    }
+    @include mixins.max-screen(1223px) {
+        position: relative;
+        z-index: 11;
+        padding-left: 5px;
+        background: variables.$green;
+        > ul {
+            border-top: 1px solid #EAEBED;
+            > li {
+                display: flex;
+                align-items: stretch;
+                flex-wrap: wrap;
+                border-bottom: 1px solid #EAEBED;
+                &.selected {
+                    > a {
+                        color: variables.$green;
+                    }
+                }
+                &.submenu-open {
+                    position: relative;
+                    z-index: 10;
+                    filter: drop-shadow(0 0 10px rgba(0,0,0,.1));
+                    > ul {
+                        display: block;
+                    }
+                }
+                > a {
+                    flex: 1 1 auto;
+                    flex-basis: calc(100% - 40px);
+                    width: calc(100% - 40px);
+                    padding: 15px 20px;
+                    background: #fff;
+                }
+                > ul {
+                    min-width: 100%;
+                    li {
+                        margin-left: 5px;
+                        border-top: 1px solid #EAEBED;
+                        &.current {
+                            a {
+                                padding-left: 20px;
+                                text-decoration: underline;
+                                text-decoration-color: variables.$green;
+                            }
+                        }
+                        a {
+                            color: variables.$black;
+                            background: #fff;
+                            padding: 10px 20px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @include mixins.min-screen(1224px) {
+        > ul {
+            display: flex;
+            align-items: flex-start;
+            // justify-content: center;
+            > li {
+                position: relative;
+                .btn {
+                    display: none;
+                }
+                &:hover {
+                    > a {
+                        background: variables.$orange;
+                    }
+                    > ul {
+                        display: block;
+                    }
+                }
+                > a {
+                    color: #fff;
+                }
+                > ul {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    width: 280px;
+                    box-shadow: 0 0 20px rgba(0,0,0,.4);
+                        background: variables.$green;
+                    > li {
+                        display: block;
+                        border-top: 1px solid variables.$green;
+                        &:first-child {
+                            border-top: 0;
+                        }
+                        &.current {
+                            > a {
+                                text-decoration: underline;
+                                text-decoration-color: variables.$base-orange;
+                            }
+                        }
+                        a {
+                            color: #fff;
+                            &:hover {
+                                color: variables.$base-orange;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @include mixins.min-screen(1800px) {
+        > ul {
+            > li {
+                > a {
+                    font-size: 18px;
+                    line-height: 30px;
+                }
+            }
+        }
+    }
+    @include mixins.max-screen(1223px) {
+        display: none;
+        .menu--mobile & {
+            display: block;
+        }
+    }
+}

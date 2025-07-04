@@ -1,0 +1,112 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+div.choices {
+    &__inner {
+        padding: 13px;
+        border: 2px solid variables.$grey;
+        border-radius: 5px;
+        background: variables.$white;
+        height: 50px;
+        min-height: auto;
+        .is-open & {
+            border-radius: 5px 5px 0 0;
+            border-color: variables.$blue;
+        }
+    }
+    &__list {
+        &--single {
+            padding: 0;
+            .choices__item {
+                font-size: 18px;
+                line-height: 20px;
+                max-width: calc(100% - 40px);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        &--dropdown {
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border: 2px solid variables.$blue;
+            border-top: 0;
+            margin-top: 0;
+            .choices__item {
+                padding: 13px;
+                font-size: 14px;
+                line-height: 15px;
+                &:not(:first-child) {
+                    border-top: 1px solid variables.$grey;
+                }
+                &--selectable {
+                    &.is-highlighted {
+                        background-color: variables.$grey3;
+                    }
+                }
+                &--custom-properties {
+                    color: variables.$grey;
+                    font-size: 12px;
+                    line-height: 15px;
+                }
+            }
+        }
+    }
+    &__placeholder {
+        opacity: 1;
+        color: variables.$grey;
+        font-size: 18px;
+        line-height: 20px;
+    }
+    &[data-type*=select-one] {
+        .choices__inner {
+            padding-bottom: 13px;
+        }
+        &:after {
+            @include mixins.fa();
+            content: '\f0d7';
+            font-size: 18px;
+            line-height: 50px;
+            color: variables.$grey;
+            width: 50px;
+            height: 50px;
+            border: 0;
+            border-left: 2px solid variables.$grey;
+            top: 0;
+            right: 0;
+            text-align: center;
+            margin-top: 0;
+        }
+        &.is-open {
+            &:after {
+                display: none;
+            }
+        }
+    }
+    &.is-open {
+        overflow: visible;
+    }
+    .form--input.small & {
+        &__inner {
+            height: 40px;
+            padding: 8px 13px;
+        }
+        &__list {
+            &--single {
+                .choices__item {
+                    font-size: 14px;
+                }
+            }
+        }
+        &[data-type*=select-one] {
+            .choices__inner {
+                padding-bottom: 8px;
+            }
+            &:after {
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+            }
+        }
+    }
+}

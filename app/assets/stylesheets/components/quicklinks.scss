@@ -1,0 +1,51 @@
+@use "../general/variables";
+
+.quicklinks {
+    position: relative;
+    z-index: 1;
+    margin-top: -40px;
+    padding: 100px 50px 80px 50px;
+    color: #fff;
+    text-align: center;
+    background: variables.$orange url("html-pattern.png") no-repeat 50% 50% / 728px auto;
+    h2 {
+        margin-bottom: 40px;
+    }
+    .bills {
+        p {
+            margin-bottom: 20px;
+            font-size: 20px;
+            strong {
+                display: block;
+                font-size: 40px;
+                line-height: 40px;
+                font-weight: 900;
+            }
+        }
+    }
+    .quicklinks--link {
+        display: block;
+        margin-bottom: 10px;
+        color: #fff;
+        font-size: 24px;
+        line-height: 30px;
+        text-decoration: none;
+        i {
+            display: block;
+            height: 40px;
+            font-size: 40px;
+            line-height: 40px;
+            margin: 0 auto 20px;
+            transition: all .3s ease-in-out;
+        }
+        &:hover {
+            color: #fff;
+            span {
+                text-decoration: underline;
+            }
+            i {
+                transform: scale(1.1)
+            }
+        }
+    }
+}

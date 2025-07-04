@@ -1,0 +1,50 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.datepicker {
+    @include mixins.input();
+    padding-right: 63px;
+    + .form--suffix {
+        width: 50px;
+        height: 48px;
+        text-align: center;
+        line-height: 50px;
+        color: variables.$grey;
+        border-left: 2px solid variables.$grey;
+        right: 0;
+    }
+    .form--input.small & {
+        height: 40px;
+        padding: 8px 53px 8px 13px;
+        font-size: 14px;
+        // max-width: 450px;
+        + .form--suffix {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+        }
+    }
+    .form--input.large & {
+        height: 60px;
+        font-size: 20px;
+        padding-right: 73px;
+        + .form--suffix {
+            height: 60px;
+            width: 60px;
+            line-height: 60px;
+        }
+    }
+    .form--input.error & {
+        border-color: variables.$orange;
+        + .form--suffix {
+            border-color: variables.$orange;
+            color: variables.$orange;
+        }
+    }
+    &:focus {
+        + .form--suffix {
+            border-color: variables.$blue;
+            color: variables.$blue;
+        }
+    }
+}

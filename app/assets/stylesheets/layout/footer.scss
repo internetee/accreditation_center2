@@ -1,0 +1,177 @@
+@use "../general/mixins";
+
+.layout--footer {
+    position: relative;
+    z-index: 10;
+    &-top {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+        background: linear-gradient(to right, #0085CA, #009DE1 100%);
+        box-shadow: 0 0 40px rgba(0,0,0,.2);
+        h3 {
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+        a {
+            color: #fff;
+        }
+        p {
+            margin-bottom: 10px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+        .quickinfo {
+            margin-top: 20px;
+            padding: 0;
+            li {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 10px;
+                &:first-child {
+                    margin-top: 0;
+                }
+                i {
+                    flex: 0 0 20px;
+                    width: 20px;
+                    margin-right: 10px;
+                    text-align: center;
+                }
+            }
+        }
+    }
+    &-logo {
+        display: block;
+        width: 62px;
+        margin: 0 auto 20px;
+        transition: all .3s ease-in-out;
+        &:hover {
+            transform: scale(1.1);
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+    }
+    &-bottom {
+        background: linear-gradient(to bottom, #003D63, #064F7C 100%);
+    }
+    @include mixins.min-screen(768px) {
+        &-top {
+            .quickinfo {
+                li {
+                    justify-content: flex-start;
+                }
+            }
+        }
+        &-logo {
+            width: 100px;
+            margin: 0 40px 0 0;
+        }
+        &-bottom {
+            display: flex;
+            align-items: flex-start;
+        }
+    }
+    @include mixins.screen(768px,991px) {
+        margin: 0 20px;
+        &-top {
+            margin: -20px 40px;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            padding: 20px 0 20px 40px;
+        }
+        &-contacts {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            .address {
+                margin-right: 40px;
+            }
+            .quickinfo {
+                margin-top: 0;
+            }
+        }
+    }
+    @include mixins.min-screen(992px) {
+        display: flex;
+        align-items: stretch;
+        padding: 0 20px;
+        margin: 0 20px;
+        background: linear-gradient(to bottom, #003D63, #064F7C 100%);
+        &-top {
+            flex: 0 0 280px;
+            width: 280px;
+            margin: -40px 0 0 0;
+            padding: 20px;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            background: linear-gradient(to right, #0085CA, #009DE1 100%);
+            box-shadow: 0 0 40px rgba(0,0,0,.2);
+            h3 {
+                margin-bottom: 20px;
+                font-weight: 900;
+            }
+            a {
+                color: #fff;
+            }
+            p {
+                margin-bottom: 10px;
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+            .quickinfo {
+                margin-top: 20px;
+                li {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 10px;
+                    &:first-child {
+                        margin-top: 0;
+                    }
+                    i {
+                        flex: 0 0 20px;
+                        width: 20px;
+                        margin-right: 10px;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+        &-logo {
+            display: block;
+            width: 104px;
+            margin: 0 auto 20px;
+            transition: all .3s ease-in-out;
+            &:hover {
+                transform: scale(1.1);
+            }
+        }
+        &-bottom {
+            flex: 1 1 auto;
+            padding: 0 0 20px;
+            background: none;
+        }
+    }
+    @include mixins.min-screen(1224px) {
+        padding: 0 40px;
+        margin: 0 50px;
+        &-top {
+            flex: 0 0 380px;
+            width: 380px;
+            padding: 40px;
+        }
+        &-bottom {
+            padding: 0 20px 20px;
+        }
+    }
+}

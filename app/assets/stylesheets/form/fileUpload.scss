@@ -1,0 +1,68 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.file {
+    appearance: none;
+    background: none;
+    border: 0;
+    outline: 0;
+    font-size: 14px;
+    line-height: 50px;
+    cursor: pointer;
+    padding: 0;
+    &:hover {
+        strong {
+            color: variables.$blue;
+        }
+    }
+    strong {
+        transition: all .3s ease-in-out;
+    }
+    .form--input.small & {
+        line-height: 40px;
+    }
+    .form--input.large & {
+        line-height: 60px;
+        font-size: 16px;
+    }
+    &--list {
+        li {
+            font-size: 14px;
+            line-height: 40px;
+            border-bottom: 1px solid variables.$grey3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            &:first-child {
+                border-top: 1px solid variables.$grey3;
+            }
+        }
+    }
+    &--remove {
+        outline: none;
+        appearance: none;
+        background: none;
+        border: 0;
+        cursor: pointer;
+        transition: all .3s ease-in-out;
+        &:before {
+            @include mixins.fa;
+            display: block;
+            content: '\f00d';
+            color: variables.$grey;
+            font-size: 14px;
+            line-height: 20px;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            transition: all .3s ease-in-out;
+        }
+        &:hover,
+        &:focus {
+            &:before {
+                color: variables.$blue;
+                transform: scale(1.1);
+            }
+        }
+    }
+}

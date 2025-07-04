@@ -1,0 +1,118 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 20;
+    &--menu,
+    &--form {
+        margin-top: 40px;
+    }
+    &--menu {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-right: auto;
+    }
+    &--form {
+        .form--label {
+            margin-bottom: 0;
+        }
+        .form--input {
+            width: 100px;
+            margin-left: 20px;
+        }
+    }
+    &--item {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+        line-height: 40px;
+        color: variables.$black;
+        background-color: variables.$grey5;
+        cursor: pointer;
+        text-align: center;
+        transition: all .3s ease-in-out;
+        &:hover {
+            background-color: variables.$base-blue;
+            color: #fff;
+        }
+        &.active {
+            background-color: variables.$blue;
+            color: variables.$white;
+            font-weight: 900;
+        }
+        &__ellipsis {
+            text-align: center;
+            margin-left: 10px;
+            + .pagination--item {
+                margin-left: 10px;
+            }
+        }
+        + .pagination--item {
+            margin-left: 10px;
+        }
+        &.disabled {
+            color: variables.$grey;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+    &--prev,
+    &--next {
+        color: variables.$black;
+        width: auto;
+        background: none;
+        text-decoration: underline;
+        &:hover,
+        &:focus {
+            color: variables.$blue;
+        }
+    }
+    &--prev {
+        margin: 0 40px 0 0;
+        i {
+            margin-right: 10px;
+        }
+    }
+    &--next {
+        margin: 0 0 0 40px;
+        i {
+            margin-left: 10px;
+        }
+    }
+    @include mixins.max-screen(767px) {
+        &--menu {
+            margin-top: 20px;
+        }
+        &--form {
+            margin-top: 0;
+            margin-left: auto;
+        }
+        &--menu {
+            width: 100%;
+            justify-content: center;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        &--item {
+            margin-bottom: 20px;
+            order: 1;
+            &__ellipsis {
+                order: 1;
+            }
+        }
+        &--prev,
+        &--next {
+            order: 0;
+            flex: 1 0 50%;
+            max-width: 50%;
+            margin: 0;
+        }
+        &--next {
+            text-align: right;
+        }
+    }
+}

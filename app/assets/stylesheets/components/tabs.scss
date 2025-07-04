@@ -1,0 +1,63 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.tabs {
+    background-color: variables.$white;
+    box-shadow: 0 0 20px 0 rgba(0,0,0,0.1);
+    margin: 0 20px;
+    &--head {
+        background-color: variables.$grey3;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        &--item {
+            flex: 1;
+            font-size: 14px;
+            line-height: 20px;
+            color: variables.$black;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            transition: all .2s ease;
+            &.active {
+                font-weight: 900;
+                background-color: variables.$white;
+            }
+        }
+
+    }
+    &--tab {
+        display: none;
+        padding: 20px;
+        &.active {
+            display: block;
+        }
+    }
+    @include mixins.min-screen(480px) {
+        &--tab {
+            padding: 40px;
+        }
+    }
+    @include mixins.min-screen(768px) {
+        margin: 0;
+        &--head {
+            flex-direction: row;
+            padding: 20px 40px 0;
+            &--item {
+                font-size: 16px;
+                line-height: 30px;
+                padding: 10px 20px;
+                border-radius: 5px 5px 0 0;
+            }
+        }
+    }
+    @include mixins.min-screen(991px) {
+        &--head {
+            &--item {
+                padding: 15px 20px;
+                font-size: 18px;
+                line-height: 30px;
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+@use "../general/variables";
+
+.menu--simple {
+    ul {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: -10px;
+        li {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+            &:first-child {
+                &:before {
+                    display: none;
+                }
+            }
+            &:before {
+                content: '\2022';
+                margin: 0 10px;
+                color: variables.$blue;
+            }
+            a {
+                text-decoration: underline;
+                &:hover {
+                    color: variables.$darkblue;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+}

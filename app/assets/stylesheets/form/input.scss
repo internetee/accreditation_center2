@@ -1,0 +1,35 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.input {
+    @include mixins.input;
+    .form--input.small & {
+        height: 40px;
+        padding: 8px 13px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .form--input.large & {
+        height: 60px;
+        font-size: 20px;
+        line-height: 30px;
+    }
+    .form--input.error & {
+        border-color: variables.$orange;
+    }
+    &.search {
+        border-color: transparent;
+    }
+    &[type=number] {
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            -moz-appearance: textfield;
+            appearance: none;
+            margin: 0;
+        }
+    }
+    &::placeholder {
+        font: inherit;
+        color: variables.$grey;
+    }
+}

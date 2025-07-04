@@ -1,0 +1,65 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.menu--portal {
+    a {
+        display: block;
+        padding: 15px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        color: variables.$black;
+        transition: all .3s ease-in-out;
+        &.active {
+            color: #fff;
+            font-weight: 900;
+        }
+        &.active:first-child {
+            background: variables.$blue;
+        }
+        &.active:nth-child(2) {
+            background: variables.$green;
+        }
+        &.active:nth-child(3) {
+            background: variables.$orange;
+        }
+        &.active:nth-child(4) {
+            background: variables.$green;
+        }
+        &:hover {
+            color: #fff;
+            text-decoration: underline;
+            &:first-child {
+                background: variables.$blue;
+            }
+            &:nth-child(2) {
+                background: variables.$green;
+            }
+            &:nth-child(3) {
+                background: variables.$orange;
+            }
+            &:nth-child(4) {
+                background: variables.$green;
+            }
+        }
+    }
+    @include mixins.min-screen(1224px) {
+        display: flex;
+        align-items: stretch;
+        a {
+            padding: 20px;
+        }
+    }
+    @include mixins.max-screen(1223px) {
+        display: none;
+        .menu--mobile & {
+            display: block;
+        }
+    }
+    @include mixins.min-screen(1440px) {
+        a {
+            font-size: 16px;
+            line-height: 25px;
+            padding: 20px;
+        }
+    }
+}

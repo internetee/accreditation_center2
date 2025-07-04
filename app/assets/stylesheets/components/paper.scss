@@ -1,0 +1,58 @@
+@use "../general/variables";
+@use "../general/mixins";
+
+.paper {
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 40px rgba(0,0,0,0.2);
+    &--header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+        h2 {
+            margin-bottom: 20px;
+        }
+    }
+    &--text {
+        margin-top: 20px;
+        font-size: 14px;
+        line-height: 20px;
+        &:first-child {
+            margin-top: 0;
+        }
+        &__center {
+            text-align: center;
+        }
+        p {
+            margin-bottom: 10px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    &__light {
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    &__simple {
+        box-shadow: none;
+        background: none;
+    }
+    &--footer {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        &__left,
+        &__right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        &__right {
+            margin-left: auto;
+        }
+    }
+    @include mixins.min-screen(767px) {
+        padding: 40px;
+    }
+}

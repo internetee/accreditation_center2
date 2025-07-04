@@ -1,4 +1,9 @@
-<h2>Log in</h2>
+<% content_for(:title) { "EIS | #{t('.login')}" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= t('.title') %></h1>
+    </div>
+<% end %>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
   <div class="field">

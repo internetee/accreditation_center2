@@ -1,0 +1,16 @@
+<div class="menu--mobile">
+    <button type="button" class="button button--menu" data-menu-toggle="">
+        <i aria-hidden="true" class="fas fa-times"></i>
+    </button>
+    <%= render 'common/menu_language' %>
+    <%= render 'common/menu_user' %>
+    <% if current_user %>
+        <%= render 'common/menu_main' %>
+    <% end %>
+    <nav class="menu--portal">
+        <a href="https://internet.ee"><span><%= t('common.header.open_portal') %></span></a>
+        <a href="https://auction.internet.ee/"><%= t('common.header.auction_portal') %></a>
+        <a href="https://registrar.internet.ee" class="active"><span><%= t('common.header.registrar_portal') %></span></a>
+        <a href="https://registrant.internet.ee"><span><%= t('common.header.registrant_portal') %></span></a>
+    </nav>
+</div>

@@ -1,0 +1,9 @@
+<% unless flash.empty? %>
+    <% flash.each do |key, value| -%>
+        <% if ['notice', 'alert'].include?(key) %>
+            <div data-controller="flash" data-action="animationend->flash#dismiss" class="message message__<%= key %>">
+                <%= h value %>
+            </div>
+        <% end %>
+    <% end %>
+<% end %>
