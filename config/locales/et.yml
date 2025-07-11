@@ -1,0 +1,17 @@
+et:
+  sign_in: "Logi sisse"
+  sign_out: "Logi välja"
+  common:
+    language: "eesti keeles"
+  users:
+    sessions:
+      new:
+        title: "Eesti Interneti SA Akrediteerimiskeskus"
+        login: "Logi sisse"
+        login_with_password_title: "Logi sisse"
+        login_with_id_title: "Logi sisse ID-ga"
+        login_with_id: "Logi sisse EEID-ga"
+        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, pangalinki või muud EIDAS-toega EL-i elektroonilist ID-d."
+        username: "Kasutajanimi"
+        password: "Parool"
+        remember_me: "Jäta mind meelde"

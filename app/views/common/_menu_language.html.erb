@@ -1,10 +1,10 @@
 <nav class="menu--language">
     <ul>
         <li class="<%= I18n.locale == :et ? 'active' : '' %>">
-            <%= link_to 'eesti keeles', url_for(locale: :et, params: params.to_unsafe_h), role: 'button', data: { turbo: false } %>
+            <%= link_to 'eesti keeles', url_for(params.to_unsafe_h.merge(locale: :et)), role: 'button', data: { turbo: false } %>
         </li>
         <li class="<%= I18n.locale == :en ? 'active' : '' %>">
-            <%= link_to 'in english', url_for(locale: :en, params: params.to_unsafe_h), role: 'button', data: { turbo: false } %>
+            <%= link_to 'in english', url_for(params.to_unsafe_h.merge(locale: :en)), role: 'button', data: { turbo: false } %>
         </li>
     </ul>
 </nav>

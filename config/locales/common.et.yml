@@ -1,0 +1,36 @@
+et:
+  common:
+    header:
+      open_portal: "Avalik portaal"
+      auction_portal: "Oksjonikeskkond"
+      registrar_portal: "Registripidaja portaal"
+      registrant_portal: "Registreerija portaal"
+      homepage: "Avaleht"
+      domains: "Domeenid"
+      contacts: "Kontaktid"
+      invoices: "Arved"
+      api_users: "Api kasutajad"
+      messages: "Sõnumid"
+      stats: "Statistika"
+      xml_console: "XML Konsool"
+
+    footer:
+      copyright: "© 2025 Eesti Interneti Sihtasutus"
+      address: "Paldiski mnt 80, 10617 Tallinn, Eesti"
+      registration_code: "Registrikood: 90010019"
+      help_and_info: "Abi & info"
+      domain_regulation: ".ee Domeenireeglid"
+      faq: "Korduma kippuvad küsimused"
+      statistics: "Statistika"
+      dispute_committee: "Domeenivaidluste Komisjon"
+      registrars: "Registripidajad"
+      list_of_accredited_registrars: "Akrediteeritud registripidajate nimekiri"
+      terms_and_conditions_for_registrars: "Akrediteeritud registripidajaks saamine"
+      partner_programme: |
+        "Elite Partner" programm
+      estonian_internet: "Meist"
+      contact_us: "Võta meiega ühendust!"
+      management: "Juhtimine"
+      documents: "Dokumendid"
+      social_media: "Sotsiaalmeedia"
+      cookie_settings: "Küpsiste seaded"
