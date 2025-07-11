@@ -42,6 +42,8 @@ gem "thruster", require: false
 
 gem 'cancancan'
 gem 'devise'
+gem 'faraday'
+gem 'figaro'
 
 gem 'font-awesome-sass', '~> 5.15.1'
 

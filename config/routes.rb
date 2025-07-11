@@ -9,16 +9,17 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  root 'home#index'
+  # Internationalization scope
+  scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
+    root 'home#index'
 
-  devise_for :users, controllers: {
-    sessions: 'users/sessions'
-  }
+    devise_for :users, controllers: {
+      sessions: 'users/sessions'
+    }
 
-  devise_scope :user do
-    get 'login', to: 'users/sessions#new'
-    get 'logout', to: 'users/sessions#destroy'
+    devise_scope :user do
+      get 'login', to: 'users/sessions#new'
+      get 'logout', to: 'users/sessions#destroy'
+    end
   end
 end
