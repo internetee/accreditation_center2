@@ -1,0 +1,26 @@
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('admin.test_categories.new_title', test: @test.title) %></h1>
+    <%= back_link %>
+  </div>
+<% end %>
+<div class="admin-page">
+  <div class="page-header">
+    <h1><%= t('admin.test_categories.new_title', test: @test.title) %></h1>
+    <div class="page-actions">
+      <%= link_to admin_test_test_categories_path(@test), class: 'btn btn-secondary' do %>
+        <i class="fas fa-arrow-left"></i> <%= t('admin.test_categories.back_to_categories') %>
+      <% end %>
+    </div>
+  </div>
+  <div class="content-section">
+    <div class="card">
+      <div class="card-header">
+        <h3><%= t('admin.test_categories.new_details') %></h3>
+      </div>
+      <div class="card-body">
+        <%= render 'form', test: @test, test_category: @test_category %>
+      </div>
+    </div>
+  </div>
+</div> 

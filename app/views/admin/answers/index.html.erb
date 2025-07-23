@@ -1,0 +1,105 @@
+<% content_for(:title) { "EIS | #{t('admin.answers.index_title', question: @question.text)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('admin.answers.index_title', question: @question.text) %></h1>
+    <%= back_link %>
+  </div>
+<% end %>
+<div class="page page--admin-answers">
+  <div class="page--actions">
+    <div class="wrapper">
+      <div class="page--actions__left">
+        <%= link_to t('admin.answers.add'), new_admin_test_category_question_answer_path(@test_category, @question), class: 'button button--primary' %>
+      </div>
+    </div>
+  </div>
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="answers-grid">
+        <% @answers.each do |answer| %>
+          <div class="answer-card">
+            <div class="answer-header">
+              <h3><%= answer.text_et %> / <%= answer.text_en %></h3>
+              <% if answer.correct? %>
+                <span class="badge badge-success"><%= t('admin.answers.correct') %></span>
+              <% end %>
+            </div>
+            <div class="answer-details">
+              <div class="answer-meta">
+                <span><%= t('admin.answers.display_order') %>: <%= answer.display_order %></span>
+              </div>
+            </div>
+            <div class="answer-actions">
+              <%= link_to t('admin.answers.edit'), edit_admin_test_category_question_answer_path(@test_category, @question, answer), class: 'btn btn-sm btn-outline-secondary' %>
+              <%= link_to t('admin.answers.delete'), admin_test_category_question_answer_path(@test_category, @question, answer), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: t('admin.answers.confirm_delete') } %>
+            </div>  
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .answers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  .answer-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+  }
+  .answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .answer-header h3 {
+    margin: 0;
+    color: #333;
+  }
+  .badge-success {
+    background: #d4edda;
+    color: #155724;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+  .answer-details {
+    color: #666;
+    margin-bottom: 5px;
+  }
+  .answer-meta {
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 10px;
+  }
+  .answer-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+  }
+  .btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+    background: transparent;
+  }
+  .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+    background: transparent;
+  }
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+</style> 

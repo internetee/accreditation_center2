@@ -1,0 +1,128 @@
+<div class="test-container">
+  <!-- Header with progress and time -->
+  <div class="test-header">
+    <div class="test-info">
+      <h1><%= @test.title %></h1>
+      <div class="test-meta">
+        <span class="question-counter">
+          <%= t('tests.question_counter', current: @current_question_index + 1, total: @questions.count) %>
+        </span>
+        <span class="time-remaining" data-time-remaining="<%= @test_attempt.time_remaining %>">
+          <%= t('tests.time_remaining', minutes: (@test_attempt.time_remaining / 60).floor, seconds: @test_attempt.time_remaining % 60) %>
+        </span>
+      </div>
+    </div>
+    
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: <%= @test_attempt.progress_percentage %>%"></div>
+      </div>
+      <span class="progress-text"><%= @test_attempt.progress_percentage %>%</span>
+    </div>
+  </div>
+
+  <!-- Question navigation -->
+  <div class="question-navigation">
+    <% @questions.each_with_index do |question, index| %>
+      <% response = @test_attempt.question_responses.find_by(question: question) %>
+      <% status_class = response&.status_color || 'unanswered' %>
+      
+      <%= link_to question_test_path(@test, attempt: @test_attempt.access_code, question_index: index),
+                  class: "question-nav-item #{status_class} #{'current' if index == @current_question_index}" do %>
+        <%= index + 1 %>
+        <% if response&.marked_for_later? %>
+          <i class="fas fa-clock"></i>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Current question -->
+  <div class="question-container">
+    <div class="question-header">
+      <h2><%= @current_question.text %></h2>
+      <% if @current_question.help_text.present? %>
+        <div class="question-help">
+          <%= @current_question.help_text %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with url: answer_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index),
+                  method: :post, local: true, class: 'question-form' do |form| %>
+      
+      <% if @current_question.multiple_choice? %>
+        <div class="answers-container">
+          <% @answers.each do |answer| %>
+            <div class="answer-option">
+              <%= form.check_box :answer_ids, 
+                                { multiple: true, 
+                                  checked: @question_response.selected_answer_ids&.include?(answer.id),
+                                  class: 'answer-checkbox' }, 
+                                answer.id, 
+                                nil %>
+              <label for="answer_ids_<%= answer.id %>" class="answer-label">
+                <%= answer.text %>
+              </label>
+            </div>
+          <% end %>
+        </div>
+      <% elsif @current_question.practical? %>
+        <div class="practical-task">
+          <% task_service = PracticalTestService.new(@current_question, @test_attempt) %>
+          <% task = task_service.generate_task %>
+          
+          <div class="task-instructions">
+            <h3><%= task[:instructions][I18n.locale] %></h3>
+            <p><%= t('tests.practical_task_instructions') %></p>
+          </div>
+          
+          <div class="task-response">
+            <%= form.text_area :practical_response, 
+                              placeholder: t('tests.practical_response_placeholder'),
+                              class: 'practical-response-textarea' %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="question-actions">
+        <%= form.submit t('tests.answer_and_continue'), class: 'btn btn-primary' %>
+        <%= form.submit t('tests.mark_for_later'), 
+                        name: 'marked_for_later', 
+                        value: 'true',
+                        class: 'btn btn-secondary' %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Finish test button -->
+  <div class="finish-test">
+    <%= link_to t('tests.finish_test'), 
+                finish_test_path(@test, attempt: @test_attempt.access_code),
+                class: 'btn btn-danger',
+                data: { confirm: t('tests.confirm_finish') } %>
+  </div>
+</div>
+
+<script>
+  // Auto-refresh time remaining every second
+  setInterval(function() {
+    const timeElement = document.querySelector('.time-remaining');
+    const timeRemaining = parseInt(timeElement.dataset.timeRemaining) - 1;
+    
+    if (timeRemaining <= 0) {
+      window.location.href = '<%= finish_test_path(@test, attempt: @test_attempt.access_code) %>';
+    } else {
+      timeElement.dataset.timeRemaining = timeRemaining;
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      timeElement.textContent = '<%= t("tests.time_remaining") %>'.replace('{minutes}', minutes).replace('{seconds}', seconds);
+      
+      // Show warning when 5 minutes remaining
+      if (timeRemaining <= 300 && timeRemaining > 0) {
+        timeElement.classList.add('warning');
+      }
+    }
+  }, 1000);
+</script> 

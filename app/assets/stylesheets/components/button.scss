@@ -34,6 +34,12 @@
         border-radius: 3px;
         box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .2), 0 0 10px rgba(0, 0, 0, .2);
     }
+    &.tiny {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 3px;
+        box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .2), 0 0 5px rgba(0, 0, 0, .2);
+    }
     &--default {
         background: variables.$white;
         color: variables.$black;

@@ -40,7 +40,6 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem 'cancancan'
 gem 'devise'
 gem 'faraday'
 gem 'figaro'
@@ -74,3 +73,11 @@ group :test do
 end
 
 gem "dartsass-rails", "~> 0.5.1"
+
+gem 'action_policy'
+
+gem 'traco'
+
+gem 'pagy', '~> 9.3' # omit patch digit
+gem 'ransack'
+# gem 'surveyor', path: 'vendor/gems/surveyor'

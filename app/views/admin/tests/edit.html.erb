@@ -1,0 +1,16 @@
+<% content_for :title, t('.edit_test', test: @test.title) %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test.id %></div>
+    <%= back_link %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-edit">
+  <div class="page--content">
+    <div class="wrapper">
+      <%= render 'form', test: @test %>
+    </div>
+  </div>
+</div>

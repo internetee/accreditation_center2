@@ -25,6 +25,10 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <script async src="https://ga.jspm.io/npm:es-module-shims@1.8.2/dist/es-module-shims.js" data-turbo-track="reload"></script>
     <%= javascript_importmap_tags %>
+    <!-- https://github.com/rails/importmap-rails/issues/65 -->
+    <script>
+      window.process = { env: { NODE_ENV: 'production'} }
+    </script>
   </head>
 
   <body data-locale="<%= I18n.locale %>">

@@ -1,5 +1,3 @@
 <nav class="menu--main">
-    <ul>
-        <li><%= link_to t('common.header.homepage'), '#' %></li>
-    </ul>
+    <%= navigation_links(current_user) %>
 </nav>

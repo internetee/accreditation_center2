@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Pagy::Backend
   include Localization
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -6,8 +7,14 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_url, alert: exception.message
+  def set_pagy_params
+    if params[:per_page]&.to_i&.positive?
+      session[:page_size] = params[:per_page].to_i
+    else
+      session[:page_size] ||= Pagy::DEFAULT[:items]
+    end
+    @page = params[:page] || 1
+    @offset = session[:page_size] * (@page.to_i - 1)
   end
 
   protected

@@ -20,14 +20,6 @@
     &.search {
         border-color: transparent;
     }
-    &[type=number] {
-        &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button {
-            -moz-appearance: textfield;
-            appearance: none;
-            margin: 0;
-        }
-    }
     &::placeholder {
         font: inherit;
         color: variables.$grey;

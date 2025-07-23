@@ -1,0 +1,105 @@
+<% content_for(:title) { "EIS | #{t('.title')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <%= back_link %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-categories">
+  <div class="page--header">
+    <div class="wrapper">
+      <%= render 'admin/test_categories/search_form' %>
+    </div>
+  </div>
+  <div class="page--actions">
+    <div class="wrapper">
+      <div class="page--actions__left">
+        <%= link_to t('.new'), new_admin_test_category_path, class: 'button button--secondary' %>
+      </div>
+    </div>
+  </div>
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="categories-grid">
+        <% @test_categories.each do |category| %>
+          <div class="category-card">
+            <div class="category-header">
+              <h3><%= category.name %></h3>
+              <div class="category-status">
+                <% if category.active? %>
+                  <span class="badge badge-success"><%= t('admin.test_categories.active') %></span>
+                <% else %>
+                  <span class="badge badge-secondary"><%= t('admin.test_categories.inactive') %></span>
+                <% end %>
+              </div>
+            </div>
+            <div class="category-details">
+              <p><strong><%= t('admin.test_categories.description_et') %>:</strong> <%= category.description_et %></p>
+              <p><strong><%= t('admin.test_categories.description_en') %>:</strong> <%= category.description_en %></p>
+              <div class="category-meta">
+                <span><%= t('admin.test_categories.domain_rule_reference') %>: <%= category.domain_rule_reference.presence || t('admin.test_categories.not_set') %></span>
+                <span><%= t('admin.test_categories.questions_per_category') %>: <%= category.questions_per_category %></span>
+                <span><%= t('admin.test_categories.display_order') %>: <%= category.display_order %></span>
+              </div>
+            </div>
+            <div class="category-actions">
+              <%= link_to t('admin.test_categories.questions'), admin_test_category_questions_path(category), class: 'btn btn-sm btn-outline-info' %>
+              <%= link_to t('admin.test_categories.edit'), edit_admin_test_category_path(category), class: 'btn btn-sm btn-outline-secondary' %>
+              <%= link_to t('admin.test_categories.delete'), admin_test_category_path(category), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: t('admin.test_categories.confirm_delete') } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  .category-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 260px;
+  }
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .category-header h3 {
+    margin: 0;
+    color: #333;
+  }
+  .category-status {
+    margin-left: 10px;
+  }
+  .category-details p {
+    color: #666;
+    margin-bottom: 5px;
+  }
+  .category-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 10px;
+  }
+  .category-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+</style> 

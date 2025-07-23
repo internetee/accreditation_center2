@@ -50,6 +50,7 @@
 @use "menu/simple";
 
 // Views
+@use "views/admin_test_show";
 
 // Font-awesome
 @use "font-awesome" with (
@@ -87,9 +88,9 @@
 }
 
 /* Fix issue with not enough space for choice items */
-@media (min-width: 640px) {
-  .choices__list--dropdown .choices__item--selectable, .choices__list[aria-expanded] .choices__item--selectable {
-      padding-right: 50px;
+@include mixins.min-screen(640px) {
+  .choices__list--dropdown .choices__item--selectable[data-select-text], .choices__list[aria-expanded] .choices__item--selectable[data-select-text] {
+    padding-right: 50px;
   }
 }
 

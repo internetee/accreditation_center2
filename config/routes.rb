@@ -21,5 +21,41 @@ Rails.application.routes.draw do
       get 'login', to: 'users/sessions#new'
       get 'logout', to: 'users/sessions#destroy'
     end
+
+    # Accreditation system routes
+    resources :tests, only: [:index, :show] do
+      member do
+        post :start
+        get :question, path: 'question/:question_index', as: :question
+        post :answer, path: 'answer/:question_index', as: :answer
+        get :finish, as: :finish
+        get :results, as: :results
+      end
+    end
+
+    # Admin routes
+    namespace :admin do
+      get 'dashboard', to: 'dashboard#index'
+
+      resources :tests do
+        member do
+          patch :activate
+          patch :deactivate
+          post :duplicate
+        end
+
+        resources :test_attempts, only: [:index, :show]
+      end
+
+      resources :test_categories, except: [:show] do
+        resources :questions, except: [:show] do
+          post :duplicate, on: :member
+          resources :answers, except: [:show]
+        end
+      end
+
+      resources :users, only: [:index, :show]
+      resources :test_attempts, only: [:index, :show]
+    end
   end
 end

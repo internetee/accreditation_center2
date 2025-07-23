@@ -1,0 +1,132 @@
+<%= form_with model: [ :admin, @test_category, @question, @answer ], local: true, class: 'answer-form' do |form| %>
+  <% if @answer.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= t('errors.template.header', count: @answer.errors.count) %></h4>
+      <ul>
+        <% @answer.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-section">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :text_et, t('admin.answers.text_et') %>
+        <%= form.text_field :text_et, class: 'form-control', required: true %>
+      </div>
+      <div class="form-group col-md-6">
+        <%= form.label :text_en, t('admin.answers.text_en') %>
+        <%= form.text_field :text_en, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :display_order, t('admin.answers.display_order') %>
+        <%= form.number_field :display_order, class: 'form-control', min: 0 %>
+      </div>
+      <div class="form-group col-md-6">
+        <div class="form-check">
+          <%= form.check_box :correct, class: 'form-check-input' %>
+          <%= form.label :correct, t('admin.answers.correct'), class: 'form-check-label' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions">
+    <%= form.submit t('admin.answers.save'), class: 'btn btn-primary' %>
+    <%= link_to t('admin.answers.cancel'), admin_test_category_question_answers_path(@test_category, @question), class: 'btn btn-secondary' %>
+  </div>
+<% end %>
+
+<style>
+  .answer-form {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #f8f9fa;
+  }
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  .form-group {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 20px;
+  }
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .form-check {
+    position: relative;
+    display: block;
+    padding-left: 1.25rem;
+  }
+  .form-check-input {
+    position: absolute;
+    margin-top: 0.3rem;
+    margin-left: -1.25rem;
+  }
+  .form-check-label {
+    margin-bottom: 0;
+  }
+  .form-actions {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+  }
+  .btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  .btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+</style> 

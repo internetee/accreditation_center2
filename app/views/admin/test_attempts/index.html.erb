@@ -1,0 +1,345 @@
+<% content_for(:title) { "EIS | #{t('.title', test: @test.title)}" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= t('.title', test: @test.title) %></h1>
+        <%= back_link %>
+    </div>
+<% end %>
+
+<div class="page page--admin-test-attempts">
+  <div class="page--actions">
+    <div class="wrapper">
+      <div class="page--actions__left">
+        <%= link_to t('.back_to_test'), admin_test_path(@test), class: 'button button--secondary' %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="attempts-summary">
+        <div class="summary-card">
+          <div class="summary-header">
+            <h3><%= t('.summary') %></h3>
+          </div>
+          <div class="summary-content">
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.total_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.passed_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.passed.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.failed_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.failed.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.pass_rate') %></span>
+                <span class="stat-value">
+                  <% if @test.test_attempts.count > 0 %>
+                    <%= number_to_percentage((@test.test_attempts.passed.count.to_f / @test.test_attempts.count * 100), precision: 1) %>
+                  <% else %>
+                    <%= t('.no_attempts') %>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="attempts-table-section">
+        <div class="section-header">
+          <h3><%= t('.all_attempts') %></h3>
+        </div>
+        
+        <div class="attempts-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th><%= t('.user') %></th>
+                <th><%= t('.started_at') %></th>
+                <th><%= t('.completed_at') %></th>
+                <th><%= t('.duration') %></th>
+                <th><%= t('.score') %></th>
+                <th><%= t('.status') %></th>
+                <th><%= t('.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @test_attempts.each do |attempt| %>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <span class="user-name"><%= attempt.user.name || attempt.user.email %></span>
+                      <span class="user-email"><%= attempt.user.email %></span>
+                    </div>
+                  </td>
+                  <td><%= l(attempt.started_at, format: :short) if attempt.started_at %></td>
+                  <td><%= l(attempt.completed_at, format: :short) if attempt.completed_at %></td>
+                  <td>
+                    <% if attempt.completed? && attempt.started_at %>
+                      <%= distance_of_time_in_words(attempt.started_at, attempt.completed_at) %>
+                    <% elsif attempt.started_at %>
+                      <%= t('.in_progress') %>
+                    <% else %>
+                      <%= t('.not_started') %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if attempt.completed? %>
+                      <span class="score-value"><%= number_to_percentage(attempt.score_percentage, precision: 1) %></span>
+                    <% else %>
+                      <%= t('.in_progress') %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if attempt.passed? %>
+                      <span class="badge badge-success"><%= t('.passed') %></span>
+                    <% elsif attempt.failed? %>
+                      <span class="badge badge-danger"><%= t('.failed') %></span>
+                    <% else %>
+                      <span class="badge badge-warning"><%= t('.in_progress') %></span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to t('.view'), admin_test_test_attempt_path(@test, attempt), class: 'btn btn-sm btn-outline-primary' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+        <% if @test_attempts.respond_to?(:current_page) %>
+          <div class="pagination-wrapper">
+            <%= paginate @test_attempts %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .page--admin-test-attempts {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .page--actions {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 0;
+  }
+  
+  .page--actions .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .page--actions__left {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .page--content {
+    padding: 30px 0;
+  }
+  
+  .wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .attempts-summary {
+    margin-bottom: 40px;
+  }
+  
+  .summary-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .summary-header {
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .summary-header h3 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .summary-content {
+    padding: 20px;
+  }
+  
+  .summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .stat-label {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  
+  .stat-value {
+    display: block;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .attempts-table-section {
+    margin-bottom: 40px;
+  }
+  
+  .section-header {
+    margin-bottom: 20px;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .attempts-table {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .table tbody tr:hover {
+    background: #f8f9fa;
+  }
+  
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .user-email {
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  .score-value {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+  
+  .badge-success {
+    background: #d4edda;
+    color: #155724;
+  }
+  
+  .badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  
+  .badge-warning {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .button--secondary {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+    background: transparent;
+  }
+  
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .pagination-wrapper {
+    margin-top: 20px;
+    text-align: center;
+  }
+</style> 

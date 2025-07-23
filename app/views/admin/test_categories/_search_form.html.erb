@@ -1,0 +1,14 @@
+<%= form_with scope: :search, method: :get do |form| %>
+    <div class="row">
+        <div class="col-md-5 col-md-offset-4 col-xs">
+            <div class="form--field">
+                <div class="form--input large">
+                    <%= button_tag(type: 'submit', class: 'button button--primary') do %>
+                        <i class="fas fa-arrow-right"></i>
+                    <% end %>
+                    <%= form.text_field :name_matches, 'aria-label': t(:search), class: 'input search', placeholder: t(:search), value: params[:search]&.dig(:name_matches) %>
+                </div>
+            </div>
+        </div>
+    </div>
+<% end %>

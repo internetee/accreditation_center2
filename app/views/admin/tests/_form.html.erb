@@ -1,0 +1,140 @@
+<%= form_with model: [:admin, @test], local: true, class: 'form form__styled' do |form| %>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.info') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :title_et, "#{t('.title_et')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :title_et, class: 'input', required: true %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row">
+            <%= form.label :description_et, "#{t('.description_et')}", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_area :description_et, rows: 3, class: 'textarea' %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :title_en, "#{t('.title_en')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :title_en, class: 'input', required: true %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row">
+            <%= form.label :description_en, "#{t('.description_en')}", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_area :description_en, rows: 3, class: 'textarea' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.configuration') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-4 col-xs-12">
+          <div class="form--row">
+            <%= form.label :time_limit_minutes, "#{t('.time_limit_minutes')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.number_field :time_limit_minutes, class: 'input', required: true, min: 1, max: 480 %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row">
+            <%= form.label :display_order, "#{t('.display_order')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.number_field :display_order, class: 'input', required: true, min: 0 %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-xs-12">
+          <div class="form--row">
+            <%= form.label :questions_per_category, "#{t('.questions_per_category')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.number_field :questions_per_category, class: 'input', required: true, min: 1, max: 20 %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-xs-12">
+          <div class="form--row">
+            <%= form.label :passing_score_percentage, "#{t('.passing_score_percentage')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.number_field :passing_score_percentage, class: 'input', required: true, min: 0, max: 100 %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.category_selection') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="form--row">
+            <div class="form--field">
+              <div class="form--input small">
+                <%= simple_select_tag 'test[test_category_ids]',
+                    options_for_select(TestCategory.active.ordered.map { |category| ["#{category.name} - #{category.domain_rule_reference}", category.id] }, @test.test_categories.pluck(:id)),
+                    multiple: true, required: true, autofocus: true %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--row">
+        <div class="form--field">
+          <div class="checkbox">
+            <%= check_box_tag 'test[active]', true, @test.active? %>
+            <%= label_tag 'test_active' do %>
+              <span><%= t('.active') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1 col-xs-12">
+        <div class="form--actions">
+          <%= form.submit t(:save), class: 'button button--primary' %>
+          <%= link_to t(:cancel), admin_tests_path, class: 'button button--link' %>
+        </div>
+      </div>
+    </div>
+<% end %>

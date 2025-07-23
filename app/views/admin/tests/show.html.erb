@@ -1,0 +1,193 @@
+<% content_for(:title) { "EIS | #{@test.title}" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= @test.title %></h1>
+        <%= back_link(text: t('.back_to_tests'), path: admin_tests_path) %>
+    </div>
+<% end %>
+
+<div class="page page--admin-test-show">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <%= link_to t(:edit), edit_admin_test_path(@test), class: 'button button--secondary' %>
+        </div>
+        <div class="col-xs-auto">
+          <% if @test.active? %>
+            <%= link_to t(:deactivate), deactivate_admin_test_path(@test),  
+                        class: 'button button--error',
+                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_deactivate') } %>
+          <% else %>
+            <%= link_to t(:activate), activate_admin_test_path(@test),
+                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_activate') },
+                        class: 'button button--success' %>
+          <% end %>
+        </div>
+        <div class="col-xs-auto">
+          <%= link_to t(:duplicate), duplicate_admin_test_path(@test),
+                      class: 'button button--secondary',
+                      data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_duplicate') } %>
+        </div>
+        <div class="col-xs-auto">
+          <%= link_to t(:delete), admin_test_path(@test),
+                      class: 'button button--danger',
+                      data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_delete') } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.test_information') %></h3>
+            <div class="test-status">
+              <% if @test.active? %>
+                <span class="label label-success"><%= t('.active') %></span>
+              <% else %>
+                <span class="label label-default"><%= t('.inactive') %></span>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="paper--content">
+            <div class="info-section">
+              <h4><%= t('.descriptions') %></h4>
+              <div class="description-pair">
+                <div class="description-item">
+                  <strong><%= t('.estonian') %>:</strong>
+                  <p><%= @test.description_et %></p>
+                </div>
+                <div class="description-item">
+                  <strong><%= t('.english') %>:</strong>
+                  <p><%= @test.description_en %></p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <h4><%= t('.test_configuration') %></h4>
+              <div class="config-grid">
+                <div class="config-item">
+                  <span class="config-label"><%= t('.time_limit') %>:</span>
+                  <span class="config-value"><%= @test.time_limit_minutes %> <%= t('.minutes') %></span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label"><%= t('.questions_per_category') %>:</span>
+                  <span class="config-value"><%= @test.questions_per_category %></span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label"><%= t('.passing_score') %>:</span>
+                  <span class="config-value"><%= @test.passing_score_percentage %>%</span>
+                </div>
+                <div class="config-item">
+                  <span class="config-label"><%= t('.display_order') %>:</span>
+                  <span class="config-value"><%= @test.display_order || t('.not_set') %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.statistics') %></h3>
+          </div>
+          
+          <div class="paper--content">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.categories') %></span>
+                <span class="stat-value"><%= @test_categories.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.total_questions') %></span>
+                <span class="stat-value"><%= @test.questions.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.total_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.passed_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.passed.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.failed_attempts') %></span>
+                <span class="stat-value"><%= @test.test_attempts.failed.count %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.pass_rate') %></span>
+                <span class="stat-value">
+                  <% if @test.test_attempts.count > 0 %>
+                    <%= number_to_percentage((@test.test_attempts.passed.count.to_f / @test.test_attempts.count * 100), precision: 1) %>
+                  <% else %>
+                    <%= t('.no_attempts') %>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row test-categories-section">
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.categories') %></h3>
+          </div>
+          <div class="paper--content">
+            <div class="categories-grid">
+              <% @test_categories.each do |category| %>
+                <div class="category-card">
+                  <div class="category-header">
+                    <h4><%= link_to category.name, admin_test_category_questions_path(category) %></h4>
+                    <div class="category-actions">      
+                      <%= link_to t('.questions'), admin_test_category_questions_path(category), class: 'button button--link' %>
+                      <%= link_to t('.edit'), edit_admin_test_category_path(category), class: 'button button--link' %>
+                    </div>
+                  </div>
+                  <div class="category-details">
+                    <p><%= category.description %></p>
+                    <div class="category-meta">
+                      <span><%= t('.questions') %>: <%= category.questions.count %></span>  
+                      <span><%= t('.domain_rule') %>: <%= category.domain_rule_reference || t('.not_set') %></span>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>  
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page--header">
+    <div class="wrapper">
+        <div class="row between-xs">
+            <div class="col-xs-auto">
+                <h2><%= t('.recent_attempts') %></h2>
+            </div>
+            <div class="col-xs-auto">
+                <%= link_to t('.view_all_attempts'), admin_test_test_attempts_path(@test), class: 'button tiny button--secondary' %>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+        <div class="col-xs-12">
+          <%= render 'admin/tests/recent_attempts' %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

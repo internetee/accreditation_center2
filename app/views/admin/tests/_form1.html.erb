@@ -1,0 +1,221 @@
+<%= form_with model: [:admin, @test], local: true, class: 'test-form' do |form| %>
+  <% if @test.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= t('errors.template.header', count: @test.errors.count) %></h4>
+      <ul>
+        <% @test.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-section">
+    <h3><%= t('admin.tests.basic_info') %></h3>
+    
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :title_et, t('admin.tests.title_et') %>
+        <%= form.text_field :title_et, class: 'form-control', required: true %>
+      </div>
+      
+      <div class="form-group col-md-6">
+        <%= form.label :title_en, t('admin.tests.title_en') %>
+        <%= form.text_field :title_en, class: 'form-control', required: true %>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :description_et, t('admin.tests.description_et') %>
+        <%= form.text_area :description_et, class: 'form-control', rows: 3, required: true %>
+      </div>
+      
+      <div class="form-group col-md-6">
+        <%= form.label :description_en, t('admin.tests.description_en') %>
+        <%= form.text_area :description_en, class: 'form-control', rows: 3, required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3><%= t('admin.tests.test_configuration') %></h3>
+    
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <%= form.label :time_limit_minutes, t('admin.tests.time_limit_minutes') %>
+        <%= form.number_field :time_limit_minutes, class: 'form-control', min: 1, max: 480, required: true %>
+        <small class="form-text text-muted"><%= t('admin.tests.time_limit_help') %></small>
+      </div>
+      
+      <div class="form-group col-md-4">
+        <%= form.label :questions_per_category, t('admin.tests.questions_per_category') %>
+        <%= form.number_field :questions_per_category, class: 'form-control', min: 1, max: 20, required: true %>
+        <small class="form-text text-muted"><%= t('admin.tests.questions_per_category_help') %></small>
+      </div>
+      
+      <div class="form-group col-md-4">
+        <%= form.label :passing_score_percentage, t('admin.tests.passing_score_percentage') %>
+        <%= form.number_field :passing_score_percentage, class: 'form-control', min: 0, max: 100, required: true %>
+        <small class="form-text text-muted"><%= t('admin.tests.passing_score_help') %></small>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <%= form.label :display_order, t('admin.tests.display_order') %>
+        <%= form.number_field :display_order, class: 'form-control', min: 0 %>
+        <small class="form-text text-muted"><%= t('admin.tests.display_order_help') %></small>
+      </div>
+      
+      <div class="form-group col-md-4">
+        <div class="form-check">
+          <%= form.check_box :active, class: 'form-check-input' %>
+          <%= form.label :active, t('admin.tests.active'), class: 'form-check-label' %>
+        </div>
+        <small class="form-text text-muted"><%= t('admin.tests.active_help') %></small>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit t('admin.tests.save'), class: 'btn btn-primary' %>
+    <%= link_to t('admin.tests.cancel'), admin_tests_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>
+
+<style>
+  .test-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #f8f9fa;
+  }
+  
+  .form-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  
+  .form-group {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #6c757d;
+  }
+  
+  .form-check {
+    position: relative;
+    display: block;
+    padding-left: 1.25rem;
+  }
+  
+  .form-check-input {
+    position: absolute;
+    margin-top: 0.3rem;
+    margin-left: -1.25rem;
+  }
+  
+  .form-check-label {
+    margin-bottom: 0;
+  }
+  
+  .form-actions {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+  }
+  
+  .btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  
+  .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  .alert {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+  }
+  
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+</style> 

@@ -1,0 +1,40 @@
+ <table class="table">
+  <thead>
+    <tr>
+      <th><%= t('.user') %></th>
+      <th><%= t('.started_at') %></th>
+      <th><%= t('.completed_at') %></th>
+      <th><%= t('.score') %></th>
+      <th><%= t('.status') %></th>
+      <th><%= t('.actions') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @recent_attempts.each do |attempt| %>
+      <tr>
+        <td><%= attempt.user.name || attempt.user.email %></td>
+        <td><%= l(attempt.started_at, format: :short) if attempt.started_at %></td>
+        <td><%= l(attempt.completed_at, format: :short) if attempt.completed_at %></td>
+        <td>
+          <% if attempt.completed? %>
+            <%= number_to_percentage(attempt.score_percentage, precision: 1) %>
+          <% else %>
+            <%= t('.in_progress') %>
+          <% end %>
+        </td>
+        <td>
+          <% if attempt.passed? %>
+            <span class="badge badge-success"><%= t('.passed') %></span>
+          <% elsif attempt.failed? %>
+            <span class="badge badge-danger"><%= t('.failed') %></span>
+          <% else %>
+            <span class="badge badge-warning"><%= t('.in_progress') %></span>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to t('.view'), admin_test_test_attempt_path(@test, attempt), class: 'btn btn-sm btn-outline-primary' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

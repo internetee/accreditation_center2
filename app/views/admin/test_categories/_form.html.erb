@@ -1,0 +1,156 @@
+<%= form_with model: [ :admin, @test, @test_category ], local: true, class: 'category-form' do |form| %>
+  <% if @test_category.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= t('errors.template.header', count: @test_category.errors.count) %></h4>
+      <ul>
+        <% @test_category.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-section">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :name_et, t('admin.test_categories.name_et') %>
+        <%= form.text_field :name_et, class: 'form-control', required: true %>
+      </div>
+      <div class="form-group col-md-6">
+        <%= form.label :name_en, t('admin.test_categories.name_en') %>
+        <%= form.text_field :name_en, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <%= form.label :description_et, t('admin.test_categories.description_et') %>
+        <%= form.text_area :description_et, class: 'form-control', rows: 2, required: true %>
+      </div>
+      <div class="form-group col-md-6">
+        <%= form.label :description_en, t('admin.test_categories.description_en') %>
+        <%= form.text_area :description_en, class: 'form-control', rows: 2, required: true %>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <%= form.label :domain_rule_reference, t('admin.test_categories.domain_rule_reference') %>
+        <%= form.text_field :domain_rule_reference, class: 'form-control' %>
+      </div>
+      <div class="form-group col-md-4">
+        <%= form.label :questions_per_category, t('admin.test_categories.questions_per_category') %>
+        <%= form.number_field :questions_per_category, class: 'form-control', min: 1, max: 20, required: true %>
+      </div>
+      <div class="form-group col-md-4">
+        <%= form.label :display_order, t('admin.test_categories.display_order') %>
+        <%= form.number_field :display_order, class: 'form-control', min: 0 %>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <div class="form-check">
+          <%= form.check_box :active, class: 'form-check-input' %>
+          <%= form.label :active, t('admin.test_categories.active'), class: 'form-check-label' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions">
+    <%= form.submit t('admin.test_categories.save'), class: 'btn btn-primary' %>
+    <%= link_to t('admin.test_categories.cancel'), admin_test_test_categories_path(@test), class: 'btn btn-secondary' %>
+  </div>
+<% end %>
+
+<style>
+  .category-form {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #f8f9fa;
+  }
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  .form-group {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 20px;
+  }
+  .col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .form-check {
+    position: relative;
+    display: block;
+    padding-left: 1.25rem;
+  }
+  .form-check-input {
+    position: absolute;
+    margin-top: 0.3rem;
+    margin-left: -1.25rem;
+  }
+  .form-check-label {
+    margin-bottom: 0;
+  }
+  .form-actions {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+  }
+  .btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  .btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+</style> 
