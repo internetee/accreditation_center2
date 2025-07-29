@@ -1,0 +1,63 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= t('admin.questions.index.question_text') %></th>
+      <th><%= t('admin.questions.index.question_description') %></th>
+      <th><%= t('admin.questions.index.question_status') %></th>
+      <th><%= t('admin.questions.index.question_updated_at') %></th>
+      <th class="table--action"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @questions.each do |question| %>
+      <!-- Question row -->
+      <tr class="question-row" id="question_<%= question.id %>">
+        <td><%= question.text %></td>
+        <td><%= question.help_text %></td>
+        <td>
+          <% if question.active? %>
+            <span class="label label-success"><%= t('admin.questions.index.question_active') %></span>
+          <% else %>
+            <span class="label label-default"><%= t('admin.questions.index.question_inactive') %></span>
+          <% end %>
+        </td>
+        <td><%= l(question.updated_at, format: :short) %></td>
+        <td class="table--action">
+          <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_path(@test_category, question), 
+                          class: 'simple_tooltip', 
+                          data: { 
+                            'tippy-content': t(:edit),
+                            turbo: true,
+                            turbo_frame: "question_form"
+                          } %>
+          <%= icon_link_to 'fas fa-trash-alt', admin_test_category_question_path(@test_category, question), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+        </td>
+      </tr>
+      
+      <!-- Answer rows -->
+      <% question.answers.each do |answer| %>
+        <tr class="answer-row" id="answer_<%= answer.id %>">
+          <td class="answer-indent">└─ <%= answer.text %></td>
+          <td><%= answer.correct? ? t('admin.questions.index.answer_correct') : t('admin.questions.index.answer_incorrect') %></td>
+          <td></td>
+          <td></td>
+          <td class="table--action">
+            <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_answer_path(@test_category, question, answer),
+                          class: 'simple_tooltip',
+                          data: { 
+                            'tippy-content': t(:edit),
+                            turbo: true,
+                            turbo_frame: "answer_form" 
+                          } %>
+            <%= icon_link_to 'fas fa-trash-alt', admin_test_category_question_answer_path(@test_category, question, answer), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+          </td>
+        </tr>
+      <% end %>
+      
+      <!-- Add Answer row -->
+      <tr class="answer-row">
+        <td class="answer-indent" colspan="5">└─ <%= link_to t('admin.answers.add'), new_admin_test_category_question_answer_path(@test_category, question), class: 'button button--link', data: { turbo: true, turbo_frame: "answer_form" } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

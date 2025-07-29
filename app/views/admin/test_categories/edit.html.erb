@@ -1,26 +1,16 @@
+<% content_for(:title) { "EIS | #{t('.edit_test_category', test_category: @test_category.name)}" } %>
 <% content_for :hero do %>
   <div class="layout--hero">
-    <h1><%= t('admin.test_categories.edit_title', test: @test.title) %></h1>
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test_category.name %></div>
     <%= back_link %>
   </div>
 <% end %>
-<div class="admin-page">
-  <div class="page-header">
-    <h1><%= t('admin.test_categories.edit_title', test: @test.title) %></h1>
-    <div class="page-actions">
-      <%= link_to admin_test_test_categories_path(@test), class: 'btn btn-secondary' do %>
-        <i class="fas fa-arrow-left"></i> <%= t('admin.test_categories.back_to_categories') %>
-      <% end %>
+
+<div class="page page--admin-test-edit">
+  <div class="page--content">
+    <div class="wrapper">
+      <%= render 'form', test_category: @test_category %>
     </div>
   </div>
-  <div class="content-section">
-    <div class="card">
-      <div class="card-header">
-        <h3><%= t('admin.test_categories.edit_details') %></h3>
-      </div>
-      <div class="card-body">
-        <%= render 'form', test: @test, test_category: @test_category %>
-      </div>
-    </div>
-  </div>
-</div> 
+</div>

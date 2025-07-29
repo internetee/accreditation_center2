@@ -47,10 +47,10 @@ Rails.application.routes.draw do
         resources :test_attempts, only: [:index, :show]
       end
 
-      resources :test_categories, except: [:show] do
-        resources :questions, except: [:show] do
+      resources :test_categories do
+        resources :questions, except: [:show, :index] do
           post :duplicate, on: :member
-          resources :answers, except: [:show]
+          resources :answers, except: [:show, :index]
         end
       end
 

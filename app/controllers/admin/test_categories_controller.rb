@@ -1,27 +1,34 @@
 class Admin::TestCategoriesController < Admin::BaseController
-  before_action :set_test_category, only: [:edit, :update, :destroy, :activate, :deactivate]
-  
+  before_action :set_test_category, only: %w[show edit update destroy activate deactivate]
+  before_action :set_pagy_params, only: %i[index]
+
   def index
-    @test_categories = TestCategory.all.ordered
+    @search = TestCategory.ransack(params[:q])
+    @pagy, @test_categories = pagy(@search.result, limit: session[:page_size], page: @page)
   end
-  
+
   def new
     @test_category = TestCategory.new
   end
-  
+
   def create
     @test_category = TestCategory.new(test_category_params)
-    
+
     if @test_category.save
       redirect_to admin_test_categories_path, notice: t('admin.test_categories.created')
     else
       render :new, status: :unprocessable_entity
     end
   end
-  
+
   def edit
   end
-  
+
+  def show
+    @questions = @test_category.questions.order(display_order: :asc)
+    @question = Question.new
+  end
+
   def update
     if @test_category.update(test_category_params)
       redirect_to admin_test_categories_path, notice: t('admin.test_categories.updated')
@@ -29,32 +36,32 @@ class Admin::TestCategoriesController < Admin::BaseController
       render :edit, status: :unprocessable_entity
     end
   end
-  
+
   def destroy
     @test_category.destroy
     redirect_to admin_test_categories_path, notice: t('admin.test_categories.destroyed')
   end
-  
+
   def activate
     @test_category.update!(active: true)
     redirect_to admin_test_categories_path, notice: t('admin.test_categories.activated')
   end
-  
+
   def deactivate
     @test_category.update!(active: false)
     redirect_to admin_test_categories_path, notice: t('admin.test_categories.deactivated')
   end
-  
+
   private
-  
+
   def set_test_category
     @test_category = TestCategory.find(params[:id])
   end
-  
+
   def test_category_params
     params.require(:test_category).permit(
       :name_et, :name_en, :description_et, :description_en,
       :domain_rule_reference, :questions_per_category, :display_order, :active
     )
   end
-end 
+end

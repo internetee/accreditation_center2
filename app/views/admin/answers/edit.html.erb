@@ -1,26 +1,5 @@
-<% content_for :hero do %>
-  <div class="layout--hero">
-    <h1><%= t('admin.answers.edit_title', question: @question.text) %></h1>
-    <%= back_link %>
-  </div>
-<% end %>
-<div class="admin-page">
-  <div class="page-header">
-    <h1><%= t('admin.answers.edit_title', question: @question.text) %></h1>
-    <div class="page-actions">
-      <%= link_to admin_test_category_question_answers_path(@test_category, @question), class: 'btn btn-secondary' do %>
-        <i class="fas fa-arrow-left"></i> <%= t('admin.answers.back_to_answers') %>
-      <% end %>
-    </div>
-  </div>
-  <div class="content-section">
-    <div class="card">
-      <div class="card-header">
-        <h3><%= t('admin.answers.edit_details') %></h3>
-      </div>
-      <div class="card-body">
-        <%= render 'form', test_category: @test_category, question: @question, answer: @answer %>
-      </div>
-    </div>
-  </div>
-</div> 
+<%= turbo_frame_tag "answer_form" do %>
+  <%= render 'form', 
+             url: admin_test_category_question_answer_path(@test_category, @question, @answer), 
+             method: :patch %>
+<% end %> 

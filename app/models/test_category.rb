@@ -10,13 +10,13 @@ class TestCategory < ApplicationRecord
   scope :ordered, -> { order(:display_order) }
   scope :active, -> { where(active: true) }
 
-  translates :name
-  
-  def name(locale = I18n.locale)
-    locale == :et ? name_et : name_en
+  translates :name, :description
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[active created_at description_en description_et display_order domain_rule_reference id id_value name_en name_et questions_per_category updated_at]
   end
-  
-  def description(locale = I18n.locale)
-    locale == :et ? description_et : description_en
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[questions tests]
   end
 end

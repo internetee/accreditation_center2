@@ -19,10 +19,8 @@
       </div>
     </div>
   </div>
-  <div class="page--content">
-    <div class="wrapper">
-      <%= render 'test_table' %>
-      <%= render partial: 'common/pagination', locals: { pagy: @pagy } if @tests.count.positive? %>
-    </div>
+  <div class="wrapper">
+    <%= render 'test_table' %>
+    <%= render partial: 'common/pagination', locals: { pagy: @pagy } if @tests.count.positive? %>
   </div>
 </div>

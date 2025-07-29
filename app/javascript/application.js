@@ -43,4 +43,9 @@ class App {
     }
 }
 
+// Reinitialize javascript elements after turbo stream link
+document.addEventListener("turbo:render", function() {
+  new App()
+})
+
 new App()

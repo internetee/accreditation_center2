@@ -1,0 +1,85 @@
+<% content_for(:title) { "EIS | #{@test_category.name}" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= @test_category.name %></h1>
+        <%= back_link(text: t('.back_to_test_categories'), path: admin_test_categories_path) %>
+    </div>
+<% end %>
+
+<div class="page page--admin-test-category-show">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <%= link_to t(:edit), edit_admin_test_category_path(@test_category), class: 'button button--secondary' %>
+        </div>
+        <div class="col-xs-auto">
+          <%= link_to t(:delete), admin_test_category_path(@test_category),
+                      class: 'button button--danger',
+                      data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_delete') } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page--block">
+    <div class="wrapper">
+      <div class="col-xs-12 col-md-8 col-md-offset-2" style="position: relative;">
+        <div class="page--block--header">
+          <h2><%= t('.test_category_information') %></h2>
+        </div>
+        <table class="table table__basic">
+          <tbody>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_name') %></th>
+              <td><%= @test_category.name %></td>
+            </tr>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_description') %></th>
+              <td><%= @test_category.description %></td>
+            </tr>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_domain_rule_reference') %></th>
+              <td><%= @test_category.domain_rule_reference %></td>
+            </tr>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_active') %></th>
+              <td><%= @test_category.active? ? t('admin.test_categories.index.test_category_active') : t('admin.test_categories.index.test_category_inactive') %></td>
+            </tr>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_updated_at') %></th>
+              <td><%= l(@test_category.updated_at, format: :long) %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row between-xs">
+        <div class="col-xs-auto">
+          <h2><%= t('.questions') %></h2>
+        </div>
+        <div class="col-xs-auto">
+          <%= link_to t(:add_new), new_admin_test_category_question_path(@test_category), 
+                      class: 'button button--primary',
+                      data: { 
+                        turbo: true,
+                        turbo_frame: "question_form"
+                      } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-xs-12">
+        <%= render 'admin/test_categories/questions_table' %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'admin/test_categories/question_dialog' %>
+<%= render 'admin/test_categories/answer_dialog' %>

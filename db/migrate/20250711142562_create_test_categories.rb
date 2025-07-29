@@ -1,7 +1,6 @@
 class CreateTestCategories < ActiveRecord::Migration[8.0]
   def change
     create_table :test_categories do |t|
-      t.references :test, null: false, foreign_key: true
       t.string :name_et, null: false
       t.string :name_en, null: false
       t.text :description_et
