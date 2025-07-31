@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     end
 
     # Accreditation system routes
-    resources :tests, only: [:index, :show] do
+    resources :tests, only: %i[index show] do
       member do
         post :start
         get :question, path: 'question/:question_index', as: :question
@@ -44,18 +44,22 @@ Rails.application.routes.draw do
           post :duplicate
         end
 
-        resources :test_attempts, only: [:index, :show]
-      end
-
-      resources :test_categories do
-        resources :questions, except: [:show, :index] do
-          post :duplicate, on: :member
-          resources :answers, except: [:show, :index]
+        resources :test_attempts, only: %i[index show]
+        resources :test_categories_tests, only: [] do
+          post :update_positions, on: :collection
         end
       end
 
-      resources :users, only: [:index, :show]
-      resources :test_attempts, only: [:index, :show]
+      resources :test_categories do
+        resources :questions, except: %i[show index] do
+          post :duplicate, on: :member
+          resources :answers, except: %i[show index]
+          post :update_positions, on: :collection
+        end
+      end
+
+      resources :users, only: %i[index show]
+      resources :test_attempts, only: %i[index show]
     end
   end
 end

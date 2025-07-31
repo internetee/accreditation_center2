@@ -1,5 +1,6 @@
 class Question < ApplicationRecord
   belongs_to :test_category
+  positioned on: :test_category, column: :display_order
   has_many :answers, dependent: :destroy
   has_many :question_responses, dependent: :destroy
 

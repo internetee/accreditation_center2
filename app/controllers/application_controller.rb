@@ -17,6 +17,33 @@ class ApplicationController < ActionController::Base
     @offset = session[:page_size] * (@page.to_i - 1)
   end
 
+  def update_positions
+    ActiveRecord::Base.transaction do
+      positions = params[:positions]
+
+      positions.each do |id, index|
+        model_class.find(id).update(display_order: index)
+      end
+    end
+
+    respond_to do |format|
+      format.json { head :no_content }
+      format.turbo_stream
+    end
+  rescue StandardError => e
+    flash.now[:alert] = e.message
+    respond_to do |format|
+      format.json { render json: { error: e.message }, status: :unprocessable_entity }
+      format.turbo_stream { render turbo_stream: turbo_stream.update('flash', partial: 'common/flash') }
+    end
+  end
+
+  private
+
+  def model_class
+    controller_name.singularize.classify.constantize
+  end
+
   protected
 
   def configure_permitted_parameters

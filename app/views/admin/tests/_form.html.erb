@@ -51,7 +51,7 @@
           <h3><%= t('.configuration') %></h3>
       </div>
       <div class="row">
-        <div class="col-md-4 col-xs-12">
+        <div class="col-md-6 col-xs-12">
           <div class="form--row">
             <%= form.label :time_limit_minutes, "#{t('.time_limit_minutes')} *", class: 'form--label' %>
             <div class="form--field">
@@ -60,26 +60,8 @@
               </div>
             </div>
           </div>
-          <div class="form--row">
-            <%= form.label :display_order, "#{t('.display_order')} *", class: 'form--label' %>
-            <div class="form--field">
-              <div class="form--input">
-                <%= form.number_field :display_order, class: 'input', required: true, min: 0 %>
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="col-md-4 col-xs-12">
-          <div class="form--row">
-            <%= form.label :questions_per_category, "#{t('.questions_per_category')} *", class: 'form--label' %>
-            <div class="form--field">
-              <div class="form--input">
-                <%= form.number_field :questions_per_category, class: 'input', required: true, min: 1, max: 20 %>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 col-xs-12">
+        <div class="col-md-6 col-xs-12">
           <div class="form--row">
             <%= form.label :passing_score_percentage, "#{t('.passing_score_percentage')} *", class: 'form--label' %>
             <div class="form--field">
@@ -104,7 +86,7 @@
             <div class="form--field">
               <div class="form--input small">
                 <%= simple_select_tag 'test[test_category_ids]',
-                    options_for_select(TestCategory.active.ordered.map { |category| ["#{category.name} - #{category.domain_rule_reference}", category.id] }, @test.test_categories.pluck(:id)),
+                    options_for_select(TestCategory.active.map { |category| ["#{category.name} - #{category.domain_rule_reference}", category.id] }, @test.test_categories.pluck(:id)),
                     multiple: true, required: true, autofocus: true %>
               </div>
             </div>

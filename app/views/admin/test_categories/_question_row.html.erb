@@ -1,0 +1,38 @@
+<tbody class="question-group item" data-id="<%= question.id %>" id="<%= dom_id(question) %>">
+  <!-- Question row -->
+  <tr class="question-row">
+    <td>
+      <div class="drag-handle">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+    </td>
+    <td><%= question.text %></td>
+    <td><%= question.help_text %></td>
+    <td>
+      <% if question.active? %>
+        <span class="label label-success"><%= t('admin.questions.index.question_active') %></span>
+      <% else %>
+        <span class="label label-default"><%= t('admin.questions.index.question_inactive') %></span>
+      <% end %>
+    </td>
+    <td class="table--action">
+      <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_path(@test_category, question), 
+                      class: 'simple_tooltip', 
+                      data: { 
+                        'tippy-content': t(:edit),
+                        turbo: true,
+                        turbo_frame: "question_form"
+                      } %>
+      <%= icon_link_to 'fas fa-trash-alt', admin_test_category_question_path(@test_category, question), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+    </td>
+  </tr>
+
+  <!-- Answer rows -->
+  <%= render partial: 'admin/test_categories/answer_row', collection: question.answers, as: :answer, locals: { question: question } %>
+
+  <!-- Add Answer row -->
+  <tr class="answer-row">
+    <td></td>
+    <td class="answer-indent" colspan="4">└─ <%= link_to t('admin.answers.add'), new_admin_test_category_question_answer_path(@test_category, question), class: 'button button--link', data: { turbo: true, turbo_frame: "answer_form" } %></td>
+  </tr>
+</tbody>

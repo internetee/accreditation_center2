@@ -50,6 +50,7 @@
 
 // Views
 @use "views/admin_test_show";
+@use "views/admin_test_attempts";
 
 // Font-awesome
 @use "font-awesome" with (
@@ -109,4 +110,17 @@
 
   /** Make the buttons a bit rounder **/
   --cc-btn-border-radius: 5px;
+}
+
+.sortable-ghost {
+  opacity: .5;
+  background: #C8EBFB;
+}
+
+.sortable-drag {
+  background: #C8EBFB;
+}
+
+.drag-handle {
+  cursor: grab; /* Enhances UX by indicating items are movable */
 }

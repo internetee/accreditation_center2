@@ -17,6 +17,7 @@ class Admin::TestCategoriesController < Admin::BaseController
     if @test_category.save
       redirect_to admin_test_categories_path, notice: t('admin.test_categories.created')
     else
+      flash.now[:alert] = @test_category.errors.full_messages.join(', ')
       render :new, status: :unprocessable_entity
     end
   end
@@ -31,8 +32,9 @@ class Admin::TestCategoriesController < Admin::BaseController
 
   def update
     if @test_category.update(test_category_params)
-      redirect_to admin_test_categories_path, notice: t('admin.test_categories.updated')
+      redirect_back_or_to admin_test_category_path(@test_category), notice: t('admin.test_categories.updated')
     else
+      flash.now[:alert] = @test_category.errors.full_messages.join(', ')
       render :edit, status: :unprocessable_entity
     end
   end
@@ -61,7 +63,7 @@ class Admin::TestCategoriesController < Admin::BaseController
   def test_category_params
     params.require(:test_category).permit(
       :name_et, :name_en, :description_et, :description_en,
-      :domain_rule_reference, :questions_per_category, :display_order, :active
+      :domain_rule_reference, :domain_rule_url, :display_order, :active
     )
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_15_113704) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_080541) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,9 +56,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_113704) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_questions_on_active"
-    t.index ["display_order"], name: "index_questions_on_display_order"
     t.index ["practical_task_data"], name: "index_questions_on_practical_task_data", using: :gin
     t.index ["question_type"], name: "index_questions_on_question_type"
+    t.index ["test_category_id", "display_order"], name: "index_questions_on_test_category_id_and_display_order", unique: true
     t.index ["test_category_id"], name: "index_questions_on_test_category_id"
   end
 
@@ -81,27 +81,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_113704) do
   end
 
   create_table "test_categories", force: :cascade do |t|
-    t.bigint "test_id", null: false
     t.string "name_et", null: false
     t.string "name_en", null: false
     t.text "description_et"
     t.text "description_en"
     t.string "domain_rule_reference", null: false
     t.integer "questions_per_category", default: 5, null: false
-    t.integer "display_order", default: 0
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "domain_rule_url"
     t.index ["active"], name: "index_test_categories_on_active"
-    t.index ["display_order"], name: "index_test_categories_on_display_order"
     t.index ["domain_rule_reference"], name: "index_test_categories_on_domain_rule_reference"
-    t.index ["test_id"], name: "index_test_categories_on_test_id"
   end
 
-  create_table "test_categories_tests", id: false, force: :cascade do |t|
+  create_table "test_categories_tests", force: :cascade do |t|
     t.bigint "test_id", null: false
     t.bigint "test_category_id", null: false
+    t.integer "display_order", default: 0, null: false
     t.index ["test_category_id"], name: "index_test_categories_tests_on_test_category_id"
+    t.index ["test_id", "display_order"], name: "index_test_categories_tests_on_test_id_and_display_order", unique: true
     t.index ["test_id", "test_category_id"], name: "index_test_categories_tests_on_test_id_and_test_category_id", unique: true
     t.index ["test_id"], name: "index_test_categories_tests_on_test_id"
   end
@@ -112,14 +111,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_113704) do
     t.text "description_et", null: false
     t.text "description_en", null: false
     t.integer "time_limit_minutes", default: 60, null: false
-    t.integer "questions_per_category", default: 5, null: false
     t.integer "passing_score_percentage", default: 70, null: false
     t.boolean "active", default: true
-    t.integer "display_order", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_tests_on_active"
-    t.index ["display_order"], name: "index_tests_on_display_order"
   end
 
   create_table "users", force: :cascade do |t|
@@ -142,13 +138,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_113704) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  add_foreign_key "answers", "questions"
-  add_foreign_key "question_responses", "questions"
   add_foreign_key "question_responses", "test_attempts"
   add_foreign_key "questions", "test_categories"
   add_foreign_key "test_attempts", "tests"
   add_foreign_key "test_attempts", "users"
-  add_foreign_key "test_categories", "tests"
   add_foreign_key "test_categories_tests", "test_categories"
   add_foreign_key "test_categories_tests", "tests"
 end

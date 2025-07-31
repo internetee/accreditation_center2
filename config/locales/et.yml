@@ -4,14 +4,18 @@ et:
   minutes: "minutit"
   edit: "Muuda"
   delete: "Kustuta"
-  activate: "Aktiivne"
-  deactivate: "Inaktiivne"
+  activate: "Aktiiveeri"
+  deactivate: "Deaktiveeri"
   save: "Salvesta"
   cancel: "Loobu"
   press_to_select: "Vajuta, et valida"
   start_typing: "Alusta tühikut"
   back: "Tagasi"
+  add: "Lisa"
+  duplicate: "Dubleeri"
+  add_new: "Lisa uus"
   delete_confirmation: "Kas oled kindel, et soovid seda kustutada?"
+  minutes: "minutit"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -38,6 +42,7 @@ et:
         test_category_domain_rule_reference: "Domain Rule Reference"
         test_category_not_set: "Määramata"
         test_category_updated_at: "Muutmise kuupäev"
+        test_category_created_at: "Loomise kuupäev"
       test_category_table:
         items:
           one: "kategooria"
@@ -52,6 +57,7 @@ et:
         description_et: "Kirjeldus (eesti)"
         description_en: "Kirjeldus (inglise)"
         domain_rule_reference: "Domain Rule Reference"
+        domain_rule_url: "Domain Rule URL"
         questions_per_category: "Küsimuste arv kategooriates"
         display_order: "Kuupäev"
       show:
@@ -90,6 +96,8 @@ et:
       updated: "Vastus muudetud"
       destroyed: "Vastus kustutatud"
     tests:
+      updated: "Test muudetud"
+      created: "Test loodud"
       new:  
         title: "Uus Test"
       index:
@@ -159,6 +167,12 @@ et:
         recent_attempts: "Viimased proovid"
         view_all_attempts: "Vaata kõiki proove"
         not_set: "Määramata"
+        total_questions: "Küsimuste arv"
+        total_attempts: "Proovide arv"
+        passed_attempts: "Läbimisi proovid"
+        failed_attempts: "Ebaõnnestunud proovid"
+        pass_rate: "Läbimise protsent"
+        no_attempts: "Proove pole"
       form:
         info: "Põhiteave"
         title_et: "Pealkiri (eesti)"
@@ -173,6 +187,28 @@ et:
         active: "Aktiivne"
         inactive: "Inaktiivne"
         category_selection: "Kategooria valik"
+    test_attempts:
+      index:
+        page_title: "Testi proovid - %{test}"
+        title: "Testi proovid"
+        test: "Test"
+        user: "Kasutaja"
+        score: "Tulemus"
+        status: "Olek"
+        back_to_test: "Tagasi testile"
+        summary: "Kokkuvõte"
+        total_attempts: "Kokku proove"
+        passed_attempts: "Läbimisi proovid"
+        failed_attempts: "Ebaõnnestunud proovid"
+        pass_rate: "Läbimise protsent"
+        no_attempts: "Proove pole"
+      test_attempts_table:
+        started_at: "Alustatud"
+        completed_at: "Lõpetatud"
+        duration: "Kestus"
+        score: "Tulemus"
+        status: "Olek"
+        actions: "Tegevused"
   users:
     sessions:
       new:

@@ -81,3 +81,5 @@ gem 'traco'
 gem 'pagy', '~> 9.3' # omit patch digit
 gem 'ransack'
 # gem 'surveyor', path: 'vendor/gems/surveyor'
+
+gem 'positioning'

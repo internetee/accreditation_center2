@@ -1,4 +1,4 @@
-# Pin npm packages by running ./bin/importmap
+# Pin npm packages by running ./bin/importmap pin
 
 pin 'application'
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
@@ -14,3 +14,5 @@ pin "tippy.js" # @6.3.7
 pin "@popperjs/core", to: "@popperjs--core--esm.js" # @2.11.8
 pin "vanilla-cookieconsent" # @3.1.0
 pin "cookieconsent-config", to: "cookieconsent-config.js"
+pin "sortablejs" # @1.15.6
+pin "@rails/request.js", to: "@rails--request.js.js" # @0.0.12

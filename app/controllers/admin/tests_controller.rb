@@ -8,7 +8,7 @@ class Admin::TestsController < Admin::BaseController
   end
 
   def show
-    @test_categories = @test.test_categories.ordered
+    @test_categories = @test.active_ordered_test_categories_with_join_id
     @recent_attempts = @test.test_attempts.recent.includes(:user).limit(10)
   end
 

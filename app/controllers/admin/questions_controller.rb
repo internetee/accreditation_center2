@@ -51,10 +51,7 @@ class Admin::QuestionsController < Admin::BaseController
       flash[:notice] = t('admin.questions.destroyed')
       format.html { redirect_to admin_test_category_path(@test_category) }
       format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.remove("question_#{@question.id}"),
-          # turbo_stream.update('flash', partial: 'common/flash')
-        ]
+        render turbo_stream: turbo_stream.remove(@question)
       }
     end
   end
@@ -78,6 +75,13 @@ class Admin::QuestionsController < Admin::BaseController
     else
       redirect_to admin_test_category_questions_path(@test_category), alert: t('admin.questions.duplication_failed')
     end
+  end
+
+  def reorder
+    @test_category.questions.each do |question|
+      question.update_column(:display_order, question.position)
+    end
+    redirect_to admin_test_category_questions_path(@test_category), notice: t('admin.questions.reordered')
   end
 
   private

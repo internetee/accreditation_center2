@@ -48,10 +48,7 @@ class Admin::AnswersController < Admin::BaseController
       flash[:notice] = t('admin.answers.destroyed')
       format.html { redirect_to admin_test_category_path(@test_category) }
       format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.remove("answer_#{@answer.id}"),
-          # turbo_stream.update('flash', partial: 'common/flash')
-        ]
+        render turbo_stream: turbo_stream.remove(@answer)
       }
     end
   end

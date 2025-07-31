@@ -40,11 +40,15 @@
             </tr>
             <tr>
               <th><%= t('admin.test_categories.index.test_category_domain_rule_reference') %></th>
-              <td><%= @test_category.domain_rule_reference %></td>
+              <td><%= link_to_if @test_category.domain_rule_url, @test_category.domain_rule_reference, @test_category.domain_rule_url, target: '_blank' %></td>
             </tr>
             <tr>
               <th><%= t('admin.test_categories.index.test_category_active') %></th>
               <td><%= @test_category.active? ? t('admin.test_categories.index.test_category_active') : t('admin.test_categories.index.test_category_inactive') %></td>
+            </tr>
+            <tr>
+              <th><%= t('admin.test_categories.index.test_category_created_at') %></th>
+              <td><%= l(@test_category.created_at, format: :long) %></td>
             </tr>
             <tr>
               <th><%= t('admin.test_categories.index.test_category_updated_at') %></th>

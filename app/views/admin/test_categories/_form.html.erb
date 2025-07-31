@@ -48,12 +48,22 @@
   <div class="row">
     <div class="col-md-10 col-md-offset-1 col-xs-12">
       <div class="row">
-        <div class="col-md-4 col-xs-12">
+        <div class="col-md-6 col-xs-12">
           <div class="form--row">
-            <%= form.label :domain_rule_reference, "#{t('.domain_rule_reference')} *", class: 'form--label' %>
+            <%= form.label :domain_rule_reference, "#{t('.domain_rule_reference')}", class: 'form--label' %>
             <div class="form--field">
               <div class="form--input">
-                <%= form.text_field :domain_rule_reference, class: 'input', required: true %>
+                <%= form.text_field :domain_rule_reference, class: 'input', required: false %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :domain_rule_url, "#{t('.domain_rule_url')}", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :domain_rule_url, class: 'input', required: false %>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 class CreateTestCategoriesTests < ActiveRecord::Migration[8.0]
   def change
-    create_table :test_categories_tests, id: false do |t|
+    create_table :test_categories_tests, id: true do |t|
       t.references :test, null: false, foreign_key: true
       t.references :test_category, null: false, foreign_key: true
     end

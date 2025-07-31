@@ -15,7 +15,7 @@ class CreateQuestions < ActiveRecord::Migration[8.0]
     end
 
     add_index :questions, :question_type
-    add_index :questions, :display_order
+    add_index :questions, [:test_category_id, :display_order], unique: true
     add_index :questions, :active
     add_index :questions, :practical_task_data, using: :gin
   end
