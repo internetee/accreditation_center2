@@ -36,26 +36,8 @@ jobs:
           bundle env
           head -n1 $(which bundle)
 
-      - name: Set ENV for codeclimate (pull_request)
-        run: |
-          git fetch --no-tags --prune --depth=1 origin +refs/heads/$GITHUB_HEAD_REF:refs/remotes/origin/$GITHUB_HEAD_REF
-          echo "GIT_BRANCH=$GITHUB_HEAD_REF" >> $GITHUB_ENV
-          echo "GIT_COMMIT_SHA=$(git rev-parse origin/$GITHUB_HEAD_REF)" >> $GITHUB_ENV
-        if: github.event_name == 'pull_request'
 
-      - name: Set ENV for codeclimate (push)
-        run: |
-          echo "GIT_BRANCH=$GITHUB_REF" >> $GITHUB_ENV
-          echo "GIT_COMMIT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-        if: github.event_name == 'push'
 
-      - name: Prepare CodeClimate
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        run: |
-          curl -LSs 'https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64' >./cc-test-reporter;
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
 
       - name: Run Tests
         env:
@@ -67,7 +49,7 @@ jobs:
           RAILS_ENV: test
           COVERAGE: true
           DISABLE_SPRING: 1
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+
         run: |
           cp config/application.yml.sample config/application.yml
           bundle exec rake db:setup
@@ -81,44 +63,15 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara
         
-      - name: Save coverage
-        run: ./cc-test-reporter format-coverage --output coverage/codeclimate.${{ matrix.ruby }}.json
+      - name: Install Qlty CLI
+        run: curl -sSL https://get.qlty.sh | bash
 
-      - uses: actions/upload-artifact@v4.6.2
-        with:
-          name: coverage-${{ matrix.ruby }}
-          path: coverage/codeclimate.${{ matrix.ruby }}.json
-
-  upload_coverage:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-24.04 ]
-        ruby: [ '3.4.4' ]
-    runs-on: ubuntu-24.04
-
-    env:
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-
-    needs: test
-
-    steps:
-      - name: Download test coverage reporter
-        run: curl -L $CC_TEST_REPORTER_URL > cc-test-reporter
-
-      - name: Give test coverage reporter executable permissions
-        run: chmod +x cc-test-reporter
-
-      - uses: actions/download-artifact@v4.3.0
-        with:
-          name: coverage-${{ matrix.ruby }}
-          path: coverage
-
-      - name: Aggregate & upload results to Code Climate
+      - name: Publish coverage to Qlty
+        env:
+          QLTY_TOKEN: ${{ secrets.QLTY_TOKEN }}
         run: |
-          ./cc-test-reporter sum-coverage coverage/codeclimate.*.json
-          ./cc-test-reporter upload-coverage
+          qlty coverage publish --path coverage --service github
+
 
   security_scan:
     runs-on: ubuntu-24.04
