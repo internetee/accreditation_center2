@@ -60,14 +60,16 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara
         
-      - name: Publish coverage to Qlty
-        env:
-          QLTY_TOKEN: ${{ secrets.QLTY_TOKEN }}
+      - name: Install qlty CLI
         run: |
-          # install CLI and ensure it is on PATH for this step and subsequent ones
-          curl -sSL https://get.qlty.sh | bash
-          echo "$HOME/.qlty/bin" >> "$GITHUB_PATH"
-          qlty coverage publish --path coverage --service github
+          curl -LSs https://qlty.sh | bash
+          echo "${HOME}/.qlty/bin" >> $GITHUB_PATH
+
+      - name: Upload coverage to Qlty
+        env:
+          QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+        run: |
+          qlty coverage publish --report-format=simplecov coverage/.resultset.json
 
 
   security_scan:
