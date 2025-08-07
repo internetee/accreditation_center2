@@ -71,8 +71,14 @@ jobs:
         run: |
           # Debug: check what coverage files exist
           ls -la coverage/
-          # SimpleCov with LCOV formatter generates coverage.lcov
-          if [ -f "coverage/coverage.lcov" ]; then
+          # SimpleCov with LCOV formatter generates individual .lcov files in coverage/lcov/
+          # We need to combine them into a single LCOV file
+          if [ -d "coverage/lcov" ]; then
+            echo "Found LCOV directory, combining files..."
+            # Combine all .lcov files into a single coverage.lcov file
+            cat coverage/lcov/*.lcov > coverage/coverage.lcov
+            qlty coverage publish --format=lcov coverage/coverage.lcov
+          elif [ -f "coverage/coverage.lcov" ]; then
             qlty coverage publish --format=lcov coverage/coverage.lcov
           elif [ -f "coverage/lcov.info" ]; then
             qlty coverage publish --format=lcov coverage/lcov.info
