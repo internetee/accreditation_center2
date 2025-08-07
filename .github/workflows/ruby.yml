@@ -36,9 +36,6 @@ jobs:
           bundle env
           head -n1 $(which bundle)
 
-
-
-
       - name: Run Tests
         env:
           PG_DATABASE: postgres
@@ -63,13 +60,13 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara
         
-      - name: Install Qlty CLI
-        run: curl -sSL https://get.qlty.sh | bash
-
       - name: Publish coverage to Qlty
         env:
           QLTY_TOKEN: ${{ secrets.QLTY_TOKEN }}
         run: |
+          # install CLI and ensure it is on PATH for this step and subsequent ones
+          curl -sSL https://get.qlty.sh | bash
+          echo "$HOME/.qlty/bin" >> "$GITHUB_PATH"
           qlty coverage publish --path coverage --service github
 
 
