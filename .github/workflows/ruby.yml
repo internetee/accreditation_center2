@@ -69,7 +69,19 @@ jobs:
         env:
           QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
         run: |
-          qlty coverage publish --report-format=simplecov coverage/.resultset.json
+          # Debug: check what coverage files exist
+          ls -la coverage/
+          # SimpleCov with LCOV formatter generates coverage.lcov
+          if [ -f "coverage/coverage.lcov" ]; then
+            qlty coverage publish --format=lcov coverage/coverage.lcov
+          elif [ -f "coverage/lcov.info" ]; then
+            qlty coverage publish --format=lcov coverage/lcov.info
+          else
+            echo "No LCOV coverage file found. Available files:"
+            find coverage/ -type f -name "*.lcov" -o -name "*.info" -o -name "*.json" -o -name "*.xml"
+            echo "Please check what coverage format your test runner generates"
+            exit 1
+          fi
 
 
   security_scan:
