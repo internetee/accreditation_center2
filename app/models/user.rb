@@ -15,6 +15,16 @@ class User < ApplicationRecord
 
   after_initialize :set_default_role, if: :new_record?
 
+  scope :not_admin, -> { where.not(role: :admin) }
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[username email]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[test_attempts tests]
+  end
+
   def set_default_role
     self.role ||= 'user'
   end

@@ -1,253 +1,63 @@
-<div class="results-container">
-  <div class="results-header">
-    <h1><%= t('tests.results_title') %></h1>
-    <div class="test-summary">
-      <div class="summary-item">
-        <span class="label"><%= t('tests.test_name') %>:</span>
-        <span class="value"><%= @test.title %></span>
-      </div>
-      <div class="summary-item">
-        <span class="label"><%= t('tests.completion_time') %>:</span>
-        <span class="value"><%= format_duration(@test_attempt.time_elapsed) %></span>
-      </div>
-      <div class="summary-item">
-        <span class="label"><%= t('tests.score') %>:</span>
-        <span class="value <%= @test_attempt.passed? ? 'passed' : 'failed' %>">
-          <%= @test_attempt.score_percentage %>%
-        </span>
-      </div>
-      <div class="summary-item">
-        <span class="label"><%= t('tests.result') %>:</span>
-        <span class="value <%= @test_attempt.passed? ? 'passed' : 'failed' %>">
-          <%= @test_attempt.passed? ? t('tests.passed') : t('tests.failed') %>
-        </span>
+<% content_for(:title) { "EIS | #{t('.page_title', test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test.title %></div>
+    <%= back_link(text: t('tests.back_to_dashboard'), path: root_path) %>
+  </div>
+<% end %>
+
+<div class="page page--test-results">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <%= link_to t('.view_test'), question_test_path(@test, attempt: @test_attempt.access_code, question_index: 0), class: 'button button--secondary' %>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Results by category -->
-  <div class="results-by-category">
-    <h2><%= t('tests.results_by_category') %></h2>
-    
-    <% @test.test_categories.ordered.each do |category| %>
-      <% category_responses = @question_responses.joins(:question).where(questions: { test_category: category }) %>
-      <% category_score = calculate_category_score(category_responses) %>
-      
-      <div class="category-result">
-        <div class="category-header">
-          <h3><%= category.name %></h3>
-          <div class="category-score">
-            <span class="score <%= category_score >= 70 ? 'passed' : 'failed' %>">
-              <%= category_score %>%
-            </span>
-            <span class="domain-rule">
-              <%= t('tests.domain_rule_reference') %>: <%= category.domain_rule_reference %>
-            </span>
-          </div>
+  <div class="page--message page--message__<%= @test_attempt.passed? ? 'success' : 'error' %>">
+    <div class="paper--content">
+      <% if @test_attempt.passed? %>
+        <div class="success-message">
+          <i class="fas fa-trophy"></i>
+          <%= t('tests.congratulations_message') %>
         </div>
-        
-        <div class="category-questions">
-          <% category_responses.each do |response| %>
-            <div class="question-result <%= response.status_color %>">
-              <div class="question-text">
-                <%= response.question.text %>
-              </div>
-              <div class="question-status">
-                <% case response.status %>
-                <% when 'correct' %>
-                  <i class="fas fa-check text-success"></i>
-                  <span class="status-text"><%= t('tests.correct') %></span>
-                <% when 'incorrect' %>
-                  <i class="fas fa-times text-danger"></i>
-                  <span class="status-text"><%= t('tests.incorrect') %></span>
-                <% when 'marked_for_later' %>
-                  <i class="fas fa-clock text-warning"></i>
-                  <span class="status-text"><%= t('tests.marked_for_later') %></span>
-                <% else %>
-                  <i class="fas fa-minus text-secondary"></i>
-                  <span class="status-text"><%= t('tests.unanswered') %></span>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
+      <% else %>
+        <div class="retry-message">
+          <i class="fas fa-redo"></i>
+          <%= t('tests.retry_message') %>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 
-  <!-- Detailed question review -->
-  <div class="question-review">
-    <h2><%= t('tests.detailed_review') %></h2>
-    
-    <% @questions.each_with_index do |question, index| %>
-      <% response = @question_responses.find_by(question: question) %>
-      
-      <div class="review-question <%= response&.status_color || 'unanswered' %>">
-        <div class="question-header">
-          <h3><%= t('tests.question_number', number: index + 1) %></h3>
-          <div class="question-category">
-            <%= question.test_category.name %> - <%= question.test_category.domain_rule_reference %>
-          </div>
-        </div>
-        
-        <div class="question-content">
-          <p class="question-text"><%= question.text %></p>
-          
-          <% if question.help_text.present? %>
-            <div class="question-help">
-              <strong><%= t('tests.help_text') %>:</strong> <%= question.help_text %>
-            </div>
-          <% end %>
-        </div>
-        
-        <div class="answers-review">
-          <% question.answers.ordered.each do |answer| %>
-            <div class="answer-review <%= 'correct' if answer.correct? %> <%= 'selected' if response&.selected_answer_ids&.include?(answer.id) %>">
-              <div class="answer-indicator">
-                <% if answer.correct? %>
-                  <i class="fas fa-check text-success"></i>
-                <% elsif response&.selected_answer_ids&.include?(answer.id) %>
-                  <i class="fas fa-times text-danger"></i>
-                <% else %>
-                  <i class="fas fa-circle text-muted"></i>
-                <% end %>
-              </div>
-              <div class="answer-text"><%= answer.text %></div>
-            </div>
-          <% end %>
-        </div>
-        
-        <% if response&.marked_for_later? %>
-          <div class="marked-note">
-            <i class="fas fa-clock"></i>
-            <%= t('tests.marked_for_later_note') %>
-          </div>
-        <% end %>
+  <div class="page--block">
+    <div class="wrapper">
+      <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <table class="table table__basic">
+          <tbody>
+            <tr>
+              <th><%= t('tests.test_name') %></th>
+              <td><%= @test.title %></td>
+            </tr>
+            <tr>
+              <th><%= t('tests.completion_time') %></th>
+              <td><%= format_duration(@test_attempt.time_elapsed) %></td>
+            </tr>
+            <tr>
+              <th><%= t('tests.score') %></th>
+              <td><%= @test_attempt.score_percentage %>%</td>
+            </tr>
+            <tr>
+              <th><%= t('tests.result') %></th>
+              <td><span class="label label-<%= @test_attempt.passed? ? 'success' : 'danger' %>"><%= @test_attempt.passed? ? t('tests.passed') : t('tests.failed') %></span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    <% end %>
-  </div>
-
-  <!-- Action buttons -->
-  <div class="results-actions">
-    <% if @test_attempt.passed? %>
-      <div class="success-message">
-        <i class="fas fa-trophy"></i>
-        <%= t('tests.congratulations_message') %>
-      </div>
-    <% else %>
-      <div class="retry-message">
-        <i class="fas fa-redo"></i>
-        <%= t('tests.retry_message') %>
-      </div>
-    <% end %>
-    
-    <%= link_to t('tests.back_to_tests'), tests_path, class: 'btn btn-primary' %>
-    <%= link_to t('tests.retake_test'), start_test_path(@test), method: :post, class: 'btn btn-secondary' %>
+    </div>
   </div>
 </div>
-
-<% content_for :styles do %>
-  <style>
-    .results-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    .results-header {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-    
-    .test-summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    
-    .summary-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .passed { color: #28a745; font-weight: bold; }
-    .failed { color: #dc3545; font-weight: bold; }
-    
-    .category-result {
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    
-    .category-header {
-      background: #e9ecef;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .question-result {
-      padding: 10px 15px;
-      border-bottom: 1px solid #dee2e6;
-    }
-    
-    .question-result:last-child {
-      border-bottom: none;
-    }
-    
-    .question-result.success { background-color: #d4edda; }
-    .question-result.danger { background-color: #f8d7da; }
-    .question-result.warning { background-color: #fff3cd; }
-    
-    .review-question {
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      padding: 20px;
-    }
-    
-    .review-question.success { border-left: 4px solid #28a745; }
-    .review-question.danger { border-left: 4px solid #dc3545; }
-    .review-question.warning { border-left: 4px solid #ffc107; }
-    
-    .answer-review {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 4px;
-    }
-    
-    .answer-review.correct { background-color: #d4edda; }
-    .answer-review.selected { background-color: #f8d7da; }
-    .answer-review.correct.selected { background-color: #d4edda; }
-    
-    .answer-indicator {
-      margin-right: 10px;
-      width: 20px;
-      text-align: center;
-    }
-    
-    .results-actions {
-      text-align: center;
-      margin-top: 30px;
-      padding: 20px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-    
-    .success-message, .retry-message {
-      margin-bottom: 20px;
-      font-size: 1.2em;
-    }
-    
-    .success-message { color: #28a745; }
-    .retry-message { color: #dc3545; }
-  </style>
-<% end %> 

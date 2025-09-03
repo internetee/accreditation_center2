@@ -44,6 +44,19 @@ class ApplicationController < ActionController::Base
     controller_name.singularize.classify.constantize
   end
 
+  def ensure_regular_user!
+    redirect_to admin_dashboard_path, alert: t('home.access_denied_admin') if current_user.admin?
+  end
+
+  # Prevent viewing history while a test attempt is in progress for the same account
+  def block_history_during_active_attempt!
+    return unless current_user
+
+    if current_user.test_attempts.in_progress.exists?
+      redirect_to tests_path, alert: I18n.t('tests.history_blocked_while_active')
+    end
+  end
+
   protected
 
   def configure_permitted_parameters

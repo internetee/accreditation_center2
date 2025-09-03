@@ -1,6 +1,154 @@
-<% content_for(:title) { "EIS | #{t('.login')}" } %>
+<% content_for(:title) { "EIS | #{t('.title')}" } %>
 <% content_for :hero do %>
-    <div class="layout--hero">
-        <h1><%= t('.title') %></h1>
+<div class="layout--hero">
+  <h1><%= t('.welcome_back', username: current_user.username || current_user.email) %></h1>
+  <% if @accreditation_expires_soon %>
+    <div class="hero--warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <%= t('.accreditation_expires_soon', days: @days_until_expiry) %>
     </div>
+  <% end %>
+</div>
 <% end %>
+
+<div class="page page--dashboard">
+  <!-- Statistics Overview -->
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-12">
+          <div class="paper">
+            <div class="paper--content">
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-value"><%= @test_statistics[:total] %></div>
+                  <div class="stat-label"><%= t('.total_attempts') %></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value stat-success"><%= @test_statistics[:passed] %></div>
+                  <div class="stat-label"><%= t('.passed_tests') %></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value stat-danger"><%= @test_statistics[:failed] %></div>
+                  <div class="stat-label"><%= t('.failed_tests') %></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value"><%= @test_statistics[:success_rate] %>%</div>
+                  <div class="stat-label"><%= t('.success_rate') %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accreditation Status -->
+  <% if @accreditation_expiry_date %>
+      <div class="wrapper">
+      <div class="row">
+          <div class="col-md-12">
+          <div class="paper">
+              <div class="paper--header">
+              <h2><%= t('.accreditation_status') %></h2>
+              </div>
+              <div class="paper--content">
+              <div class="accreditation-info">
+                  <div class="accreditation-date">
+                  <strong><%= t('.expiry_date') %>:</strong>
+                  <%= l(@accreditation_expiry_date, format: :long) %>
+                  </div>
+                  <div class="accreditation-days">
+                  <% if @days_until_expiry > 0 %>
+                      <span class="text-success">
+                      <%= t('.days_remaining', count: @days_until_expiry) %>
+                      </span>
+                  <% else %>
+                      <span class="text-danger">
+                      <%= t('.accreditation_expired') %>
+                      </span>
+                  <% end %>
+                  </div>
+              </div>
+              </div>
+          </div>
+          </div>
+      </div>
+      </div>
+  <% end %>
+
+  <div class="wrapper">
+    <div class="page--header">
+      <h2><%= t('.assigned_tests') %></h2>
+    </div>
+    <% if @assigned_tests.any? %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th><%= t('.test') %></th>
+            <th><%= t('.time_remaining') %></th>
+            <th><%= t('.progress') %></th>
+            <th><%= t('.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @assigned_tests.each do |attempt| %>
+            <tr>
+              <td><%= attempt.test.title %></td>
+              <td><%= format_time(attempt.time_remaining) %></td>
+              <td><%= attempt.progress_percentage %>%</td>
+              <td>
+                <% if attempt.in_progress? %>
+                  <%= link_to t('.continue_test'), 
+                              question_test_path(attempt.test, attempt: attempt.access_code, question_index: 0), 
+                              class: 'button button--link' %>
+                <% elsif attempt.not_started? %>
+                  <%= button_to t('.start_test'), 
+                                start_test_path(attempt.test, attempt: attempt.access_code), 
+                                method: :post, 
+                                class: 'button button--link' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <tr>
+            <td colspan="4">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="page--message"><%= t('.no_tests_assigned') %></div>
+    <% end %>
+  </div>
+ 
+
+  <% if @completed_tests.any? %>
+    <div class="wrapper">
+      <div class="page--header">
+        <h2><%= t('.recent_history') %></h2>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th><%= t('.test') %></th>
+            <th><%= t('.date') %></th>
+            <th><%= t('.score') %></th>
+            <th><%= t('.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @completed_tests.each do |attempt| %>
+            <tr>
+              <td><%= attempt.test.title %></td>
+              <td><%= l(attempt.completed_at.in_time_zone('EET'), format: :short) %></td>
+              <td><%= attempt.score_percentage %>%</td>
+              <td><%= link_to t('.view_results'), 
+                          results_test_path(attempt.test, attempt: attempt.access_code), 
+                          class: 'button button--link' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

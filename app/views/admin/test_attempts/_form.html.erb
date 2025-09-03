@@ -1,0 +1,82 @@
+<%= form_with url: admin_test_test_attempts_path(@test), method: :post, local: true, class: 'form form__styled' do |form| %>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.assignment_info') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :user_id, "#{t('.user')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <% if @users.any? %>
+                  <%= simple_select_tag "test_attempt[user_id]", 
+                      options_for_select(@users.map { |user| ["#{user.username} (#{user.email})", user.id] }, @test_attempt&.user_id),  
+                      { required: true } %>
+                <% else %>
+                  <div class="message message--notice">
+                    <p><%= t('.no_users_available') %></p>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <label class="form--label"><%= t('.test') %></label>
+            <div class="form--field">
+              <div class="form--input">
+                <input type="text" value="<%= @test.title %>" class="input" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <span class="form--break"></span>
+  
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.assignment_details') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="form--row">
+            <div class="form--field">
+              <div class="form--input">
+                <div class="info-box">
+                  <p><%= t('.assignment_note') %></p>
+                  <ul>
+                    <li><%= t('.assignment_note_1') %></li>
+                    <li><%= t('.assignment_note_2') %></li>
+                    <li><%= t('.assignment_note_3') %></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <span class="form--break"></span>
+  
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
+      <div class="form--actions">
+        <% if @users.any? %>
+          <%= form.submit t('.assign_test'), class: 'button button--primary' %>
+        <% else %>
+          <%= form.submit t('.assign_test'), class: 'button button--primary', disabled: true %>
+        <% end %>
+        <%= link_to t(:cancel), admin_test_test_attempts_path(@test), class: 'button button--link' %>
+      </div>
+    </div>
+  </div>
+<% end %> 

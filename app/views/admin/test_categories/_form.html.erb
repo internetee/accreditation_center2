@@ -57,6 +57,14 @@
               </div>
             </div>
           </div>
+          <div class="form--row">
+            <%= form.label :questions_per_category, "#{t('.questions_per_category')}", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.number_field :questions_per_category, class: 'input', required: true %>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-md-6 col-xs-12">
           <div class="form--row">

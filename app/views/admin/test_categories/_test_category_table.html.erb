@@ -21,7 +21,7 @@
       <tr>
         <td><%= link_to category.name, admin_test_category_path(category) %></td>
         <td><%= category.description %></td>
-        <td><%= link_to_if category.questions_per_category.positive?, category.questions_per_category, admin_test_category_questions_path(category) %></td>
+        <td><%= category.questions_per_category %></td>
         <td><%= link_to_if category.domain_rule_url, category.domain_rule_reference, category.domain_rule_url, target: '_blank' %></td>
         <td>
           <% if category.active? %>

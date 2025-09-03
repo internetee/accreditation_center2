@@ -4,7 +4,7 @@ class CreateTestAttempts < ActiveRecord::Migration[8.0]
       t.references :user, null: false, foreign_key: true
       t.references :test, null: false, foreign_key: true
       t.string :access_code, null: false
-      t.datetime :started_at, null: false
+      t.datetime :started_at, null: true
       t.datetime :completed_at
       t.integer :score_percentage
       t.boolean :passed

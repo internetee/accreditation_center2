@@ -1,4 +1,7 @@
 class Test < ApplicationRecord
+  extend FriendlyId
+  friendly_id :generate_random_slug, use: :slugged
+
   has_many :test_categories_tests, dependent: :destroy
   has_many :test_categories, through: :test_categories_tests
   has_many :test_attempts, dependent: :destroy
@@ -44,5 +47,18 @@ class Test < ApplicationRecord
 
   def estimated_duration
     "#{time_limit_minutes} #{I18n.t('minutes')}"
+  end
+
+  private
+
+  def generate_random_slug
+    loop do
+      # Generate a random 8-character alphanumeric string
+      random_slug = SecureRandom.alphanumeric(8).downcase
+      # Check if this slug already exists
+      unless Test.exists?(slug: random_slug)
+        return random_slug
+      end
+    end
   end
 end

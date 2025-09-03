@@ -135,6 +135,8 @@ GEM
       thor (>= 0.14.0, < 2)
     font-awesome-sass (5.15.1)
       sassc (>= 1.11)
+    friendly_id (5.4.2)
+      activerecord (>= 4.0.0)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -385,6 +387,7 @@ DEPENDENCIES
   faraday
   figaro
   font-awesome-sass (~> 5.15.1)
+  friendly_id (~> 5.4.0)
   importmap-rails
   jbuilder
   kamal

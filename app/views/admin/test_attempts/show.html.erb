@@ -1,0 +1,169 @@
+<% content_for(:title) { "EIS | #{t('.page_title', user: @test_attempt.user.username, test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace">
+      <%= @test_attempt.user.username %> - <%= @test.title %>
+    </div>
+    <%= back_link(text: t('.back_to_test_attempts'), path: admin_test_test_attempts_path(@test)) %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-attempt-detail">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <% if @test_attempt.failed? %>
+            <%= link_to t('.reassign_test'), reassign_admin_test_test_attempt_path(@test, @test_attempt), 
+                class: 'button button--secondary',
+                data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_reassign') } %>
+          <% end %>
+          <div class="col-xs-auto">
+            <%= link_to t('.remove_assignment'), admin_test_test_attempt_path(@test, @test_attempt), 
+                class: 'button button--danger',
+                data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_remove_assignment') } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-4 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.attempt_summary') %></h3>
+          </div>
+          <div class="paper--content">
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.user') %></span>
+                <span class="stat-value"><%= link_to @test_attempt.user.username, admin_user_path(@test_attempt.user) %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.test') %></span>
+                <span class="stat-value"><%= @test.title %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.started_at') %></span>
+                <span class="stat-value"><%= l(@test_attempt.started_at, format: :long) if @test_attempt.started_at %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.completed_at') %></span>
+                <span class="stat-value"><%= l(@test_attempt.completed_at, format: :long) if @test_attempt.completed_at %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.duration') %></span>
+                <span class="stat-value">
+                  <% if @test_attempt.completed? && @test_attempt.started_at %>
+                    <%= distance_of_time_in_words(@test_attempt.started_at, @test_attempt.completed_at) %>
+                  <% elsif @test_attempt.started_at %>
+                    <%= t('.in_progress') %>
+                  <% else %>
+                    <%= t('.not_started') %>
+                  <% end %>
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.score') %></span>
+                <span class="stat-value">
+                  <% if @test_attempt.completed? %>
+                    <span class="score-value"><%= number_to_percentage(@test_attempt.score_percentage, precision: 1) %></span>
+                  <% else %>
+                    <%= t('.in_progress') %>
+                  <% end %>
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.status') %></span>
+                <span class="stat-value">
+                  <% if @test_attempt.passed? %>
+                    <span class="badge badge-success"><%= t('.passed') %></span>
+                  <% elsif @test_attempt.failed? %>
+                    <span class="badge badge-danger"><%= t('.failed') %></span>
+                  <% else %>
+                    <span class="badge badge-warning"><%= t('.in_progress') %></span>
+                  <% end %>
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.passing_score') %></span>
+                <span class="stat-value"><%= number_to_percentage(@test.passing_score_percentage, precision: 1) %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.question_responses') %></h3>
+          </div>
+          <div class="paper--content">
+            <% if @question_responses.any? %>
+              <% @question_responses.each_with_index do |response, index| %>
+                <div class="question-response">
+                  <div class="question-header">
+                    <h4><%= t('.question_number', number: index + 1) %></h4>
+                    <span class="question-status">
+                      <% if response.correct? %>
+                        <span class="badge badge-success"><%= t('.correct') %></span>
+                      <% else %>
+                        <span class="badge badge-danger"><%= t('.incorrect') %></span>
+                      <% end %>
+                    </span>
+                  </div>
+                  
+                  <div class="question-text">
+                    <strong><%= response.question.text %></strong>
+                  </div>
+                  
+                  <div class="answers-section">
+                    <h5><%= t('.user_answers') %>:</h5>
+                    <% if response.selected_answers.any? %>
+                      <ul class="user-answers">
+                        <% response.selected_answers.each do |answer| %>
+                          <li class="<%= answer.correct? ? 'correct' : 'incorrect' %>">
+                            <%= answer.text %>
+                            <% if answer.correct? %>
+                              <span class="badge badge-success"><%= t('.correct') %></span>
+                            <% else %>
+                              <span class="badge badge-danger"><%= t('.incorrect') %></span>
+                            <% end %>
+                          </li>
+                        <% end %>
+                      </ul>
+                    <% else %>
+                      <p class="no-answer"><%= t('.no_answer_provided') %></p>
+                    <% end %>
+                  </div>
+                  
+                  <div class="correct-answers-section">
+                    <h5><%= t('.correct_answers') %>:</h5>
+                    <ul class="correct-answers">
+                      <% response.question.correct_answers.each do |answer| %>
+                        <li class="correct">
+                          <%= answer.text %>
+                          <span class="badge badge-success"><%= t('.correct') %></span>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+                
+                <% unless index == @question_responses.length - 1 %>
+                  <hr class="question-divider">
+                <% end %>
+              <% end %>
+            <% else %>
+              <p class="no-responses"><%= t('.no_responses_recorded') %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

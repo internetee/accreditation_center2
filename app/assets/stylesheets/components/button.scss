@@ -43,6 +43,10 @@
     &--default {
         background: variables.$white;
         color: variables.$black;
+        &:hover {
+            background: variables.$grey2;
+            color: variables.$grey;
+        }
     }
     &--primary {
         background: variables.$base-blue;

@@ -30,6 +30,9 @@
                       data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_duplicate') } %>
         </div>
         <div class="col-xs-auto">
+          <%= link_to t(:assign), new_admin_test_test_attempt_path(@test), class: 'button button--secondary' %>
+        </div>
+        <div class="col-xs-auto">
           <%= link_to t(:delete), admin_test_path(@test),
                       class: 'button button--danger',
                       data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_delete') } %>

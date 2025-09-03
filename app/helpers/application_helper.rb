@@ -39,6 +39,20 @@ module ApplicationHelper
     end
   end
 
+  def format_time(seconds)
+    return '0:00' if seconds.nil? || seconds <= 0
+    
+    hours = seconds / 3600
+    minutes = (seconds % 3600) / 60
+    remaining_seconds = seconds % 60
+    
+    if hours > 0
+      format('%d:%02d:%02d', hours, minutes, remaining_seconds)
+    else
+      format('%d:%02d', minutes, remaining_seconds)
+    end
+  end
+
   private
 
   def links(links_list)
@@ -62,8 +76,11 @@ module ApplicationHelper
   end
 
   def administrator_link_list
-    [{ name: I18n.t('nav.dashboard'), path: admin_dashboard_path },
-     { name: I18n.t('nav.tests'), path: admin_tests_path },
-     { name: I18n.t('nav.test_categories'), path: admin_test_categories_path }]
+    [
+      { name: I18n.t('nav.dashboard'), path: admin_dashboard_path },
+      { name: I18n.t('nav.tests'), path: admin_tests_path },
+      { name: I18n.t('nav.test_categories'), path: admin_test_categories_path },
+      { name: I18n.t('nav.users'), path: admin_users_path }
+    ]
   end
 end

@@ -2,7 +2,9 @@ class QuestionResponse < ApplicationRecord
   belongs_to :test_attempt
   belongs_to :question
 
-  validates :selected_answer_ids, presence: true, unless: :marked_for_later?
+  validates :selected_answer_ids, presence: true, unless: :marked_for_later?, on: :update
+
+  default_scope { order(created_at: :asc) }
 
   def selected_answers
     Answer.where(id: selected_answer_ids)
@@ -31,27 +33,16 @@ class QuestionResponse < ApplicationRecord
   end
 
   def status
-    if marked_for_later?
+    if marked_for_later? && test_attempt.in_progress?
       'marked_for_later'
-    elsif correct?
+    elsif correct? && test_attempt.completed?
       'correct'
-    elsif answered?
+    elsif !correct? && test_attempt.completed?
       'incorrect'
+    elsif answered?
+      'correct'
     else
       'unanswered'
-    end
-  end
-
-  def status_color
-    case status
-    when 'correct'
-      'success'
-    when 'incorrect'
-      'danger'
-    when 'marked_for_later'
-      'warning'
-    else
-      'secondary'
     end
   end
 end

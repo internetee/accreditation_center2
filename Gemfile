@@ -83,3 +83,5 @@ gem 'ransack'
 # gem 'surveyor', path: 'vendor/gems/surveyor'
 
 gem 'positioning'
+
+gem 'friendly_id', '~> 5.4.0'

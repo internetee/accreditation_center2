@@ -13,7 +13,7 @@ class TestCategory < ApplicationRecord
   translates :name, :description
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[active created_at description_en description_et domain_rule_reference domain_rule_url id id_value name_en name_et updated_at]
+    %w[active created_at description_en description_et domain_rule_reference domain_rule_url id id_value name_en name_et questions_per_category updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)

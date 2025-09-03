@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_30_080541) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_080542) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,7 +66,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_080541) do
     t.bigint "user_id", null: false
     t.bigint "test_id", null: false
     t.string "access_code", null: false
-    t.datetime "started_at", null: false
+    t.datetime "started_at"
     t.datetime "completed_at"
     t.integer "score_percentage"
     t.boolean "passed"
@@ -115,7 +115,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_080541) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
     t.index ["active"], name: "index_tests_on_active"
+    t.index ["slug"], name: "index_tests_on_slug", unique: true
   end
 
   create_table "users", force: :cascade do |t|
