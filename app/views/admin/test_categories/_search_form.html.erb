@@ -1,0 +1,21 @@
+<%= search_form_for @search, url: admin_test_categories_path, method: :get do |form| %>
+  <div class="row">
+    <div class="col-md-5 col-md-offset-4 col-xs">
+      <div class="form--field">
+        <div class="form--input large">
+          <% attr = "name_#{I18n.locale}_or_description_#{I18n.locale}_cont" %>
+          <%= form.search_field(
+                attr,
+                class: 'input search',
+                placeholder: t(:search),
+                'aria-label': t(:search),
+                value: params.dig(:q, attr)
+              ) %>
+          <%= button_tag(type: 'submit', class: 'button button--primary', 'aria-label': t(:search)) do %>
+            <i class="fas fa-arrow-right"></i>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

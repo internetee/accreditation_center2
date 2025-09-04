@@ -1,0 +1,51 @@
+<%= form_with scope: :question, url: url, method: method, data: { turbo: true, turbo_frame: "_top" }, class: 'form' do |form| %>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form--row">
+        <%= form.label :text_et, "#{t('admin.questions.text_et')} *", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :text_et, required: true, autofocus: true, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form--row">
+        <%= form.label :text_en, "#{t('admin.questions.text_en')} *", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :text_en, required: true, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form--row">
+        <%= form.label :help_text_et, "#{t('admin.questions.help_text_et')}", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :help_text_et, required: false, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form--row">
+        <%= form.label :help_text_en, "#{t('admin.questions.help_text_en')}", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :help_text_en, required: false, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form--field">
+          <div class="checkbox">
+            <%= form.check_box :active %>
+            <%= form.label :active do %>
+              <span><%= t('admin.questions.active') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form--actions">
+    <%= form.submit t(:save), class: 'button button--primary' %>
+  </div>
+<% end %>

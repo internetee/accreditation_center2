@@ -1,0 +1,16 @@
+<% content_for(:title) { "EIS | #{t('.edit_test_category', test_category: @test_category.name)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test_category.name %></div>
+    <%= back_link %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-edit">
+  <div class="page--content">
+    <div class="wrapper">
+      <%= render 'form', test_category: @test_category %>
+    </div>
+  </div>
+</div>

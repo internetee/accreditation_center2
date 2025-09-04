@@ -1,0 +1,5 @@
+class AddDomainRuleUrlToTestCategories < ActiveRecord::Migration[8.0]
+  def change
+    add_column :test_categories, :domain_rule_url, :string
+  end
+end

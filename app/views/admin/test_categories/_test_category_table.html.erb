@@ -1,0 +1,40 @@
+<table>
+  <tr>
+    <td>
+      <%= sanitize pagy_info(@pagy, item_name: t('.items', count: @pagy.count)) %>
+    </td>
+  </tr>
+</table>
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= sort_link(@search, "name_#{I18n.locale}", t('admin.test_categories.index.test_category_name')  ) %></th>
+      <th><%= sort_link(@search, "description_#{I18n.locale}", t('admin.test_categories.index.test_category_description')) %></th>
+      <th><%= sort_link(@search, "questions_per_category", t('admin.test_categories.index.test_category_questions')) %></th>
+      <th><%= sort_link(@search, "domain_rule_reference", t('admin.test_categories.index.test_category_domain_rule_reference')) %></th>
+      <th><%= sort_link(@search, "active", t('admin.test_categories.index.test_category_status')) %></th>
+      <th class="table--action"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @test_categories.each do |category| %>
+      <tr>
+        <td><%= link_to category.name, admin_test_category_path(category) %></td>
+        <td><%= category.description %></td>
+        <td><%= category.questions_per_category %></td>
+        <td><%= link_to_if category.domain_rule_url, category.domain_rule_reference, category.domain_rule_url, target: '_blank' %></td>
+        <td>
+          <% if category.active? %>
+            <span class="label label-success"><%= t('admin.test_categories.index.test_category_active') %></span>
+          <% else %>
+            <span class="label label-default"><%= t('admin.test_categories.index.test_category_inactive') %></span>
+          <% end %>
+        </td>
+        <td class="table--action">
+          <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_path(category), class: 'simple_tooltip', data: { 'tippy-content': t(:edit) } %>
+          <%= icon_link_to 'fas fa-trash-alt', admin_test_category_path(category), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

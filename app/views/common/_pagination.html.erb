@@ -1,27 +1,27 @@
 <div class="pagination">
     <div class="pagination--menu">
-        <% link = pagy_link_proc(pagy) -%>
+        <% link = pagy_anchor(pagy) -%>
         <% if pagy.prev -%>
-            <%= sanitize link.call(pagy.prev, pagy_t('pagy.nav.prev_html'), 'aria-label="previous" aria-current= "false" tabindex="-1" class="pagination--prev"') %>
+            <%= sanitize link.call(pagy.prev, pagy_t('pagy.nav.prev_html'), aria_label: "previous", classes: "pagination--prev") %>
         <% end -%>
-        <% pagy.series.each do |item| # series example: [1, :gap, 7, 8, "9", 10, 11, :gap, 36] -%>
-            <% if item.is_a?(Integer) -%>
-                <%= sanitize link.call(item, item, 'aria-current="false" tabindex="0" class="pagination--item"') %>
-            <% elsif item.is_a?(String) -%>
-                <%= sanitize link.call(item, item, 'aria-current="true" tabindex="0" class="pagination--item active"') %>
-            <% elsif item == :gap -%>
+        <% pagy.series.each do |item| %>
+            <% if item.is_a?(Integer) %>
+                <%= sanitize link.call(item, item, classes: "pagination--item", aria_label: "page #{item}") %>
+            <% elsif item.is_a?(String) %>
+                <%= sanitize link.call(item, item, classes: "pagination--item active", aria_label: "current page") %>
+            <% elsif item == :gap %>
                <span class="pagination--item pagination--item__ellipsis"><%== pagy_t('pagy.nav.gap') %></span>
-            <% end -%>
+            <% end %>
         <% end -%>
         <% if pagy.next -%>
-            <%= sanitize link.call(pagy.next, pagy_t('pagy.nav.next_html'), 'aria-label="next" aria-current= "false" tabindex="-1" class="pagination--next"') %>
+            <%= sanitize link.call(pagy.next, pagy_t('pagy.nav.next_html'), aria_label: "next", classes: "pagination--next") %>
         <% end -%>
     </div>
     <form class="form pagination--form">
         <div class="form--field">
             <label for="per_page" class="form--label"><%= t('pagy.per_page') %></label>
             <div class="form--input small">
-                <%= simple_select_tag :per_page, options_for_select([10, 20, 50, 100], session[:page_size]) %>
+                <%= simple_select_tag :per_page, options_for_select([10, 20, 50, 100], session[:page_size]), itemSelectText: '', allowHTML: false %>
             </div>
         </div>
     </form>

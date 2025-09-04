@@ -1,0 +1,203 @@
+<% content_for(:title) { "EIS | #{t('.title', test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title', test: @test.title) %></h1>
+    <% if @test_attempt.in_progress? %>
+      <!-- Time Remaining Display -->
+      <div class="time-display">
+        <div class="time-remaining" data-time-remaining="<%= @test_attempt.time_remaining %>">
+          <i class="fas fa-clock"></i>
+          <span class="time-text">
+            <%= t('tests.time_remaining', minutes: (@test_attempt.time_remaining / 60).floor, seconds: @test_attempt.time_remaining % 60) %>
+          </span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="page page--test-question">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <% @questions.each_with_index do |question, index| %>
+          <% response = @test_attempt.question_responses.find_by(question: question) %>
+          <% status_class = response&.status || 'unanswered' %>
+          <% status_class += ' current' if index == @current_question_index %>
+          <div class="col-xs-auto" style="padding-right: 5px; padding-left: 5px; margin-bottom: 10px;">
+            <% disabled_forward = defined?(@max_allowed_index) && index > @max_allowed_index %>
+            <% if disabled_forward %>
+              <span class="question-nav-circle <%= status_class %> disabled"><%= index + 1 %></span>
+            <% else %>
+              <%= link_to question_test_path(@test, attempt: @test_attempt.access_code, question_index: index),
+                          class: "question-nav-circle #{status_class}" do %>
+                <%= index + 1 %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--content">
+            <!-- Question Header -->
+            <div class="question-header">
+              <div class="question-context">
+                <%= @current_question.test_category&.name || @test.title %>. Küsimus <%= @current_question_index + 1 %>.
+              </div>
+              <h2 class="question-text"><%= @current_question.text %></h2>
+            </div>
+
+            <!-- Answer Options -->
+            <div class="answer-options">
+              <%= form_with url: answer_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index),
+                        method: :post, local: true, class: 'form' do |form| %>
+                  
+                <% if @current_question.multiple_choice? %>
+                  <div class="answer-options">
+                    <% @answers.each_with_index do |answer, index| %>
+                      <% 
+                        answer_letter = ('A'.ord + index).chr
+                        is_selected = @question_response.selected_answer_ids&.include?(answer.id)
+                        show_feedback = @test_attempt.completed?
+                        is_correct_answer = answer.correct?
+                        is_incorrect_selected = show_feedback && is_selected && !is_correct_answer
+                      %>
+                      
+                      <div class="answer-option <%= 'selected' if is_selected %> <%= 'correct' if show_feedback && is_correct_answer %> <%= 'incorrect' if is_incorrect_selected %>">
+                        <%= form.radio_button :answer_id,
+                                            answer.id,
+                                            { checked: is_selected,
+                                              disabled: @test_attempt.completed?,
+                                              class: 'answer-radio',
+                                              id: "answer_#{answer.id}" } %>
+                        
+                        <label for="answer_<%= answer.id %>" class="answer-label">
+                          <span class="answer-letter"><%= answer_letter %>:</span>
+                          <span class="answer-text"><%= answer.text %></span>
+                          <% if show_feedback %>
+                            <% if is_correct_answer %>
+                              <i class="fas fa-check correct-icon"></i>
+                            <% elsif is_incorrect_selected %>
+                              <i class="fas fa-times incorrect-icon"></i>
+                            <% end %>
+                          <% end %>
+                        </label>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Correct Answer Display (if answered) -->
+                  <% if @test_attempt.completed? %>
+                    <div class="correct-answer-display">
+                      <div class="correct-answer-label">Õige vastus</div>
+                      <div class="correct-answer-circle">
+                        <% correct_answer = @answers.find { |a| a.correct? } %>
+                        <% correct_index = @answers.index(correct_answer) %>
+                        <%= ('A'.ord + correct_index).chr %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% elsif @current_question.practical? %>
+                  <div class="practical-task">
+                    <% task_service = PracticalTestService.new(@current_question, @test_attempt) %>
+                    <% task = task_service.generate_task %>
+                    
+                    <div class="task-instructions">
+                      <h3><%= task[:instructions][I18n.locale] %></h3>
+                      <p><%= t('tests.practical_task_instructions') %></p>
+                    </div>
+                    
+                    <div class="task-response">
+                      <%= form.text_area :practical_response, 
+                                        placeholder: t('tests.practical_response_placeholder'),
+                                        class: 'practical-response-textarea' %>
+                    </div>
+                  </div>
+                <% end %>
+
+                <!-- Action Buttons -->
+                <div class="question-actions">
+                  <% if @test_attempt.in_progress? %>
+                    <div class="primary-actions">
+                      <%= form.submit t('tests.save_answer'), class: 'button button--primary' %>
+                      <%= form.submit t('tests.mark_for_later'), 
+                                      name: 'marked_for_later', 
+                                      class: 'button button--secondary' %>
+                    </div>
+                  <% end %>
+                  
+                  <div class="navigation-actions">
+                    <% if @current_question_index > 0 %>
+                      <%= link_to '<i class="fas fa-arrow-left"></i>'.html_safe,
+                                  question_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index - 1),
+                                  class: 'button button--default' %>
+                    <% end %>
+                    
+                    <% if @current_question_index < @questions.count - 1 %>
+                      <% can_go_next = defined?(@max_allowed_index) && (@current_question_index + 1) <= @max_allowed_index %>
+                      <% if can_go_next %>
+                        <%= link_to '<i class="fas fa-arrow-right"></i>'.html_safe,
+                                    question_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index + 1),
+                                    class: 'button button--default' %>
+                      <% else %>
+                        <span class="button button--default disabled"><i class="fas fa-arrow-right"></i></span>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @test_attempt.in_progress? %>
+    <!-- Finish Test Button -->
+    <div class="wrapper">
+      <div class="page--header">
+        <div class="row center-xs">
+          <div class="col-xs-auto">
+            <% if @test_attempt.all_questions_answered? %>
+              <%= link_to t('tests.finish_test'),
+                          results_test_path(@test, attempt: @test_attempt.access_code),
+                          class: 'button button--danger',
+                          data: { turbo: true, turbo_method: :get, turbo_confirm: t('tests.confirm_finish') } %>
+            <% else %>
+              <span class="button button--danger disabled"><%= t('tests.finish_test') %></span>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // Auto-refresh time remaining every second
+  setInterval(function() {
+    const timeElement = document.querySelector('.time-remaining');
+    if (!timeElement) return;
+    const timeRemaining = parseInt(timeElement.dataset.timeRemaining) - 1;
+    
+    if (timeRemaining <= 0) {
+      window.location.href = '<%= results_test_path(@test, attempt: @test_attempt.access_code) %>';
+    } else {
+      timeElement.dataset.timeRemaining = timeRemaining;
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      timeElement.querySelector('.time-text').textContent = 
+        '<%= t("tests.time_remaining") %>'.replace('%{minutes}', minutes).replace('%{seconds}', seconds);
+      // Show warning when 5 minutes remaining
+      if (timeRemaining <= 300 && timeRemaining > 0) {
+        timeElement.classList.add('warning');
+      }
+    }
+  }, 1000);
+</script> 

@@ -1,0 +1,35 @@
+<%= form_with scope: :answer, url: url, method: method, data: { turbo: true, turbo_frame: "_top" }, class: 'form' do |form| %>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form--row">
+        <%= form.label :text_et, "#{t('admin.answers.text_et')} *", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :text_et, required: true, autofocus: true, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form--row">
+        <%= form.label :text_en, "#{t('admin.answers.text_en')} *", class: 'form--label' %>
+        <div class="form--field">
+          <div class="form--input">
+            <%= form.text_field :text_en, required: true, class: 'input' %>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form--field">
+          <div class="checkbox">
+            <%= form.check_box :correct %>
+            <%= form.label :correct do %>
+              <span><%= t('admin.answers.correct') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form--actions">
+    <%= form.submit t(:save), class: 'button button--primary' %>
+  </div>
+<% end %>

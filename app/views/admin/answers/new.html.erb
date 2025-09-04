@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "answer_form" do %>
+  <%= render 'form', 
+             url: admin_test_category_question_answers_path(@test_category, @question), 
+             method: :post %>
+<% end %> 

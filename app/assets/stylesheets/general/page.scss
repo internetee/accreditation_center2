@@ -166,6 +166,9 @@
         &__success {
             background: variables.$green;
         }
+        &__info {
+            background: variables.$blue;
+        }
         h2 {
             margin-bottom: 20px;
         }

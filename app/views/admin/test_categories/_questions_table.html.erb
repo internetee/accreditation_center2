@@ -1,0 +1,12 @@
+<table class="table" data-controller="drag" data-drag-url-value="<%= update_positions_admin_test_category_questions_path(@test_category) %>">
+  <thead>
+    <tr>
+      <th width="5px"></th>
+      <th><%= t('admin.questions.index.question_text') %></th>
+      <th><%= t('admin.questions.index.question_description') %></th>
+      <th><%= t('admin.questions.index.question_status') %></th>
+      <th class="table--action"></th>
+    </tr>
+  </thead>
+  <%= render partial: 'admin/test_categories/question_row', collection: @questions, as: :question %>
+</table>

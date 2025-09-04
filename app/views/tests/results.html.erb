@@ -1,0 +1,63 @@
+<% content_for(:title) { "EIS | #{t('.page_title', test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test.title %></div>
+    <%= back_link(text: t('tests.back_to_dashboard'), path: root_path) %>
+  </div>
+<% end %>
+
+<div class="page page--test-results">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <%= link_to t('.view_test'), question_test_path(@test, attempt: @test_attempt.access_code, question_index: 0), class: 'button button--secondary' %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page--message page--message__<%= @test_attempt.passed? ? 'success' : 'error' %>">
+    <div class="paper--content">
+      <% if @test_attempt.passed? %>
+        <div class="success-message">
+          <i class="fas fa-trophy"></i>
+          <%= t('tests.congratulations_message') %>
+        </div>
+      <% else %>
+        <div class="retry-message">
+          <i class="fas fa-redo"></i>
+          <%= t('tests.retry_message') %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="page--block">
+    <div class="wrapper">
+      <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <table class="table table__basic">
+          <tbody>
+            <tr>
+              <th><%= t('tests.test_name') %></th>
+              <td><%= @test.title %></td>
+            </tr>
+            <tr>
+              <th><%= t('tests.completion_time') %></th>
+              <td><%= format_duration(@test_attempt.time_elapsed) %></td>
+            </tr>
+            <tr>
+              <th><%= t('tests.score') %></th>
+              <td><%= @test_attempt.score_percentage %>%</td>
+            </tr>
+            <tr>
+              <th><%= t('tests.result') %></th>
+              <td><span class="label label-<%= @test_attempt.passed? ? 'success' : 'danger' %>"><%= @test_attempt.passed? ? t('tests.passed') : t('tests.failed') %></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

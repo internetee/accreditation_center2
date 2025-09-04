@@ -1,0 +1,53 @@
+<% content_for(:title) { "EIS | #{t('.page_title', test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace"><%= @test.title %></div>
+    <%= back_link(text: t('.back_to_test'), path: admin_tests_path) %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-attempts">
+  <div class="page--header"></div>
+  <div class="page--message page--message__info">
+    <div class="wrapper">
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--content">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.total_attempts') %></span>
+                  <span class="stat-value"><%= @test.test_attempts.count %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.passed_attempts') %></span>
+                  <span class="stat-value"><%= @test.test_attempts.passed.count %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.failed_attempts') %></span>
+                  <span class="stat-value"><%= @test.test_attempts.failed.count %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.pass_rate') %></span>
+                  <span class="stat-value">
+                    <% if @test.test_attempts.count > 0 %>
+                      <%= number_to_percentage((@test.test_attempts.passed.count.to_f / @test.test_attempts.count * 100), precision: 1) %>
+                    <% else %>
+                      <%= t('.no_attempts') %>
+                    <% end %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <%= render 'test_attempts_table' %>
+    <%= render partial: 'common/pagination', locals: { pagy: @pagy } if @test_attempts.count.positive? %>
+  </div>
+</div>

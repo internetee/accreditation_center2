@@ -1,0 +1,42 @@
+<table>
+  <tr>
+    <td>
+      <%= sanitize pagy_info(@pagy, item_name: t('.items', count: @pagy.count)) %>
+    </td>
+  </tr>
+</table>
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= sort_link(@search, "title_#{I18n.locale}", t('admin.tests.index.test_title')  ) %></th>
+      <th><%= sort_link(@search, "description_#{I18n.locale}", t('admin.tests.index.test_description')) %></th>
+      <th><%= sort_link(@search, "categories", t('admin.tests.index.test_categories')) %></th>
+      <th><%= sort_link(@search, "questions", t('admin.tests.index.test_questions')) %></th>
+      <th><%= sort_link(@search, "attempts", t('admin.tests.index.test_attempts')) %></th>
+      <th><%= sort_link(@search, "active", t('admin.tests.index.test_active')) %></th>
+      <th class="table--action"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tests.each do |test| %>
+      <tr>
+        <td><%= link_to test.title, admin_test_path(test) %></td>
+        <td><%= test.description %></td>
+        <td><%= test.test_categories.count %></td>
+        <td><%= test.questions.count %></td>
+        <td><%= link_to_if test.test_attempts.count > 0, test.test_attempts.count, admin_test_test_attempts_path(test) %></td>
+        <td>
+          <% if test.active? %>
+            <span class="label label-success"><%= t('admin.tests.index.test_active') %></span>
+          <% else %>
+            <span class="label label-default"><%= t('admin.tests.index.test_inactive') %></span>
+          <% end %>
+        </td>
+        <td class="table--action">
+          <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_path(test), class: 'simple_tooltip', data: { 'tippy-content': t(:edit) } %>
+          <%= icon_link_to 'fas fa-trash-alt', admin_test_path(test), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

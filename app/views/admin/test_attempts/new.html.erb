@@ -1,0 +1,17 @@
+<% content_for(:title) { "EIS | #{t('.title')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <%= back_link(text: t('.back_to_test_attempts'), path: admin_test_test_attempts_path(@test)) %>
+  </div>
+<% end %>
+
+<div class="page page--admin-test-attempts">
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="card-body">
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+</div> 

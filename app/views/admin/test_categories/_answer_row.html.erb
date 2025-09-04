@@ -1,0 +1,16 @@
+<tr class="answer-row" id="<%= dom_id(answer) %>">
+  <td></td>
+  <td class="answer-indent" colspan="3">
+    └─ <%= answer.text %> <strong>[<%= answer.correct? ? t('admin.questions.index.answer_correct') : t('admin.questions.index.answer_incorrect') %>]</strong>
+  </td>
+  <td class="table--action">
+    <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_answer_path(@test_category, question, answer),
+                  class: 'simple_tooltip',
+                  data: { 
+                    'tippy-content': t(:edit),
+                    turbo: true,
+                    turbo_frame: "answer_form" 
+                  } %>
+    <%= icon_link_to 'fas fa-trash-alt', admin_test_category_question_answer_path(@test_category, question, answer), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+  </td>
+</tr>

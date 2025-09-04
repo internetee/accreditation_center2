@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "question_form" do %>
+  <%= render 'form', 
+             url: admin_test_category_question_path(@test_category, @question), 
+             method: :patch %>
+<% end %> 
