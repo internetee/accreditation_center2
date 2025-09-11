@@ -78,3 +78,7 @@ group :test do
 end
 
 gem "dartsass-rails", "~> 0.5.1"
+
+# Security updates for vulnerable packages
+gem "nokogiri", ">= 1.18.9"
+gem "thor", ">= 1.4.0"
