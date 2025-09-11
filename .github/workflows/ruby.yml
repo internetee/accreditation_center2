@@ -53,7 +53,7 @@ jobs:
           bundle exec rspec
 
       - name: Upload Capybara screenshots
-        if: failure()
+        if: failure() && hashFiles('tmp/capybara/**') != ''
         uses: actions/upload-artifact@v4.6.2
         with:
           name: capybara-screenshots
