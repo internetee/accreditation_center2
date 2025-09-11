@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", ">= 8.0.2.1"
+gem "rails", "~> 8.0.2"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -40,7 +40,6 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem 'cancancan'
 gem 'devise'
 gem 'faraday'
 gem 'figaro'
@@ -71,13 +70,21 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  
-  # Code coverage
-  gem "simplecov", require: false
-  gem "simplecov-lcov", require: false
 end
 
 gem "dartsass-rails", "~> 0.5.1"
+
+gem 'action_policy'
+
+gem 'traco'
+
+gem 'pagy', '~> 9.3' # omit patch digit
+gem 'ransack'
+# gem 'surveyor', path: 'vendor/gems/surveyor'
+
+gem 'positioning'
+
+gem 'friendly_id', '~> 5.4.0'
 
 # Security updates for vulnerable packages
 gem "nokogiri", ">= 1.18.9"
