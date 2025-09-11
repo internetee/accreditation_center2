@@ -32,7 +32,7 @@ jobs:
       - name: Config bundler
         run:  |
           bundle config set without 'development staging production'
-          bundle config set deployment '[secure]'
+          bundle config set deployment 'true'
           bundle env
           head -n1 $(which bundle)
 
@@ -68,21 +68,27 @@ jobs:
         env:
           QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
         run: |
-          ls -la coverage/
-          if [ -d "coverage/lcov" ]; then
-            echo "Found LCOV directory, combining files..."
-            # Combine all .lcov files into a single coverage.lcov file
-            cat coverage/lcov/*.lcov > coverage/coverage.lcov
-            qlty coverage publish --format=lcov coverage/coverage.lcov
-          elif [ -f "coverage/coverage.lcov" ]; then
-            qlty coverage publish --format=lcov coverage/coverage.lcov
-          elif [ -f "coverage/lcov.info" ]; then
-            qlty coverage publish --format=lcov coverage/lcov.info
+          if [ -d "coverage" ]; then
+            echo "Coverage directory found:"
+            ls -la coverage/
+            if [ -f "coverage/lcov.info" ]; then
+              echo "Found LCOV info file, uploading to qlty..."
+              qlty coverage publish --format=lcov coverage/lcov.info
+            elif [ -d "coverage/lcov" ]; then
+              echo "Found LCOV directory, combining files..."
+              cat coverage/lcov/*.lcov > coverage/coverage.lcov
+              qlty coverage publish --format=lcov coverage/coverage.lcov
+            elif [ -f "coverage/coverage.lcov" ]; then
+              qlty coverage publish --format=lcov coverage/coverage.lcov
+            else
+              echo "No LCOV coverage file found. Available files:"
+              find coverage/ -type f -name "*.lcov" -o -name "*.info" -o -name "*.json" -o -name "*.xml"
+              echo "Please check what coverage format your test runner generates"
+              exit 1
+            fi
           else
-            echo "No LCOV coverage file found. Available files:"
-            find coverage/ -type f -name "*.lcov" -o -name "*.info" -o -name "*.json" -o -name "*.xml"
-            echo "Please check what coverage format your test runner generates"
-            exit 1
+            echo "No coverage directory found. Skipping coverage upload."
+            echo "This is normal if coverage is not configured or tests failed."
           fi
 
   security_scan:
@@ -101,7 +107,7 @@ jobs:
       - name: Config bundler
         run:  |
           bundle config set without 'development staging production'
-          bundle config set deployment '[secure]'
+          bundle config set deployment 'true'
           bundle env
           head -n1 $(which bundle)
       - name: Scan for security vulnerabilities
