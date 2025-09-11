@@ -73,6 +73,7 @@ group :test do
   
   # Code coverage
   gem "simplecov", require: false
+  gem "simplecov-lcov", require: false
 end
 
 gem "dartsass-rails", "~> 0.5.1"
