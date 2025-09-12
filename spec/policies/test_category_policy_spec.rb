@@ -7,15 +7,15 @@ RSpec.describe TestCategoryPolicy, type: :policy do
   # let(:record) { build_stubbed :post, draft: false }
   # let(:context) { {user: user} }
 
-  describe_rule :index? do
+  describe "#index?" do
     pending "add some examples to (or delete) #{__FILE__}"
   end
 
-  describe_rule :create? do
+  describe "#create?" do
     pending "add some examples to (or delete) #{__FILE__}"
   end
 
-  describe_rule :manage? do
+  describe "#manage?" do
     pending "add some examples to (or delete) #{__FILE__}"
   end
 end
