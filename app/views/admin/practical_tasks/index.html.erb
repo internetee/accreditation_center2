@@ -1,0 +1,79 @@
+<% content_for(:title) { "EIS | #{@test.title} - Practical Tasks" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= @test.title %> - <%= t('.practical_tasks') %></h1>
+        <%= back_link(text: t('.back_to_test'), path: admin_test_path(@test)) %>
+    </div>
+<% end %>
+
+<div class="page page--admin-practical-tasks">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <div class="col-xs-auto">
+          <%= link_to t('.new_practical_task'), new_admin_test_practical_task_path(@test), class: 'button button--secondary' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.practical_tasks') %></h3>
+          </div>
+          
+          <div class="paper--content">
+            <% if @practical_tasks.any? %>
+              <div class="practical-tasks-grid" data-controller="drag" data-drag-url-value="<%= update_positions_admin_test_practical_tasks_path(@test) %>">
+                <% @practical_tasks.each do |task| %>
+                  <div class="practical-task-card item" data-id="<%= task.id %>">
+                    <div class="task-header">
+                      <h4>
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <%= link_to task.title, admin_test_practical_task_path(@test, task) %>
+                      </h4>
+                      <div class="task-actions">
+                        <% if task.active? %>
+                          <span class="label label-success"><%= t('.active') %></span>
+                        <% else %>
+                          <span class="label label-default"><%= t('.inactive') %></span>
+                        <% end %>
+                        <%= link_to t(:edit), edit_admin_test_practical_task_path(@test, task), class: 'button button--link' %>
+                        <% if task.active? %>
+                          <%= link_to t(:deactivate), deactivate_admin_test_practical_task_path(@test, task), 
+                                      class: 'button button--link',
+                                      data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_deactivate') } %>
+                        <% else %>
+                          <%= link_to t(:activate), activate_admin_test_practical_task_path(@test, task),
+                                      class: 'button button--link',
+                                      data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_activate') } %>
+                        <% end %>
+                        <%= link_to t(:delete), admin_test_practical_task_path(@test, task),
+                                    class: 'button button--link',
+                                    data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_delete') } %>
+                      </div>
+                    </div>
+                    <div class="task-details">
+                      <p><%= task.body %></p>
+                      <div class="task-meta">
+                        <span><%= t('.klass') %>: <%= task.klass_name || t('.not_configured') %></span>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="empty-state">
+                <p><%= t('.no_practical_tasks') %></p>
+                <%= link_to t('.create_first'), new_admin_test_practical_task_path(@test), class: 'button button--secondary' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

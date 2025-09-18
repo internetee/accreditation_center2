@@ -22,15 +22,17 @@ Rails.application.routes.draw do
       get 'logout', to: 'users/sessions#destroy'
     end
 
-    # Accreditation system routes
-    resources :tests, only: %i[index] do
+    concern :test_actions do
       member do
         post :start
-        get :question, path: 'question/:question_index', as: :question
-        post :answer, path: 'answer/:question_index', as: :answer
-        get :results, as: :results
+        get 'question/:question_index', action: :question, as: :question
+        post 'answer/:question_index', action: :answer, as: :answer
+        get :results
       end
     end
+
+    resources :theoretical_tests, only: [], controller: 'theoretical_tests', concerns: :test_actions
+    resources :practical_tests,   only: [], controller: 'practical_tests', concerns: :test_actions
 
     # Admin routes
     namespace :admin do
@@ -51,6 +53,16 @@ Rails.application.routes.draw do
         end
         resources :test_categories_tests, only: [] do
           post :update_positions, on: :collection
+        end
+        resources :practical_tasks do
+          member do
+            patch :activate
+            patch :deactivate
+          end
+          collection do
+            post :update_positions
+          end
+          resources :practical_task_results, only: %i[index show update]
         end
       end
 

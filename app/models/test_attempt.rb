@@ -3,6 +3,8 @@ class TestAttempt < ApplicationRecord
   belongs_to :test
   has_many :question_responses, dependent: :destroy
   has_many :questions, through: :question_responses
+  has_many :practical_task_results, dependent: :destroy
+  has_many :practical_tasks, through: :practical_task_results
 
   validates :access_code, presence: true, uniqueness: true
 
@@ -22,6 +24,10 @@ class TestAttempt < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %w[test user]
+  end
+
+  def merge_vars!(h)
+    update!(vars: vars.merge(h.stringify_keys))
   end
 
   def generate_access_code
@@ -81,7 +87,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def answered_questions
-    question_responses.includes(:question).map(&:question)
+    question_responses.answered.includes(:question).map(&:question)
   end
 
   def unanswered_questions
@@ -92,21 +98,54 @@ class TestAttempt < ApplicationRecord
     question_responses.where(marked_for_later: true).includes(:question).map(&:question)
   end
 
-  def progress_percentage
-    return 100 if test.questions.active.count.zero?
+  def completed_tasks
+    practical_task_results.where(status: 'passed').includes(:practical_task).map(&:practical_task)
+  end
 
-    (answered_questions.count.to_f / test.questions.active.count * 100).round(1)
+  def incompleted_tasks
+    test.practical_tasks.active - completed_tasks
+  end
+
+  def progress_percentage
+    if test.practical?
+      return 0 if test.practical_tasks.active.count.zero?
+
+      (completed_tasks.count.to_f / test.practical_tasks.active.count * 100).round(1)
+    else
+      return 0 if test.questions.active.count.zero?
+
+      (answered_questions.count.to_f / test.questions.active.count * 100).round(1)
+    end
   end
 
   # Returns true when every question in this attempt has a selected answer
   def all_questions_answered?
-    question_responses.where(selected_answer_ids: []).none?
+    question_responses.all? do |response|
+      if response.question.practical?
+        response.practical_answered?
+      else
+        response.answered?
+      end
+    end
+  end
+
+  def all_tasks_completed?
+    practical_task_results.all? do |result|
+      result.status == 'passed'
+    end
   end
 
   def score_percentage
+    return 100 if test.practical? && all_tasks_completed?
     return 0 if question_responses.empty?
 
-    correct_count = question_responses.count(&:correct?)
+    correct_count = question_responses.count do |response|
+      if response.question.practical?
+        response.practical_correct?
+      else
+        response.correct?
+      end
+    end
 
     (correct_count.to_f / question_responses.count * 100).round(0)
   end

@@ -13,7 +13,9 @@ class ApiConnector
   self.retry_delay = 1
   self.logging = Rails.env.development?
 
-  def initialize
+  def initialize(username:, password:)
+    @auth_token = generate_api_token(username, password)
+    @headers = { 'Authorization' => "Basic #{@auth_token}" }
     @connection = build_connection
   end
 
@@ -54,11 +56,11 @@ class ApiConnector
     when 403
       error_response('Access denied')
     when 404
-      error_response('Service not found')
+      error_response(response.body['errors'] || 'Service not found')
     when 422
       error_response('Invalid data')
     when 500..599
-      error_response('Service error')
+      error_response(response.body['errors'] || 'Service error')
     else
       error_response('Unexpected response from service')
     end
@@ -159,4 +161,3 @@ class ApiConnector
     }
   end
 end
- 

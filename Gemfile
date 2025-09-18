@@ -85,3 +85,5 @@ gem 'ransack'
 gem 'positioning'
 
 gem 'friendly_id', '~> 5.4.0'
+
+gem 'mustache', '~> 1.0'

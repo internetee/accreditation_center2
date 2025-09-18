@@ -12,7 +12,7 @@
     <div class="wrapper">
       <div class="row center-xs">
         <div class="col-xs-auto">
-          <%= link_to t('.view_test'), question_test_path(@test, attempt: @test_attempt.access_code, question_index: 0), class: 'button button--secondary' %>
+          <%= link_to t('.view_test'), send("question_#{@test.test_type.underscore}_test_path", @test, attempt: @test_attempt.access_code, question_index: 0), class: 'button button--secondary' %>
         </div>
       </div>
     </div>

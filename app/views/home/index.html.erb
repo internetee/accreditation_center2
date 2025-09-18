@@ -52,23 +52,23 @@
               <h2><%= t('.accreditation_status') %></h2>
               </div>
               <div class="paper--content">
-              <div class="accreditation-info">
-                  <div class="accreditation-date">
-                  <strong><%= t('.expiry_date') %>:</strong>
-                  <%= l(@accreditation_expiry_date, format: :long) %>
-                  </div>
-                  <div class="accreditation-days">
-                  <% if @days_until_expiry > 0 %>
-                      <span class="text-success">
-                      <%= t('.days_remaining', count: @days_until_expiry) %>
-                      </span>
-                  <% else %>
-                      <span class="text-danger">
-                      <%= t('.accreditation_expired') %>
-                      </span>
-                  <% end %>
-                  </div>
-              </div>
+                <div class="accreditation-info">
+                    <div class="accreditation-date">
+                    <strong><%= t('.expiry_date') %>:</strong>
+                    <%= l(@accreditation_expiry_date, format: :long) %>
+                    </div>
+                    <div class="accreditation-days">
+                    <% if @days_until_expiry > 0 %>
+                        <span class="text-success">
+                        <%= t('.days_remaining', count: @days_until_expiry) %>
+                        </span>
+                    <% else %>
+                        <span class="text-danger">
+                        <%= t('.accreditation_expired') %>
+                        </span>
+                    <% end %>
+                    </div>
+                </div>
               </div>
           </div>
           </div>
@@ -92,18 +92,19 @@
         </thead>
         <tbody>
           <% @assigned_tests.each do |attempt| %>
+            <% route_prefix = attempt.test.theoretical? ? :theoretical : :practical %>
             <tr>
               <td><%= attempt.test.title %></td>
               <td><%= format_time(attempt.time_remaining) %></td>
               <td><%= attempt.progress_percentage %>%</td>
               <td>
                 <% if attempt.in_progress? %>
-                  <%= link_to t('.continue_test'), 
-                              question_test_path(attempt.test, attempt: attempt.access_code, question_index: 0), 
-                              class: 'button button--link' %>
+                  <%= link_to t('.continue_test'),
+                    send("question_#{route_prefix}_test_path", attempt.test, attempt: attempt.access_code, question_index: 0),
+                    class: 'button button--link' %>
                 <% elsif attempt.not_started? %>
                   <%= button_to t('.start_test'), 
-                                start_test_path(attempt.test, attempt: attempt.access_code), 
+                                send("start_#{route_prefix}_test_path", attempt.test, attempt: attempt.access_code), 
                                 method: :post, 
                                 class: 'button button--link' %>
                 <% end %>
@@ -138,12 +139,13 @@
         </thead>
         <tbody>
           <% @completed_tests.each do |attempt| %>
+            <% route_prefix = attempt.test.theoretical? ? :theoretical : :practical %>
             <tr>
               <td><%= attempt.test.title %></td>
               <td><%= l(attempt.completed_at.in_time_zone('EET'), format: :short) %></td>
               <td><%= attempt.score_percentage %>%</td>
               <td><%= link_to t('.view_results'), 
-                          results_test_path(attempt.test, attempt: attempt.access_code), 
+                          send("results_#{route_prefix}_test_path", attempt.test, attempt: attempt.access_code), 
                           class: 'button button--link' %></td>
             </tr>
           <% end %>

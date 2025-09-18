@@ -36,12 +36,12 @@
   border-color: #28a745;
 }
 
-.question-nav-circle.correct {
+.question-nav-circle.correct, .question-nav-circle.passed {
   background: #28a745;
   color: white;
 }
 
-.question-nav-circle.incorrect {
+.question-nav-circle.incorrect, .question-nav-circle.failed {
   background: #dc3545;
   color: white;
 }

@@ -1,0 +1,14 @@
+<% route_prefix = test_attempt.test.theoretical? ? :theoretical : :practical %>
+<!-- Time Remaining Display -->
+<div class="time-display">
+  <div class="time-remaining" 
+        data-controller="test-timer"
+        data-test-timer-remaining-value="<%= test_attempt.time_remaining %>"
+        data-test-timer-results-url-value="<%= send("results_#{route_prefix}_test_path", test_attempt.test, attempt: test_attempt.access_code) %>"
+        data-time-template="<%= t('tests.time_remaining') %>">
+    <i class="fas fa-clock"></i>
+    <span class="time-text" data-test-timer-target="timeText">
+      <%= t('tests.time_remaining', minutes: (test_attempt.time_remaining / 60).floor, seconds: test_attempt.time_remaining % 60) %>
+    </span>
+  </div>
+</div>

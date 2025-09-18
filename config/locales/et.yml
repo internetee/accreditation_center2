@@ -8,6 +8,7 @@ et:
   deactivate: "Deaktiveeri"
   save: "Salvesta"
   cancel: "Loobu"
+  validate: "Kontrolli"
   press_to_select: "Vajuta, et valida"
   start_typing: "Alusta tühikut"
   back: "Tagasi"
@@ -64,6 +65,8 @@ et:
         test_category_not_set: "Määramata"
         test_category_updated_at: "Muutmise kuupäev"
         test_category_created_at: "Loomise kuupäev"
+        test_category_test_type: "Testi tüüp"
+        test_category_questions_per_category: "Küsimuste arv kategooriates"
       test_category_table:
         items:
           one: "kategooria"
@@ -81,6 +84,8 @@ et:
         domain_rule_url: "Domain Rule URL"
         questions_per_category: "Küsimuste arv kategooriates"
         display_order: "Kuupäev"
+        configuration: "Seadistus"
+        test_type: "Testi tüüp"
       show:
         back_to_test_categories: "Tagasi Kategooriatele"
         confirm_delete: "Kas oled kindel, et soovid selle kategooria kustutada?"
@@ -88,6 +93,7 @@ et:
         questions: "Küsimused"
         question_dialog_title: "Küsimuse vorm"
         answer_dialog_title: "Vastuse vorm"
+        practical_tasks: "Praktilised ülesanded"
     questions:
       text_et: "Tekst (eesti)"
       text_en: "Tekst (inglise)"
@@ -100,8 +106,8 @@ et:
       activated: "Küsimus aktiveeritud"
       deactivated: "Küsimus deaktiveeritud"
       index:
-        question_text: "Küsimuse tekst"
-        question_description: "Küsimuse kirjeldus"
+        question_text: "Tekst"
+        question_description: "Kirjeldus"
         question_status: "Olek"
         question_inactive: "Inaktiivne"
         question_active: "Aktiivne"
@@ -194,6 +200,13 @@ et:
         failed_attempts: "Ebaõnnestunud proovid"
         pass_rate: "Läbimise protsent"
         no_attempts: "Proove pole"
+        practical_tasks: "Praktilised ülesanded"
+        manage_practical_tasks: "Hallista praktilisi ülesandeid"
+        create_practical_task: "Loo praktiline ülesanne"
+        no_practical_tasks: "Praktilisi ülesandeid pole"
+        task_title: "Pealkiri"
+        task_body: "Kirjeldus"
+        practical_task_dialog_title: "Praktilise ülesande vorm"
       form:
         info: "Põhiteave"
         title_et: "Pealkiri (eesti)"
@@ -208,6 +221,13 @@ et:
         active: "Aktiivne"
         inactive: "Inaktiivne"
         category_selection: "Kategooria valik"
+        test_type: "Testi tüüp"
+        theoretical: "Teoreetiline"
+        practical: "Praktiline"
+        practical_tasks_info: "Praktiliste ülesannete teave"
+        practical_tasks_description: "See test sisaldab praktilisi ülesandeid, mis nõuavad kätega tegemist."
+        practical_tasks_note: "Praktilisi ülesandeid saab luua ja hallata pärast selle testi salvestamist."
+        practical_tasks_passing_score: "Märkus: Praktilistel testidel on automaatselt 100% läbimise nõue."
     test_attempts:
       assigned: "Test edukalt määratud kasutajale"
       reassigned: "Test edukalt uuesti määratud kasutajale"
@@ -327,7 +347,18 @@ et:
       user_table:
         items:
           one: "kasutaja"
-          other: "kasutajad"
+    practical_tasks:
+      updated: "Praktiline ülesanne salvestatud"
+      created: "Praktiline ülesanne loodud"
+      destroyed: "Praktiline ülesanne kustutatud"
+      activated: "Praktiline ülesanne aktiveeritud"
+      deactivated: "Praktiline ülesanne deaktiveeritud"
+      form:
+        title_et: "Pealkiri (eesti)"
+        title_en: "Pealkiri (inglise)"
+        body_et: "Kirjeldus (eesti)"
+        body_en: "Kirjeldus (inglise)"
+        validator: "Validator"
   users:
     sessions:
       new:
@@ -377,6 +408,8 @@ et:
     question_counter: "%{current}/%{total}"
     time_remaining: "%{minutes} min %{seconds} s jäänud"
     time_expired: "Aeg on lõppenud"
+    time_warning: "Aja hoiatus: %{minutes} minutit jäänud"
+    task_current_to_continue: "Palun täida praegune ülesanne, et jätkata."
     answer_and_continue: "Vasta"
     mark_for_later: "Vastan hiljem"
     answer_all_questions: "Palun vasta kõigile küsimustele enne lõpetamist."
@@ -408,8 +441,24 @@ et:
     mark_for_later: "Märgi hilisemaks"
     back_to_dashboard: "Tagasi kodulehele"
     question_marked_for_later: "Küsimus märgitud hilisemaks"
+    task_passed: "Ülesanne läbitud"
+    task_failed: "Ülesanne ebaõnnestunud"
+    validation_timeout: "Validatsiooni aegumine"
+    finish_all_tasks: "Palun täida kõik ülesanded enne lõpetamist."
     question:
       title: "%{test}"
+      question_number: "Küsimus %{number}"
+    task:
+      title: "%{test}"
+      task_number: "Ülesanne %{number}"
     results:
       page_title: "Testi tulemused - %{test}"
       title: "Testi tulemused"
+  validators:
+    create_contacts_validator:
+      organization_contact_not_found: "Organisatsiooni kontakt ei leitud"
+      private_contact_not_found: "Privaatse kontakti ei leitud"
+      org_type_mismatch: "Organisatsiooni kontakti tüüp ei vasta"
+      priv_type_mismatch: "Privaatse kontakti tüüp ei vasta"
+      org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
+      priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"

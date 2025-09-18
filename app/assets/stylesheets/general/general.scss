@@ -345,3 +345,24 @@ h4 {
     opacity: 0.5;
 }
 
+/* Test Form Conditional Display */
+.hidden {
+    display: none !important;
+}
+
+.info-box {
+    background-color: variables.$gray-light;
+    border: 1px solid variables.$gray;
+    border-radius: 4px;
+    padding: 16px;
+    margin: 8px 0;
+    
+    p {
+        margin: 0 0 8px 0;
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+

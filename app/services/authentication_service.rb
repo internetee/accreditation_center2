@@ -2,20 +2,16 @@
 
 # Service for handling user authentication via external API
 class AuthenticationService < ApiConnector
-  def initialize
+  def initialize(username:, password:)
     # Use authentication-specific API URL
     @api_url = ENV['BASE_URL'] + ENV['AUTH_API_URL']
-    super
+    super(username: username, password: password)
   end
 
   # Authenticate user via API using GET request
-  def authenticate_user(username, password)
-    # Generate API token from username and password
-    api_token = generate_api_token(username, password)
-    headers = { 'Authorization' => "Basic #{api_token}" }
-
+  def authenticate_user
     # Use base class make_request method with error handling
-    result = make_request(:get, @api_url, { headers: headers })
+    result = make_request(:get, @api_url, { headers: @headers })
 
     # Handle authentication-specific response processing
     if result[:success]

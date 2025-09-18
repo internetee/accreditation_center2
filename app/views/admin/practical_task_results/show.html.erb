@@ -1,0 +1,124 @@
+<% content_for(:title) { "EIS | #{@practical_task.title} - Result" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= @practical_task.title %> - <%= t('.result') %></h1>
+        <%= back_link(text: t('.back_to_results'), path: admin_test_practical_task_practical_task_results_path(@test, @practical_task)) %>
+    </div>
+<% end %>
+
+<div class="page page--admin-practical-task-result-show">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.result_information') %></h3>
+          </div>
+          
+          <div class="paper--content">
+            <div class="info-section">
+              <h4><%= t('.user_details') %></h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label"><%= t('.user') %>:</span>
+                  <span class="info-value"><%= link_to @user.email, admin_user_path(@user) %></span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label"><%= t('.test_attempt') %>:</span>
+                  <span class="info-value"><%= link_to @test_attempt.access_code, admin_test_test_attempt_path(@test, @test_attempt) %></span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label"><%= t('.submitted_at') %>:</span>
+                  <span class="info-value"><%= @practical_task_result.created_at.strftime('%Y-%m-%d %H:%M:%S') %></span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <h4><%= t('.result_status') %></h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label"><%= t('.status') %>:</span>
+                  <span class="info-value">
+                    <span class="label label-<%= @practical_task_result.status == 'passed' ? 'success' : @practical_task_result.status == 'failed' ? 'error' : 'default' %>">
+                      <%= t(".#{@practical_task_result.status}") %>
+                    </span>
+                  </span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label"><%= t('.score') %>:</span>
+                  <span class="info-value"><%= @practical_task_result.score || '-' %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.admin_actions') %></h3>
+          </div>
+          
+          <div class="paper--content">
+            <%= form_with model: [:admin, @test, @practical_task, @practical_task_result], local: true, class: 'form form__styled' do |form| %>
+              <div class="form--group">
+                <div class="form--row">
+                  <div class="form--field">
+                    <%= form.label :status, t('.status'), class: 'form--label' %>
+                    <%= form.select :status, 
+                        options_for_select([
+                          [t('.pending'), 'pending'],
+                          [t('.running'), 'running'],
+                          [t('.passed'), 'passed'],
+                          [t('.failed'), 'failed']
+                        ], @practical_task_result.status), 
+                        {}, 
+                        { class: 'form--select' } %>
+                  </div>
+                </div>
+
+                <div class="form--row">
+                  <div class="form--field">
+                    <%= form.label :score, t('.score'), class: 'form--label' %>
+                    <%= form.number_field :score, class: 'form--input', step: 0.1, min: 0, max: 100 %>
+                  </div>
+                </div>
+
+                <div class="form--row">
+                  <div class="form--field">
+                    <%= form.label :feedback, t('.feedback'), class: 'form--label' %>
+                    <%= form.text_area :feedback, class: 'form--textarea', rows: 4 %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form--actions">
+                <%= form.submit t(:update), class: 'button button--primary' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if @practical_task_result.response_data.present? %>
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.response_data') %></h3>
+            </div>
+            
+            <div class="paper--content">
+              <div class="response-data">
+                <pre><%= JSON.pretty_generate(@practical_task_result.response_data) %></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
