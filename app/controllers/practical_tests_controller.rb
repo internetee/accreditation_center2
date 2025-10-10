@@ -1,12 +1,13 @@
 class PracticalTestsController < TestsController
   def start
     super
+
     redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: 0)
   end
 
   def question
     @tasks = @test.practical_tasks.active.ordered
-    @current_task_index = (params[:task_index] || 0).to_i
+    @current_task_index = (params[:question_index] || 0).to_i
     @current_task = @tasks[@current_task_index]
 
     if @current_task.nil?
@@ -18,13 +19,13 @@ class PracticalTestsController < TestsController
     results_by_tid = @test_attempt.practical_task_results.index_by(&:practical_task_id)
     first_pending_index = @tasks.index do |t|
       result = results_by_tid[t.id]
-      result.nil? || result.status == 'pending'
+      result.nil? || result.status == 'pending' || result.status == 'failed'
     end
     @max_allowed_index = first_pending_index || (@tasks.count - 1)
 
     # Prevent navigating past the first pending task
     if @current_task_index > @max_allowed_index
-      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, task_index: @max_allowed_index),
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @max_allowed_index),
                   alert: t('tests.task_current_to_continue') and return
     end
 
@@ -36,7 +37,8 @@ class PracticalTestsController < TestsController
 
   def answer
     task_index = params[:question_index].to_i
-    @current_task = @test.practical_tasks.ordered[task_index]
+    tasks = @test.practical_tasks.active.ordered
+    @current_task = tasks[task_index]
     return head(:not_found) if @current_task.nil?
 
     # ensure result row exists
@@ -60,7 +62,6 @@ class PracticalTestsController < TestsController
 
         validator = validator_klass.new(
           attempt: @test_attempt,
-          question: @current_task,
           config: @current_task.conf,
           inputs: inputs
         )
@@ -76,10 +77,15 @@ class PracticalTestsController < TestsController
       export_vars = result[:export_vars] || {}
       @test_attempt.merge_vars!(export_vars) if export_vars.present?
 
+      next_index = task_index + 1
+      next_index = task_index if next_index >= tasks.count
+
       if result[:passed]
         flash[:notice] = t('tests.task_passed')
+        redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
       else
         flash[:alert] = result[:error].presence || t('tests.task_failed')
+        redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
       end
     rescue Timeout::Error
       ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => t('tests.validation_timeout')))
@@ -88,13 +94,6 @@ class PracticalTestsController < TestsController
       ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => e.message))
       flash[:alert] = e.message
     end
-
-    # Navigate to next task (or stay on last)
-    next_index = task_index + 1
-    tasks = @test.practical_tasks.ordered
-    next_index = task_index if next_index >= tasks.count
-
-    redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
   end
 
   def results

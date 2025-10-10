@@ -25,17 +25,4 @@ class ContactService < ApiConnector
     data = JSON.parse(data) if data.is_a?(String)
     symbolize_keys_deep(data['contact'])
   end
-
-  def symbolize_keys_deep(obj)
-    case obj
-    when Array
-      obj.map { |e| symbolize_keys_deep(e) }
-    when Hash
-      obj.each_with_object({}) do |(k, v), h|
-        h[k.to_sym] = symbolize_keys_deep(v)
-      end
-    else
-      obj
-    end
-  end
 end

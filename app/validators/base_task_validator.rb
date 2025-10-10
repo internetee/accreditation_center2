@@ -1,7 +1,10 @@
 # app/validators/base_task_validator.rb
 class BaseTaskValidator
-  def initialize(attempt:, question:, config:)
-    @attempt, @question, @config = attempt, question, config
+  def initialize(attempt:, config:, inputs:)
+    @attempt = attempt
+    @config = config
+    @inputs = inputs
+    @service = api_service_adapter(@attempt.user)
   end
 
   def call
@@ -14,5 +17,9 @@ class BaseTaskValidator
 
   def v(key)
     @attempt.vars[key.to_s]
+  end
+
+  def api_service_adapter(_user)
+    nil
   end
 end

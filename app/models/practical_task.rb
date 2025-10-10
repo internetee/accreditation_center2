@@ -5,6 +5,8 @@ class PracticalTask < ApplicationRecord
   scope :ordered, -> { order(:display_order) }
   scope :active, -> { where(active: true) }
 
+  validates :display_order, presence: true, numericality: { greater_than: 0 }
+
   translates :title, :body
 
   def vconf

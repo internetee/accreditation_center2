@@ -123,6 +123,8 @@ GEM
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
+    faker (3.5.2)
+      i18n (>= 1.8.11, < 2)
     faraday (2.13.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -317,6 +319,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    simpleidn (0.2.3)
     solid_cable (3.0.11)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -385,6 +388,7 @@ DEPENDENCIES
   dartsass-rails (~> 0.5.1)
   debug
   devise
+  faker
   faraday
   figaro
   font-awesome-sass (~> 5.15.1)
@@ -402,6 +406,7 @@ DEPENDENCIES
   ransack
   rspec-rails (~> 8.0.0)
   selenium-webdriver
+  simpleidn
   solid_cable
   solid_cache
   solid_queue

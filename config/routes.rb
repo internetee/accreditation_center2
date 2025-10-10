@@ -54,11 +54,7 @@ Rails.application.routes.draw do
         resources :test_categories_tests, only: [] do
           post :update_positions, on: :collection
         end
-        resources :practical_tasks do
-          member do
-            patch :activate
-            patch :deactivate
-          end
+        resources :practical_tasks, except: %i[index] do
           collection do
             post :update_positions
           end

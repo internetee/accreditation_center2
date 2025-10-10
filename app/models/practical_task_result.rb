@@ -3,4 +3,8 @@ class PracticalTaskResult < ApplicationRecord
   belongs_to :practical_task
 
   enum :status, { pending: 'pending', running: 'running', passed: 'passed', failed: 'failed' }
+
+  def correct?
+    status == 'passed'
+  end
 end

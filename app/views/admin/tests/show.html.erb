@@ -210,6 +210,7 @@
               <tr>
                 <th width="5px"></th>
                 <th><%= t('.task_body') %></th>
+                <th><%= t('.task_status') %></th>
                 <th class="table--action"></th>
               </tr>
             </thead>
@@ -222,6 +223,13 @@
                     </div>
                   </td>
                   <td><%= task.body %></td>
+                  <td>
+                    <% if task.active? %>
+                      <span class="label label-success"><%= t('.active') %></span>
+                    <% else %>
+                      <span class="label label-default"><%= t('.inactive') %></span>
+                    <% end %>
+                  </td>
                   <td class="table--action">
                     <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_practical_task_path(@test, task), 
                                     class: 'simple_tooltip', 

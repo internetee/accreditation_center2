@@ -8,7 +8,7 @@ class TestAttempt < ApplicationRecord
 
   validates :access_code, presence: true, uniqueness: true
 
-  before_validation :generate_access_code, on: :create
+  # before_validation :generate_access_code, on: :create
 
   scope :ordered, -> { order(created_at: :desc) }
   scope :not_completed, -> { where(completed_at: nil) }
@@ -30,11 +30,11 @@ class TestAttempt < ApplicationRecord
     update!(vars: vars.merge(h.stringify_keys))
   end
 
-  def generate_access_code
-    return if access_code.present?
+  # def generate_access_code
+  #   return if access_code.present?
 
-    self.access_code = SecureRandom.hex(8)
-  end
+  #   self.access_code = SecureRandom.hex(8)
+  # end
 
   def set_started_at
     self.started_at = Time.zone.now
@@ -99,7 +99,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def completed_tasks
-    practical_task_results.where(status: 'passed').includes(:practical_task).map(&:practical_task)
+    practical_task_results.includes(:practical_task).map(&:practical_task)
   end
 
   def incompleted_tasks
@@ -130,24 +130,27 @@ class TestAttempt < ApplicationRecord
   end
 
   def all_tasks_completed?
+    return false if practical_task_results.count != test.practical_tasks.active.count
+
     practical_task_results.all? do |result|
       result.status == 'passed'
     end
   end
 
   def score_percentage
-    return 100 if test.practical? && all_tasks_completed?
-    return 0 if question_responses.empty?
+    if test.practical?
+      return 0 if practical_task_results.empty?
 
-    correct_count = question_responses.count do |response|
-      if response.question.practical?
-        response.practical_correct?
-      else
-        response.correct?
-      end
+      correct_count = practical_task_results.count(&:correct?)
+
+      (correct_count.to_f / practical_task_results.count * 100).round(0)
+    else
+      return 0 if question_responses.empty?
+
+      correct_count = question_responses.count(&:correct?)
+
+      (correct_count.to_f / question_responses.count * 100).round(0)
     end
-
-    (correct_count.to_f / question_responses.count * 100).round(0)
   end
 
   def passed?

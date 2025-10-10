@@ -6,22 +6,18 @@ class Question < ApplicationRecord
 
   validates :text_et, presence: true
   validates :text_en, presence: true
-  validates :question_type, presence: true, inclusion: { in: %w[multiple_choice practical] }
+  validates :question_type, presence: true, inclusion: { in: %w[multiple_choice] }
   validates :display_order, presence: true, numericality: { greater_than: 0 }
 
   scope :ordered, -> { order(:display_order) }
   scope :active, -> { where(active: true) }
 
-  enum :question_type, { multiple_choice: 'multiple_choice', practical: 'practical' }
+  enum :question_type, { multiple_choice: 'multiple_choice' }
 
   translates :text, :help_text
 
   def multiple_choice?
     question_type == 'multiple_choice'
-  end
-
-  def practical?
-    question_type == 'practical'
   end
 
   def correct_answers
@@ -38,24 +34,5 @@ class Question < ApplicationRecord
 
   def randomize_answers
     answers.shuffle
-  end
-
-  def practical_task_data
-    return {} unless practical?
-    
-    # Parse stored JSON or return default based on question text
-    begin
-      JSON.parse(super || '{}')
-    rescue JSON::ParserError
-      {}
-    end
-  end
-
-  def practical_task_data=(data)
-    if data.is_a?(Hash)
-      super(data.to_json)
-    else
-      super(data)
-    end
   end
 end

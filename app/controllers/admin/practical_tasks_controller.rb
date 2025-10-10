@@ -2,10 +2,6 @@ class Admin::PracticalTasksController < Admin::BaseController
   before_action :set_test
   before_action :set_practical_task, only: %i[show edit update destroy activate deactivate]
 
-  def index
-    @practical_tasks = @test.practical_tasks.order(:display_order)
-  end
-
   def show
   end
 
@@ -15,6 +11,7 @@ class Admin::PracticalTasksController < Admin::BaseController
 
   def create
     @practical_task = @test.practical_tasks.build(practical_task_params)
+    @practical_task.display_order = @test.practical_tasks.maximum(:display_order).to_i + 1
 
     respond_to do |format|
       if @practical_task.save

@@ -21,6 +21,17 @@
           <%= form.text_area :validator, class: 'textarea', rows: 8, placeholder: t('.validator_placeholder') %>
         </div>
       </div>
+
+      <div class="form-row">
+        <div class="form--field">
+          <div class="checkbox">
+            <%= form.check_box :active %>
+            <%= form.label :active do %>
+              <span><%= t('admin.questions.active') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

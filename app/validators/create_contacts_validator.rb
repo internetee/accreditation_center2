@@ -1,11 +1,5 @@
 # app/validators/create_contacts_validator.rb
 class CreateContactsValidator < BaseTaskValidator
-  def initialize(attempt:, question:, config:, inputs:)
-    super(attempt: attempt, question: question, config: config)
-    @inputs = inputs
-    @service = api_service_adapter(attempt.user)
-  end
-
   def call
     org_id  = @inputs['org_contact_id']
     priv_id = @inputs['priv_contact_id']

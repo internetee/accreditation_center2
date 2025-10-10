@@ -87,3 +87,7 @@ gem 'positioning'
 gem 'friendly_id', '~> 5.4.0'
 
 gem 'mustache', '~> 1.0'
+
+gem 'simpleidn'
+
+gem 'faker'
