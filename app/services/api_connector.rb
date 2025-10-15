@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Base class for API services with HTTP client and error handling
+require 'openssl'
 class ApiConnector
   # Class-level configuration
   class << self
@@ -13,9 +14,10 @@ class ApiConnector
   self.retry_delay = 1
   self.logging = Rails.env.development?
 
-  def initialize(username:, password:)
+  def initialize(username:, password:, ssl: {})
     @auth_token = generate_api_token(username, password)
     @headers = { 'Authorization' => "Basic #{@auth_token}" }
+    @ssl_opts = ssl || {}
     @connection = build_connection
   end
 
@@ -82,6 +84,25 @@ class ApiConnector
       # Configure logging if enabled
       if self.class.logging
         faraday.response :logger, Rails.logger, { headers: false, bodies: false }
+      end
+
+      # SSL configuration (optional; services not needing SSL can skip)
+      ssl_verify = if @ssl_opts.key?(:verify)
+                     !!@ssl_opts[:verify]
+                   else
+                     false
+                   end
+      faraday.ssl.verify = ssl_verify
+
+      ca_file = @ssl_opts[:ca_file].presence
+      faraday.ssl.ca_file = ca_file if ca_file.present?
+
+      cert_file = @ssl_opts[:client_cert_file].presence
+      key_file  = @ssl_opts[:client_key_file].presence
+
+      if cert_file.present? && key_file.present? && File.exist?(cert_file) && File.exist?(key_file)
+        faraday.ssl.client_cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
+        faraday.ssl.client_key  = OpenSSL::PKey.read(File.read(key_file))
       end
     end
   end

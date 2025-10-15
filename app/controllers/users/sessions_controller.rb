@@ -47,6 +47,7 @@ class Users::SessionsController < Devise::SessionsController
     user = User.find_or_initialize_by(username: response[:username])
     if user.new_record?
       user.email = response[:registrar_email]
+      user.registrar_name = response[:registrar_name]
       user.role = 'user'
       user.password = password
       user.save!

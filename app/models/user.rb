@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :registrar_name, length: { maximum: 255 }, presence: true
 
   enum :role, { user: 0, admin: 1 }
 
@@ -18,7 +19,7 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[username email]
+    %w[username email registrar_name]
   end
 
   def self.ransackable_associations(auth_object = nil)

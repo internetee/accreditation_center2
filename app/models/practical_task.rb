@@ -30,4 +30,15 @@ class PracticalTask < ApplicationRecord
   def deps
     Array(vconf[:depends_on_task_ids])
   end
+
+  before_validation :auto_deactivate_if_no_validator
+
+  private
+
+  def auto_deactivate_if_no_validator
+    raw = validator
+    raw = JSON.parse(raw) if raw.is_a?(String)
+    conf = raw || {}
+    self.active = false if conf.blank? || conf['klass'].blank?
+  end
 end

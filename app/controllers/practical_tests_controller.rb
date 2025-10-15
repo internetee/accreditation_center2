@@ -90,9 +90,11 @@ class PracticalTestsController < TestsController
     rescue Timeout::Error
       ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => t('tests.validation_timeout')))
       flash[:alert] = t('tests.validation_timeout')
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
     rescue => e
       ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => e.message))
       flash[:alert] = e.message
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
     end
   end
 

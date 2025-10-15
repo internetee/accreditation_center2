@@ -4,11 +4,12 @@ require 'faker'
 
 module Allocators
   class DomainPair
-    DEFAULT_TRIES = 12
+    DEFAULT_TRIES = 2
 
     def initialize(config:, attempt:)
       @cfg = config
       @attempt = attempt
+      @service = service_adapter(@attempt.user)
     end
 
     def call
@@ -93,12 +94,13 @@ module Allocators
     end
 
     def available?(fqdn)
-      # Prefer a proper check if your client has it:
-      # @client.domain_check(name: fqdn) → true/false
-      @client.domain_info(name: fqdn)
-      false # if info returns, it exists
-    rescue StandardError
-      true  # info raised/not found → assume available
+      result = @service.domain_info(name: fqdn)
+      Rails.logger.info "DomainPair available? result: #{result.inspect}"
+      true if result[:success] == false
+    end
+
+    def service_adapter(user)
+      DomainService.new(username: user.username, password: user.password)
     end
   end
 end

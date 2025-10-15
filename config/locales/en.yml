@@ -20,6 +20,7 @@ en:
   assign: "Assign"
   view: "View"
   ago: "ago"
+  access_denied_admin: "Admin users cannot access user pages"
   nav:
     dashboard: "Dashboard"
     tests: "Tests"
@@ -99,7 +100,6 @@ en:
     retry_message: "You can review your answers and try again if the test is reassigned."
     back_to_tests: "Back to tests"
     retake_test: "Retake test"
-    access_denied_admin: "Admin users cannot access user pages"
     answer_saved: "Answer saved"
     save_answer: "Save answer"
     mark_for_later: "Mark for later"

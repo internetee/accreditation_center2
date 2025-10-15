@@ -20,6 +20,7 @@ et:
   assign: "Määra"
   view: "Vaata"
   ago: "tagasi"
+  access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -101,7 +102,6 @@ et:
     retry_message: "Saad vastuseid üle vaadata ja proovida uuesti, kui test uuesti määratakse."
     back_to_tests: "Tagasi testide juurde"
     retake_test: "Tee test uuesti"
-    access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
     answer_saved: "Vastus salvestatud"
     save_answer: "Salvesta vastus"
     mark_for_later: "Märgi hilisemaks"

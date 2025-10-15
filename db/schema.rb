@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_10_112803) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_15_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,8 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_112803) do
 
   create_table "practical_tasks", force: :cascade do |t|
     t.bigint "test_id", null: false
-    t.string "title_en", null: false
-    t.string "title_et", null: false
+    t.string "title_en"
+    t.string "title_et"
     t.text "body_en", null: false
     t.text "body_et", null: false
     t.jsonb "validator", default: {}
@@ -60,11 +60,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_112803) do
     t.bigint "question_id", null: false
     t.integer "selected_answer_ids", default: [], array: true
     t.boolean "marked_for_later", default: false
-    t.jsonb "practical_response_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["marked_for_later"], name: "index_question_responses_on_marked_for_later"
-    t.index ["practical_response_data"], name: "index_question_responses_on_practical_response_data", using: :gin
     t.index ["question_id"], name: "index_question_responses_on_question_id"
     t.index ["selected_answer_ids"], name: "index_question_responses_on_selected_answer_ids", using: :gin
     t.index ["test_attempt_id", "question_id"], name: "index_question_responses_on_test_attempt_id_and_question_id", unique: true
@@ -80,11 +78,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_112803) do
     t.string "question_type", default: "multiple_choice", null: false
     t.integer "display_order", null: false
     t.boolean "active", default: true
-    t.jsonb "practical_task_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_questions_on_active"
-    t.index ["practical_task_data"], name: "index_questions_on_practical_task_data", using: :gin
     t.index ["question_type"], name: "index_questions_on_question_type"
     t.index ["test_category_id", "display_order"], name: "index_questions_on_test_category_id_and_display_order", unique: true
     t.index ["test_category_id"], name: "index_questions_on_test_category_id"
@@ -167,7 +163,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_112803) do
     t.datetime "last_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
+    t.string "registrar_name"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["registrar_name"], name: "index_users_on_registrar_name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
