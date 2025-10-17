@@ -111,6 +111,7 @@ en:
     task_failed: "Task failed"
     validation_timeout: "Validation timeout"
     finish_all_tasks: "Please complete all tasks before finishing."
+    test_not_found: "Test not found"
     question:
       title: "%{test}"
       question_number: "Question %{number}"
@@ -126,3 +127,5 @@ en:
       priv_type_mismatch: "Priv type mismatch"
       org_required_fields_missing: "Org required fields missing"
       priv_required_fields_missing: "Priv required fields missing"
+      org_contact_not_recent: "Org contact not recent"
+      priv_contact_not_recent: "Priv contact not recent"

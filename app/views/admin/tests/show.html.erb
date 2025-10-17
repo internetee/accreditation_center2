@@ -222,7 +222,10 @@
                       <i class="fas fa-grip-vertical"></i>
                     </div>
                   </td>
-                  <td><%= task.body %></td>
+                  <td>
+                    <p><strong><%= task.title %></strong></p>
+                    <p><%= task.body %></p>
+                  </td>
                   <td>
                     <% if task.active? %>
                       <span class="label label-success"><%= t('.active') %></span>

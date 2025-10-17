@@ -25,6 +25,12 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  # DELETE /resource/sign_out
+  def destroy
+    session[:auth_token] = nil
+    super
+  end
+
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.
@@ -54,6 +60,7 @@ class Users::SessionsController < Devise::SessionsController
     end
 
     sign_in(user)
+    session[:auth_token] = ApiTokenService.new(username: username, password: password).generate
     redirect_after_sign_in(user)
   end
 

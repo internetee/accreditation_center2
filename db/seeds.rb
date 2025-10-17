@@ -8,6 +8,8 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+require_relative 'seeds/practical_tasks'
+
 User.create!(
   email: 'admin@example.com',
   username: 'admin',

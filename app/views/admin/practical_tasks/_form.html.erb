@@ -1,6 +1,18 @@
 <%= form_with model: [:admin, @test, @practical_task], method: method, data: { turbo: true, turbo_frame: "_top" }, class: 'form' do |form| %>
-  <div class="row">
+  <div class="row" style="max-height: 70vh; overflow-y: auto; padding-right: 8px;">
     <div class="col-xs-12">
+      <div class="form--row">
+        <%= form.label :title_et, t('.title_et'), class: 'form--label' %>
+        <div class="form--field">
+          <%= form.text_field :title_et, class: 'input' %>
+        </div>
+      </div>
+      <div class="form--row">
+        <%= form.label :title_en, t('.title_en'), class: 'form--label' %>
+        <div class="form--field">
+          <%= form.text_field :title_en, class: 'input' %>
+        </div>
+      </div>
       <div class="form--row">
         <%= form.label :body_et, t('.body_et'), class: 'form--label' %>
         <div class="form--field">

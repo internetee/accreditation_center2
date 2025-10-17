@@ -111,6 +111,7 @@ et:
     task_failed: "Ülesanne ebaõnnestunud"
     validation_timeout: "Validatsiooni aegumine"
     finish_all_tasks: "Palun täida kõik ülesanded enne lõpetamist."
+    test_not_found: "Testi ei leitud"
     question:
       title: "%{test}"
       question_number: "Küsimus %{number}"
@@ -128,3 +129,5 @@ et:
       priv_type_mismatch: "Privaatse kontakti tüüp ei vasta"
       org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
       priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"
+      org_contact_not_recent: "Organisatsiooni kontakt ei ole hiljuti loodud"
+      priv_contact_not_recent: "Privaatse kontakt ei ole hiljuti loodud"

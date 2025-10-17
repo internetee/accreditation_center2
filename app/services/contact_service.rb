@@ -4,9 +4,9 @@
 # Builds authorization headers using provided credentials and
 # exposes a simple `contact_info(id:)` method returning a symbolized hash.
 class ContactService < ApiConnector
-  def initialize(username:, password:)
+  def initialize(token:)
     @api_url = ENV['BASE_URL'] + ENV['GET_CONTACT']
-    super(username: username, password: password)
+    super(token: token)
   end
 
   def contact_info(id:)

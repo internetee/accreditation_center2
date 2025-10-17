@@ -58,8 +58,8 @@ class RegisterDomainsValidator < BaseTaskValidator
     { passed: false, score: 0.0, evidence: {}, error: errs.join('; '), api_audit: api, export_vars: {} }
   end
 
-  def api_service_adapter(user)
-    DomainService.new(username: user.username, password: user.password)
+  def api_service_adapter
+    DomainService.new(token: @token)
   end
 
   def calculate_expiry(created, period)

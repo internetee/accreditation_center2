@@ -4,9 +4,9 @@
 # Exposes `domain_info(name:)` returning a symbolized hash on success
 # and raising on API errors (allocator rescues and treats as unavailable).
 class DomainService < ApiConnector
-  def initialize(username:, password:)
+  def initialize(token:)
     @api_url_info = ENV['BASE_URL'] + ENV['GET_DOMAIN_INFO']
-    super(username: username, password: password)
+    super(token: token)
   end
 
   def domain_info(name:)

@@ -1,10 +1,11 @@
 # app/validators/base_task_validator.rb
 class BaseTaskValidator
-  def initialize(attempt:, config:, inputs:)
+  def initialize(attempt:, config:, inputs:, token: nil)
     @attempt = attempt
     @config = config
     @inputs = inputs
-    @service = api_service_adapter(@attempt.user)
+    @token = token
+    @service = api_service_adapter
   end
 
   def call
@@ -19,7 +20,7 @@ class BaseTaskValidator
     @attempt.vars[key.to_s]
   end
 
-  def api_service_adapter(_user)
-    nil
+  def api_service_adapter
+    raise NotImplementedError
   end
 end

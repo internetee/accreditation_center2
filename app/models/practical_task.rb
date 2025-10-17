@@ -36,7 +36,7 @@ class PracticalTask < ApplicationRecord
   private
 
   def auto_deactivate_if_no_validator
-    raw = validator
+    raw = validator || {}
     raw = JSON.parse(raw) if raw.is_a?(String)
     conf = raw || {}
     self.active = false if conf.blank? || conf['klass'].blank?

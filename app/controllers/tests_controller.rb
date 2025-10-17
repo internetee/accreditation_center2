@@ -21,6 +21,8 @@ class TestsController < ApplicationController
       test: @test,
       access_code: params[:attempt]
     )
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path, alert: t('tests.test_not_found')
   end
 
   def ensure_test_not_expired
