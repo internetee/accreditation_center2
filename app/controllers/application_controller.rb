@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_regular_user!
-    redirect_to admin_dashboard_path, alert: t('home.access_denied_admin') if current_user.admin?
+    redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user.admin?
   end
 
   # Prevent viewing history while a test attempt is in progress for the same account

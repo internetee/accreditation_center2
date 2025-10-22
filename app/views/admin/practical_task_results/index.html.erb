@@ -1,0 +1,67 @@
+<% content_for(:title) { "EIS | #{@practical_task.title} - Results" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= @practical_task.title %> - <%= t('.results') %></h1>
+        <%= back_link(text: t('.back_to_practical_task'), path: admin_test_practical_task_path(@test, @practical_task)) %>
+    </div>
+<% end %>
+
+<div class="page page--admin-practical-task-results">
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.practical_task_results') %></h3>
+          </div>
+          
+          <div class="paper--content">
+            <% if @practical_task_results.any? %>
+              <div class="results-table">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th><%= t('.user') %></th>
+                      <th><%= t('.test_attempt') %></th>
+                      <th><%= t('.status') %></th>
+                      <th><%= t('.score') %></th>
+                      <th><%= t('.submitted_at') %></th>
+                      <th><%= t('.actions') %></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @practical_task_results.each do |result| %>
+                      <tr>
+                        <td><%= link_to result.test_attempt.user.email, admin_user_path(result.test_attempt.user) %></td>
+                        <td><%= link_to result.test_attempt.access_code, admin_test_test_attempt_path(@test, result.test_attempt) %></td>
+                        <td>
+                          <span class="label label-<%= result.status == 'passed' ? 'success' : result.status == 'failed' ? 'error' : 'default' %>">
+                            <%= t(".#{result.status}") %>
+                          </span>
+                        </td>
+                        <td><%= result.score || '-' %></td>
+                        <td><%= result.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+                        <td>
+                          <%= link_to t(:view), admin_test_practical_task_practical_task_result_path(@test, @practical_task, result), 
+                                      class: 'button button--link' %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="pagination-wrapper">
+                <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+              </div>
+            <% else %>
+              <div class="empty-state">
+                <p><%= t('.no_results') %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

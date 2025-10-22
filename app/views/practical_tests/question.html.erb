@@ -1,0 +1,128 @@
+<% content_for(:title) { "EIS | #{t('tests.question.title', test: @test.title)}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('tests.question.title', test: @test.title) %></h1>
+    <% if @test_attempt.in_progress? %>
+      <%= render 'common/timer', test_attempt: @test_attempt %>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="page page--test-question">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+        <% @tasks.each_with_index do |task, index| %>
+          <% result = @test_attempt.practical_task_results.find_by(practical_task: task) %>
+          <% status_class = result&.status || 'pending' %>
+          <% status_class += ' current' if index == @current_task_index %>
+          <div class="col-xs-auto" style="padding-right: 5px; padding-left: 5px; margin-bottom: 10px;">
+            <% disabled_forward = defined?(@max_allowed_index) && index > @max_allowed_index %>
+            <% if disabled_forward && @test_attempt.in_progress? %>
+              <span class="question-nav-circle <%= status_class %> disabled"><%= index + 1 %></span>
+            <% else %>
+              <%= link_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: index),
+                          class: "question-nav-circle #{status_class}" do %>
+                <%= index + 1 %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--content">
+            <!-- Task Header -->
+            <div class="question-header">
+              <div class="question-context">
+                <%= t('tests.question.task_number', number: @current_task_index + 1) %>
+              </div>
+              <h2 class="question-text"><%= simple_format Mustache.render(@current_task.body, @test_attempt.vars) %></h2>
+            </div>
+
+            <!-- Inputs form -->
+            <div class="answer-options">
+            <%= form_with url: answer_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_task_index),
+                      method: :post, local: true, class: "form" do |f| %>
+              <div class="row">
+                <div class="col-md-4 col-xs-12">
+                  <% @current_task.input_fields.each do |field| %>
+                    <% name  = field["name"] %>
+                    <% label = I18n.locale == :et ? field["label_et"] : field["label_en"] %>
+                    <% val   = (@test_attempt.practical_task_results.find_by(practical_task: @current_task)&.inputs || {})[name] %>
+                    <div class="form--row">
+                      <label class="form--label"><%= label %></label>
+                      <div class="form--field">
+                        <input type="text"
+                              class="input"
+                              name="inputs[<%= name %>]"
+                              value="<%= val %>"
+                              <%= "required" if field["required"] %>
+                              <%= "pattern=#{field['pattern']}" if field["pattern"].present? %> 
+                              <%= "disabled" if @test_attempt.completed? %> />
+                        <% if help = field["help_#{I18n.locale}"] %>
+                          <small class="text-muted"><%= help %></small>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+              <!-- Action Buttons -->
+              <div class="question-actions">
+                <% if @test_attempt.in_progress? %>
+                  <div class="primary-actions">
+                    <%= f.submit t(:validate), class: "button button--primary" %>
+                  </div>
+                <% end %>
+
+                <div class="navigation-actions">
+                    <% if @current_task_index > 0 %>
+                      <%= link_to '<i class="fas fa-arrow-left"></i>'.html_safe,
+                                  question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_task_index - 1),
+                                  class: 'button button--default' %>
+                    <% end %>
+                    
+                    <% if @current_task_index < @tasks.count - 1 %>
+                      <% can_go_next = defined?(@max_allowed_index) && (@current_task_index + 1) <= @max_allowed_index %>
+                      <% if can_go_next %>
+                        <%= link_to '<i class="fas fa-arrow-right"></i>'.html_safe,
+                                    question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_task_index + 1),
+                                    class: 'button button--default' %>
+                      <% else %>
+                        <span class="button button--default disabled"><i class="fas fa-arrow-right"></i></span>
+                      <% end %>
+                    <% end %>
+                  </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @test_attempt.in_progress? %>
+    <!-- Finish Test Button -->
+    <div class="wrapper">
+      <div class="page--header">
+        <div class="row center-xs">
+          <div class="col-xs-auto">
+            <% if @test_attempt.all_tasks_completed? %>
+              <%= link_to t('tests.finish_test'),
+                          results_practical_test_path(@test, attempt: @test_attempt.access_code),
+                          class: 'button button--danger',
+                          data: { turbo: true, turbo_method: :get, turbo_confirm: t('tests.confirm_finish') } %>
+            <% else %>
+              <span class="button button--danger disabled"><%= t('tests.finish_test') %></span>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -17,12 +17,18 @@ class Users::SessionsController < Devise::SessionsController
 
     user = User.find_by(username: username)
 
-    if user&.valid_password?(password) && user&.admin?
+    if user&.valid_password?(password) && user.admin?
       sign_in(user)
       redirect_after_sign_in(user)
     else
       api_authenticate_user(username, password)
     end
+  end
+
+  # DELETE /resource/sign_out
+  def destroy
+    session[:auth_token] = nil
+    super
   end
 
   # protected
@@ -35,8 +41,8 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def api_authenticate_user(username, password)
-    auth_service = AuthenticationService.new
-    response = auth_service.authenticate_user(username, password)
+    auth_service = AuthenticationService.new(username: username, password: password)
+    response = auth_service.authenticate_user
 
     unless response[:success]
       flash.now[:alert] = response[:message]
@@ -47,12 +53,14 @@ class Users::SessionsController < Devise::SessionsController
     user = User.find_or_initialize_by(username: response[:username])
     if user.new_record?
       user.email = response[:registrar_email]
+      user.registrar_name = response[:registrar_name]
       user.role = 'user'
       user.password = password
       user.save!
     end
 
     sign_in(user)
+    session[:auth_token] = ApiTokenService.new(username: username, password: password).generate
     redirect_after_sign_in(user)
   end
 

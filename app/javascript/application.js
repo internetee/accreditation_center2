@@ -48,4 +48,8 @@ document.addEventListener("turbo:render", function() {
   new App()
 })
 
+document.addEventListener("turbo:frame-render", function() {
+  new App()
+})
+
 new App()

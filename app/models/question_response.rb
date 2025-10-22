@@ -6,6 +6,8 @@ class QuestionResponse < ApplicationRecord
 
   default_scope { order(created_at: :asc) }
 
+  scope :answered, -> { where.not(marked_for_later: true) }
+
   def selected_answers
     Answer.where(id: selected_answer_ids)
   end
@@ -44,5 +46,33 @@ class QuestionResponse < ApplicationRecord
     else
       'unanswered'
     end
+  end
+
+  # Practical question methods
+  def practical_response
+    practical_response_data&.dig('response') || {}
+  end
+
+  def practical_valid?
+    practical_response_data&.dig('valid') || false
+  end
+
+  def practical_score
+    practical_response_data&.dig('score') || 0
+  end
+
+  def practical_validation_details
+    practical_response_data&.dig('validation_details') || []
+  end
+
+  def practical_answered?
+    practical_response.present?
+  end
+
+  def practical_correct?
+    return false if marked_for_later?
+    return false unless practical_answered?
+    
+    practical_valid?
   end
 end

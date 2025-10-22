@@ -9,7 +9,8 @@ class Admin::TestsController < Admin::BaseController
 
   def show
     @test_categories = @test.active_ordered_test_categories_with_join_id
-    @recent_attempts = @test.test_attempts.recent.includes(:user).limit(10)
+    @practical_tasks = @test.practical_tasks.ordered
+    # @recent_attempts = @test.test_attempts.recent.includes(:user).limit(10)
   end
 
   def new
@@ -97,7 +98,7 @@ class Admin::TestsController < Admin::BaseController
     params.require(:test).permit(
       :title_et, :title_en, :description_et, :description_en,
       :time_limit_minutes, :questions_per_category, :passing_score_percentage,
-      :display_order, :active, test_category_ids: []
+      :display_order, :active, :test_type, test_category_ids: []
     )
   end
 end

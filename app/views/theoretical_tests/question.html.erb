@@ -1,17 +1,9 @@
-<% content_for(:title) { "EIS | #{t('.title', test: @test.title)}" } %>
+<% content_for(:title) { "EIS | #{t('tests.question.title', test: @test.title)}" } %>
 <% content_for :hero do %>
   <div class="layout--hero">
-    <h1><%= t('.title', test: @test.title) %></h1>
+    <h1><%= t('tests.question.title', test: @test.title) %></h1>
     <% if @test_attempt.in_progress? %>
-      <!-- Time Remaining Display -->
-      <div class="time-display">
-        <div class="time-remaining" data-time-remaining="<%= @test_attempt.time_remaining %>">
-          <i class="fas fa-clock"></i>
-          <span class="time-text">
-            <%= t('tests.time_remaining', minutes: (@test_attempt.time_remaining / 60).floor, seconds: @test_attempt.time_remaining % 60) %>
-          </span>
-        </div>
-      </div>
+      <%= render 'common/timer', test_attempt: @test_attempt %>
     <% end %>
   </div>
 <% end %>
@@ -26,10 +18,10 @@
           <% status_class += ' current' if index == @current_question_index %>
           <div class="col-xs-auto" style="padding-right: 5px; padding-left: 5px; margin-bottom: 10px;">
             <% disabled_forward = defined?(@max_allowed_index) && index > @max_allowed_index %>
-            <% if disabled_forward %>
+            <% if disabled_forward && @test_attempt.in_progress? %>
               <span class="question-nav-circle <%= status_class %> disabled"><%= index + 1 %></span>
             <% else %>
-              <%= link_to question_test_path(@test, attempt: @test_attempt.access_code, question_index: index),
+              <%= link_to question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: index),
                           class: "question-nav-circle #{status_class}" do %>
                 <%= index + 1 %>
               <% end %>
@@ -48,14 +40,14 @@
             <!-- Question Header -->
             <div class="question-header">
               <div class="question-context">
-                <%= @current_question.test_category&.name || @test.title %>. Küsimus <%= @current_question_index + 1 %>.
+                <%= t('tests.question.question_number', number: @current_question_index + 1) %>
               </div>
               <h2 class="question-text"><%= @current_question.text %></h2>
             </div>
 
             <!-- Answer Options -->
             <div class="answer-options">
-              <%= form_with url: answer_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index),
+              <%= form_with url: answer_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index),
                         method: :post, local: true, class: 'form' do |form| %>
                   
                 <% if @current_question.multiple_choice? %>
@@ -103,22 +95,6 @@
                       </div>
                     </div>
                   <% end %>
-                <% elsif @current_question.practical? %>
-                  <div class="practical-task">
-                    <% task_service = PracticalTestService.new(@current_question, @test_attempt) %>
-                    <% task = task_service.generate_task %>
-                    
-                    <div class="task-instructions">
-                      <h3><%= task[:instructions][I18n.locale] %></h3>
-                      <p><%= t('tests.practical_task_instructions') %></p>
-                    </div>
-                    
-                    <div class="task-response">
-                      <%= form.text_area :practical_response, 
-                                        placeholder: t('tests.practical_response_placeholder'),
-                                        class: 'practical-response-textarea' %>
-                    </div>
-                  </div>
                 <% end %>
 
                 <!-- Action Buttons -->
@@ -135,7 +111,7 @@
                   <div class="navigation-actions">
                     <% if @current_question_index > 0 %>
                       <%= link_to '<i class="fas fa-arrow-left"></i>'.html_safe,
-                                  question_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index - 1),
+                                  question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index - 1),
                                   class: 'button button--default' %>
                     <% end %>
                     
@@ -143,7 +119,7 @@
                       <% can_go_next = defined?(@max_allowed_index) && (@current_question_index + 1) <= @max_allowed_index %>
                       <% if can_go_next %>
                         <%= link_to '<i class="fas fa-arrow-right"></i>'.html_safe,
-                                    question_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index + 1),
+                                    question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_question_index + 1),
                                     class: 'button button--default' %>
                       <% else %>
                         <span class="button button--default disabled"><i class="fas fa-arrow-right"></i></span>
@@ -179,25 +155,3 @@
   <% end %>
 </div>
 
-<script>
-  // Auto-refresh time remaining every second
-  setInterval(function() {
-    const timeElement = document.querySelector('.time-remaining');
-    if (!timeElement) return;
-    const timeRemaining = parseInt(timeElement.dataset.timeRemaining) - 1;
-    
-    if (timeRemaining <= 0) {
-      window.location.href = '<%= results_test_path(@test, attempt: @test_attempt.access_code) %>';
-    } else {
-      timeElement.dataset.timeRemaining = timeRemaining;
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      timeElement.querySelector('.time-text').textContent = 
-        '<%= t("tests.time_remaining") %>'.replace('%{minutes}', minutes).replace('%{seconds}', seconds);
-      // Show warning when 5 minutes remaining
-      if (timeRemaining <= 300 && timeRemaining > 0) {
-        timeElement.classList.add('warning');
-      }
-    }
-  }, 1000);
-</script> 

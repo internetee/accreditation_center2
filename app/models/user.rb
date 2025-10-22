@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :registrar_name, length: { maximum: 255 }, presence: true
 
   enum :role, { user: 0, admin: 1 }
 
@@ -18,7 +19,7 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[username email]
+    %w[username email registrar_name]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -59,11 +60,20 @@ class User < ApplicationRecord
   end
 
   def latest_accreditation
-    passed_tests.order(:created_at).last
+    # Get the last passed theoretical and practical tests
+    tests = passed_tests.includes(:test).order(:created_at)
+    last_theoretical = tests.where(test: { test_type: :theoretical }).last
+    last_practical = tests.where(test: { test_type: :practical }).last
+
+    # Only return accreditation if both tests are passed
+    return nil if last_theoretical.nil? || last_practical.nil?
+
+    # Return the later of the two (last one completed)
+    last_theoretical.created_at > last_practical.created_at ? last_theoretical : last_practical
   end
 
   def accreditation_expiry_date
-    latest_accreditation&.created_at&.+ 1.year
+    latest_accreditation&.created_at&.+ ENV.fetch('ACCR_EXPIRY_YEARS', 2).years
   end
 
   def accreditation_expired?

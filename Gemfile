@@ -90,6 +90,9 @@ gem 'positioning'
 
 gem 'friendly_id', '~> 5.4.0'
 
-# Security updates
-gem 'nokogiri', '>= 1.18.9'
-gem 'thor', '>= 1.4.0'
+gem 'mustache', '~> 1.0'
+
+gem 'simpleidn'
+
+gem 'faker'
+

@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "practical_task_form" do %>
+  <%= render 'form', 
+             url: admin_test_practical_task_path(@test, @practical_task), 
+             method: :patch %>
+<% end %> 

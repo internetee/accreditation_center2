@@ -9,7 +9,6 @@ class CreateQuestions < ActiveRecord::Migration[8.0]
       t.string :question_type, null: false, default: 'multiple_choice'
       t.integer :display_order, null: false
       t.boolean :active, default: true
-      t.jsonb :practical_task_data
 
       t.timestamps
     end
@@ -17,6 +16,5 @@ class CreateQuestions < ActiveRecord::Migration[8.0]
     add_index :questions, :question_type
     add_index :questions, [:test_category_id, :display_order], unique: true
     add_index :questions, :active
-    add_index :questions, :practical_task_data, using: :gin
   end
 end

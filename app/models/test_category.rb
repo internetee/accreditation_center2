@@ -8,6 +8,7 @@ class TestCategory < ApplicationRecord
   # validates :domain_rule_reference, presence: true
   validates :active, inclusion: { in: [true, false] }
   validates :domain_rule_url, format: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true
+
   scope :active, -> { where(active: true) }
 
   translates :name, :description
@@ -18,5 +19,11 @@ class TestCategory < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %w[questions tests]
+  end
+
+  def name_with_rule
+    name_str = name.to_s
+    name_str += " - #{domain_rule_reference}" if domain_rule_reference.present?
+    name_str
   end
 end
