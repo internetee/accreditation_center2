@@ -12,7 +12,7 @@ class ApiConnector
   self.timeout = 10
   self.max_retries = 3
   self.retry_delay = 1
-  self.logging = Rails.env.development?
+  self.logging = ENV['RAILS_LOG_LEVEL'] == 'debug'
 
   def initialize(username: nil, password: nil, token: nil, ssl: {})
     @auth_token = token || ApiTokenService.new(username: username, password: password).generate
@@ -83,7 +83,11 @@ class ApiConnector
 
       # Configure logging if enabled
       if self.class.logging
-        faraday.response :logger, Rails.logger, { headers: false, bodies: false }
+        faraday.response :logger, Rails.logger, {
+          headers: false,
+          bodies: true,
+          log_level: :debug
+        }
       end
 
       # SSL configuration (optional; services not needing SSL can skip)
