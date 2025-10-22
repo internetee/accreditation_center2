@@ -1,0 +1,25 @@
+# Add configuration values here, as shown below.
+
+# Here we will use TEST environment registry base url
+# because all operation with domains and contacts should be in test registry environment
+BASE_URL: "http://registry:3000"
+
+REPP_BASE_URL: "http://registry:3000"
+REPP_CREATE_DOMAIN: "/repp/v1/domains"
+
+AUTH_API_URL: "/api/v1/accreditation_center/auth"
+GET_CONTACT: "/api/v1/accreditation_center/contacts"
+GET_DOMAIN_INFO: "/api/v1/accreditation_center/domains"
+GET_INVOICES: "/api/v1/accreditation_center/invoice_status"
+
+#ACCR_BOT DATA
+ACCR_BOT_USERNAME: ""
+ACCR_BOT_PASSWORD: ""
+ACCR_BOT_CONTACT_CODE: ""
+ACCR_BOT_REGISTRAR_NAME: "ACCREDITATION EIS"
+
+CLIENT_BOT_CERTS_PATH: '/opt/ca/certs/accr_bot.crt.pem'
+CLIENT_BOT_KEY_PATH:  '/opt/ca/private/accr_bot.key.pem'
+CLIENT_BOT_PASSWORD: ''
+
+ACCR_EXPIRY_YEARS: 2
