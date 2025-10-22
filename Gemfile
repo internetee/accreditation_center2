@@ -96,3 +96,4 @@ gem 'simpleidn'
 
 gem 'faker'
 
+gem 'nokogiri', '= 1.16.8'
