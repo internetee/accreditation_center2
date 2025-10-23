@@ -66,6 +66,7 @@ jobs:
 
       - name: Upload coverage to Qlty
         env:
+          QLTY_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
         run: |
           if [ -d "coverage" ]; then
