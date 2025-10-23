@@ -38,12 +38,14 @@ jobs:
 
       - name: Check if PR should be auto-merged
         id: check_auto_merge
+        env:
+          UPDATE_TYPE: ${{ steps.metadata.outputs['update-type'] }}
+          ACTOR: ${{ github.actor }}
+          LABELS: ${{ toJson(github.event.pull_request.labels) }}
         run: |
-          # Set default UPDATE_TYPE to avoid unbound variable errors
-          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
           UPDATE_TYPE="${UPDATE_TYPE:-unknown}"
 
-          if [ "${{ github.actor }}" == "dependabot[bot]" ]; then
+          if [ "$ACTOR" == "dependabot[bot]" ]; then
             if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
               echo "Auto-merge: Dependabot patch update detected"
@@ -52,9 +54,9 @@ jobs:
               echo "update_type=${UPDATE_TYPE}" >> $GITHUB_OUTPUT
               echo "Auto-merge: Dependabot non-patch update, skipping"
             fi
-          elif [ "${{ github.actor }}" == "renovate[bot]" ]; then
+          elif [ "$ACTOR" == "renovate[bot]" ]; then
             # Extract label names from the labels array
-            LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name' | tr '\n' ' ')
+            LABEL_NAMES=$(echo "$LABELS" | jq -r '.[].name' | tr '\n' ' ')
             if [[ "$LABEL_NAMES" == *"patch"* ]] || [[ "$LABEL_NAMES" == *"bundler"* ]] || [[ "$LABEL_NAMES" == *"ruby-version"* ]] || [[ "$LABEL_NAMES" == *"github-actions"* ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
               echo "Auto-merge: Renovate patch update detected (label-based): $LABEL_NAMES"
@@ -124,4 +126,3 @@ jobs:
               echo "Failed to send Mattermost notification" >&2
               exit 1
             }
-
