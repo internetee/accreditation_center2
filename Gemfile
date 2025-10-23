@@ -95,5 +95,3 @@ gem 'mustache', '~> 1.0'
 gem 'simpleidn'
 
 gem 'faker'
-
-gem 'nokogiri', '= 1.16.8'
