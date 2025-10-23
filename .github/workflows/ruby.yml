@@ -1,6 +1,6 @@
 name: Github Testing
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload Capybara screenshots
         if: failure() && hashFiles('tmp/capybara/**') != ''
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v4
         with:
           name: capybara-screenshots
           path: tmp/capybara
@@ -117,3 +117,11 @@ jobs:
           bundle exec bundler-audit --update
           bin/brakeman --no-pager
         continue-on-error: true
+      - name: Upload security scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: |
+            brakeman-report.json
+            brakeman-report.html
