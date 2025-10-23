@@ -79,7 +79,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
           timeout-minutes: 30
-          check-regexp: 'Github Testing'
+          check-regexp: 'test'
 
       - name: Auto-merge PR
         if: steps.check_auto_merge.outputs.auto_merge == 'true'
@@ -126,3 +126,4 @@ jobs:
               echo "Failed to send Mattermost notification" >&2
               exit 1
             }
+
