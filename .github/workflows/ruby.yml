@@ -115,7 +115,8 @@ jobs:
           cp config/application.yml.sample config/application.yml
           bin/importmap audit
           bundle exec bundler-audit --update
-          bin/brakeman --no-pager
+          bin/brakeman --no-pager --format json --output brakeman-report.json
+          bin/brakeman --no-pager --format html --output brakeman-report.html
         continue-on-error: true
       - name: Upload security scan results
         if: always()
