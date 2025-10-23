@@ -40,7 +40,8 @@ jobs:
         id: check_auto_merge
         run: |
           # Set default UPDATE_TYPE to avoid unbound variable errors
-          UPDATE_TYPE="${{ steps.metadata.outputs.update-type || 'unknown' }}"
+          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
+          UPDATE_TYPE="${UPDATE_TYPE:-unknown}"
 
           if [ "${{ github.actor }}" == "dependabot[bot]" ]; then
             if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
@@ -123,3 +124,4 @@ jobs:
               echo "Failed to send Mattermost notification" >&2
               exit 1
             }
+
