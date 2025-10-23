@@ -20,6 +20,5 @@ ACCR_BOT_REGISTRAR_NAME: "ACCREDITATION EIS"
 
 CLIENT_BOT_CERTS_PATH: '/opt/ca/certs/accr_bot.crt.pem'
 CLIENT_BOT_KEY_PATH:  '/opt/ca/private/accr_bot.key.pem'
-CLIENT_BOT_PASSWORD: ''
 
 ACCR_EXPIRY_YEARS: 2

@@ -99,6 +99,9 @@ en:
     tests:
       updated: "Test updated"
       created: "Test created"
+      duplicated: "Test duplicated successfully"
+      duplication_failed: "Failed to duplicate test"
+      destroyed: "Test destroyed"
       new:
         title: "New Test" 
       index:  
@@ -180,6 +183,7 @@ en:
         task_body: "Body"
         practical_task_dialog_title: "Practical Task Form"
         task_status: "Status"
+        confirm_duplicate: "Are you sure you want to duplicate this test?"
       form:
         info: "Basic Information"
         title_et: "Title (Estonian)"

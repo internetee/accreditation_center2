@@ -3,16 +3,8 @@
 # Base class for API services with HTTP client and error handling
 require 'openssl'
 class ApiConnector
-  # Class-level configuration
-  class << self
-    attr_accessor :timeout, :max_retries, :retry_delay, :logging
-  end
-
   # Default configuration
-  self.timeout = 10
-  self.max_retries = 3
-  self.retry_delay = 1
-  self.logging = ENV['RAILS_LOG_LEVEL'] == 'debug'
+  TIMEOUT = 10
 
   def initialize(username: nil, password: nil, token: nil, ssl: {})
     @auth_token = token || ApiTokenService.new(username: username, password: password).generate
@@ -56,7 +48,7 @@ class ApiConnector
     when 401
       error_response('Invalid credentials')
     when 403
-      error_response('Access denied')
+      error_response(response.body['errors'] || 'Access denied')
     when 404
       error_response(response.body['errors'] || 'Service not found')
     when 422
@@ -78,14 +70,15 @@ class ApiConnector
       faraday.adapter Faraday.default_adapter
 
       # Configure timeout
-      faraday.options.timeout = self.class.timeout
-      faraday.options.open_timeout = self.class.timeout
+      faraday.options.timeout = TIMEOUT
+      faraday.options.open_timeout = TIMEOUT
 
       # Configure logging if enabled
-      if self.class.logging
-        faraday.response :logger, Rails.logger, {
+      if ENV['RAILS_LOG_LEVEL'] == 'debug'
+        faraday.response :logger, nil, {
           headers: false,
           bodies: true,
+          errors: true,
           log_level: :debug
         }
       end
@@ -112,17 +105,17 @@ class ApiConnector
   end
 
   def handle_timeout_error(error)
-    Rails.logger.error "API Connector timeout: #{error.message}" if self.class.logging
+    Rails.logger.error "API Connector timeout: #{error.message}"
     error_response('Service timeout')
   end
 
   def handle_connection_error(error)
-    Rails.logger.error "API Connector connection failed: #{error.message}" if self.class.logging
+    Rails.logger.error "API Connector connection failed: #{error.message}"
     error_response('Cannot connect to service')
   end
 
   def handle_faraday_error(error)
-    Rails.logger.error "API Connector Faraday error: #{error.message}" if self.class.logging
+    Rails.logger.error "API Connector Faraday error: #{error.message}"
     error_response('Network error')
   end
 

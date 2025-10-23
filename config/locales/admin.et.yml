@@ -99,6 +99,9 @@ et:
     tests:
       updated: "Test muudetud"
       created: "Test loodud"
+      duplicated: "Test dubleeritud edukalt"
+      duplication_failed: "Testi dubleerimine ebaõnnestus"
+      destroyed: "Test kustutatud"
       new:  
         title: "Uus Test"
       index:
@@ -182,6 +185,7 @@ et:
         task_body: "Kirjeldus"
         practical_task_dialog_title: "Praktilise ülesande vorm"
         task_status: "Olek"
+        confirm_duplicate: "Kas oled kindel, et soovid selle testi dubleerida?"
       form:
         info: "Põhiteave"
         title_et: "Pealkiri (eesti)"

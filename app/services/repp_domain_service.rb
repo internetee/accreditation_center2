@@ -16,7 +16,7 @@ class ReppDomainService < ApiConnector
   # }
   def create_domain(params)
     body = { domain: params }.to_json
-    result = make_request(:post, @api_url_create, { headers: @headers.merge('Content-Type' => 'application/json'), body: body })
+    result = make_request(:post, @api_url_create, { headers: @headers, body: body })
 
     return result unless result[:success]
 

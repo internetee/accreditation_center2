@@ -21,6 +21,7 @@ et:
   view: "Vaata"
   ago: "tagasi"
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
+  no_translation: "Tõlge pole saadaval"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"

@@ -21,6 +21,7 @@ en:
   view: "View"
   ago: "ago"
   access_denied_admin: "Admin users cannot access user pages"
+  no_translation: "Sorry, no translation available for this language"
   nav:
     dashboard: "Dashboard"
     tests: "Tests"

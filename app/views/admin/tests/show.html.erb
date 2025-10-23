@@ -11,7 +11,7 @@
     <div class="wrapper">
       <div class="row center-xs">
         <div class="col-xs-auto">
-          <%= link_to t(:edit), edit_admin_test_path(@test), class: 'button button--secondary' %>
+          <%= link_to t(:edit), edit_admin_test_path(@test), class: 'button button--primary' %>
         </div>
         <div class="col-xs-auto">
           <% if @test.active? %>
@@ -21,16 +21,16 @@
           <% else %>
             <%= link_to t(:activate), activate_admin_test_path(@test),
                         data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_activate') },
-                        class: 'button button--success' %>
+                        class: 'button button--secondary' %>
           <% end %>
         </div>
         <div class="col-xs-auto">
           <%= link_to t(:duplicate), duplicate_admin_test_path(@test),
-                      class: 'button button--secondary',
+                      class: 'button button--primary',
                       data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_duplicate') } %>
         </div>
         <div class="col-xs-auto">
-          <%= link_to t(:assign), new_admin_test_test_attempt_path(@test), class: 'button button--secondary' %>
+          <%= link_to t(:assign), new_admin_test_test_attempt_path(@test), class: 'button button--primary' %>
         </div>
         <div class="col-xs-auto">
           <%= link_to t(:delete), admin_test_path(@test),
