@@ -15,6 +15,10 @@ Rails.application.configure do
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
@@ -34,7 +38,7 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id, :remote_ip ]
+  config.log_tags = [:request_id, :remote_ip]
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = JsonLogFormatter.new
 
@@ -49,7 +53,7 @@ Rails.application.configure do
   config.colorize_logging = false
 
   # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
+  config.silence_healthcheck_path = "/health"
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
@@ -66,16 +70,24 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  # config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = {
+    host: config.customization.dig(:mailer, :host)
+  }
+
+  routes.default_url_options[:host] = config.customization.dig(:mailer, :host)
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  config.action_mailer.smtp_settings = {
+    user_name: config.customization.dig(:mailer, :user_name),
+    password: config.customization.dig(:mailer, :password),
+    address: config.customization.dig(:mailer, :address),
+    port: config.customization.dig(:mailer, :port),
+    authentication: config.customization.dig(:mailer, :authentication),
+    enable_starttls_auto: config.customization.dig(:mailer, :enable_starttls_auto),
+    domain: config.customization.dig(:mailer, :domain),
+    openssl_verify_mode: config.customization.dig(:mailer, :openssl_verify_mode)
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -85,7 +97,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
+  config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

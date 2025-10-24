@@ -37,11 +37,14 @@ module AccreditationCenter
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Application configuration can be added here if needed
-    # config.customization = config_for(:application)
+    config.customization = config_for(:application)
 
     config.i18n.available_locales = %i[en et]
-    config.i18n.default_locale = :en
+    config.i18n.default_locale = config.customization['locale'] || 'en'
     config.i18n.fallbacks = true
+
+    # efault to UTC if not set
+    config.time_zone = config.customization['time_zone'] || 'UTC'
 
     # Don't generate system test files.
     config.generators.system_tests = nil
