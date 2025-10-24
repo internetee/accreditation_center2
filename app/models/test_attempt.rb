@@ -123,13 +123,7 @@ class TestAttempt < ApplicationRecord
 
   # Returns true when every question in this attempt has a selected answer
   def all_questions_answered?
-    question_responses.all? do |response|
-      if response.question.practical?
-        response.practical_answered?
-      else
-        response.answered?
-      end
-    end
+    question_responses.all?(&:answered?)
   end
 
   def all_tasks_completed?
