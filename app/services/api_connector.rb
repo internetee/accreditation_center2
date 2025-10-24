@@ -17,6 +17,8 @@ class ApiConnector
   def make_request(method, url, options = {})
     return error_response('API endpoint not configured') unless url
 
+    Rails.logger.debug("Making #{method} request to #{url} with options: #{options}")
+
     begin
       response = @connection.send(method) do |req|
         req.url url
@@ -38,6 +40,8 @@ class ApiConnector
       handle_faraday_error(e)
     rescue StandardError => e
       handle_generic_error(e)
+    ensure
+      Rails.logger.debug("Response: #{response.inspect}")
     end
   end
 
