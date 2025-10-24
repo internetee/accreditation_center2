@@ -122,6 +122,10 @@ et:
     results:
       page_title: "Testi tulemused - %{test}"
       title: "Testi tulemused"
+  mailers:
+    accreditation:
+      test_completion:
+        subject: "Test on lõpetatud - %{test}"
   validators:
     create_contacts_validator:
       organization_contact_not_found: "Organisatsiooni kontakt ei leitud"

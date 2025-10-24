@@ -36,7 +36,7 @@ class AccreditationMailer < ApplicationMailer
 
     mail(
       to: Rails.application.credentials.coordinator_email,
-      subject: t('mailers.accreditation.coordinator_notification.subject')
+      subject: t('mailers.accreditation.coordinator_notification.subject', count: expiring_users.count)
     )
   end
 end

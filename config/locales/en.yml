@@ -120,6 +120,16 @@ en:
     results:
       page_title: "Test results - %{test}"
       title: "Test results"
+  mailers:
+    accreditation:
+      test_completion:
+        subject: "Test Completed - %{test}"
+      expiry_warning:
+        subject: "Accreditation Expires in %{days} Days"
+      expiry_notification:
+        subject: "Accreditation Expired - Action Required"
+      coordinator_notification:
+        subject: "Accreditation Expiry Alert - %{count} Users"
   validators:
     create_contacts_validator:
       organization_contact_not_found: "Organization contact not found"

@@ -1,0 +1,39 @@
+<div class="header">
+  <h1>📋 Accreditation Expiry Alert</h1>
+</div>
+
+<div class="content">
+  <p>Dear Coordinator,</p>
+  
+  <div class="alert alert-info">
+    <strong>Alert: <%= @expiring_users.count %> user(s) have expiring accreditations</strong>
+  </div>
+  
+  <p>The following users have accreditations that are expiring soon and may need attention:</p>
+  
+  <div class="user-list">
+    <% @expiring_users.each do |user| %>
+      <div class="user-item">
+        <strong><%= user.username %></strong> (<%= user.email %>)
+        <br>Registrar: <%= user.registrar_name %>
+        <br>Expiry Date: <%= user.accreditation_expiry_date&.strftime('%B %d, %Y') %>
+        <br>Days Until Expiry: <%= user.days_until_accreditation_expiry %>
+      </div>
+    <% end %>
+  </div>
+  
+  <p><strong>Recommended Actions:</strong></p>
+  <ul>
+    <li>Review the list of users with expiring accreditations</li>
+    <li>Contact users who haven't started their renewal process</li>
+    <li>Monitor test completion rates</li>
+    <li>Follow up on any issues or concerns</li>
+  </ul>
+  
+  <p>You can access the admin dashboard to view detailed information about these users and their test attempts.</p>
+</div>
+
+<div class="footer">
+  <p>This is an automated alert from the Accreditation Center system.</p>
+  <p>Generated on <%= Time.current.strftime('%B %d, %Y at %I:%M %p') %></p>
+</div>

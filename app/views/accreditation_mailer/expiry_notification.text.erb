@@ -1,0 +1,22 @@
+Accreditation Expired
+
+Dear <%= @user.username %>,
+
+🚨 YOUR ACCREDITATION HAS EXPIRED!
+Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+
+Your registrar accreditation expired on <%= @expiry_date.strftime('%B %d, %Y') %>. You are no longer authorized to perform registrar operations.
+
+IMMEDIATE ACTION REQUIRED:
+- You must stop all registrar operations immediately
+- Log into the Accreditation Center to renew your accreditation
+- Complete both theoretical and practical tests
+- Pass both tests to regain your accreditation status
+
+IMPORTANT: You cannot perform registrar operations until you have successfully renewed your accreditation.
+
+Renew your accreditation at: <%= root_url %>
+
+---
+This is an automated notification from the Accreditation Center system.
+If you have any questions, please contact the system administrator immediately.

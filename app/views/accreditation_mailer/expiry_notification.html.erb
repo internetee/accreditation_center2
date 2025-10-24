@@ -1,0 +1,33 @@
+<div class="header">
+  <h1>🚨 Accreditation Expired</h1>
+</div>
+
+<div class="content">
+  <p>Dear <%= @user.username %>,</p>
+  
+  <div class="alert alert-danger">
+    <strong>Your accreditation has expired!</strong>
+    <br>Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+  </div>
+  
+  <p>Your registrar accreditation expired on <strong><%= @expiry_date.strftime('%B %d, %Y') %></strong>. You are no longer authorized to perform registrar operations.</p>
+  
+  <p><strong>Immediate Action Required:</strong></p>
+  <ul>
+    <li>You must stop all registrar operations immediately</li>
+    <li>Log into the Accreditation Center to renew your accreditation</li>
+    <li>Complete both theoretical and practical tests</li>
+    <li>Pass both tests to regain your accreditation status</li>
+  </ul>
+  
+  <p><strong>Important:</strong> You cannot perform registrar operations until you have successfully renewed your accreditation.</p>
+  
+  <div class="text-center">
+    <a href="<%= root_url %>" class="cta-button">Renew Accreditation Now</a>
+  </div>
+</div>
+
+<div class="footer">
+  <p>This is an automated notification from the Accreditation Center system.</p>
+  <p>If you have any questions, please contact the system administrator immediately.</p>
+</div>

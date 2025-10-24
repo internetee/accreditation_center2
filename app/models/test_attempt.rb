@@ -43,6 +43,9 @@ class TestAttempt < ApplicationRecord
   def complete!
     self.completed_at = Time.zone.now
     save!
+
+    # Send completion email notification
+    AccreditationMailer.test_completion(user, self).deliver_now
   end
 
   def completed?

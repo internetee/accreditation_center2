@@ -1,0 +1,35 @@
+<div class="header">
+  <h1>⚠️ Accreditation Expiry Warning</h1>
+</div>
+
+<div class="content">
+  <p>Dear <%= @user.username %>,</p>
+  
+  <div class="alert alert-warning">
+    <strong>Your accreditation will expire in <%= @days_before %> days!</strong>
+    <br>Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+  </div>
+  
+  <p>This is a friendly reminder that your registrar accreditation will expire on <strong><%= @expiry_date.strftime('%B %d, %Y') %></strong>.</p>
+  
+  <p>To maintain your accreditation status, you will need to retake and pass both the theoretical and practical tests before the expiry date.</p>
+  
+  <p><strong>What you need to do:</strong></p>
+  <ul>
+    <li>Log into the Accreditation Center</li>
+    <li>Complete the theoretical test</li>
+    <li>Complete the practical test</li>
+    <li>Pass both tests to renew your accreditation</li>
+  </ul>
+  
+  <p>Don't wait until the last minute - start your renewal process today!</p>
+  
+  <div class="text-center">
+    <a href="<%= root_url %>" class="cta-button">Access Accreditation Center</a>
+  </div>
+</div>
+
+<div class="footer">
+  <p>This is an automated reminder from the Accreditation Center system.</p>
+  <p>If you have any questions, please contact the system administrator.</p>
+</div>
