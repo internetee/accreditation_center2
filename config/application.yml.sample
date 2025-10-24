@@ -7,17 +7,17 @@ locale: "en"
 # Address from which the emails come from
 email_from_address: "noreply@internet.ee"
 
-mailer:
-  host: 'https://localhost:9001'
-  address: 'mailcatcher'
-  port: '1025'
-  enable_starttls_auto: false
-  user_name: ''
-  password: ''
-  # 'plain', 'login', 'cram_md5'
-  authentication: 'plain'
-  domain: ''
-  openssl_verify_mode: 'none'
+# Mailer configuration
+mailer_host: 'https://localhost:9001'
+mailer_address: 'mailcatcher'
+mailer_port: '1025'
+mailer_enable_starttls_auto: false
+mailer_user_name: ''
+mailer_password: ''
+# 'plain', 'login', 'cram_md5'
+mailer_authentication: 'plain'
+mailer_domain: ''
+mailer_openssl_verify_mode: 'none'
 
 # Here we will use TEST environment registry base url
 # because all operation with domains and contacts should be in test registry environment
