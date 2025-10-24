@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: Rails.application.config.customization['email_from_address']
+  default from: ENV.fetch('email_from_address', 'noreply@internet.ee')
   layout 'mailer'
 end
