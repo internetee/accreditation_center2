@@ -73,21 +73,21 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   # config.action_mailer.default_url_options = { host: "example.com" }
   config.action_mailer.default_url_options = {
-    host: config.customization.dig(:mailer, :host)
+    host: ENV.fetch('mailer_host', nil)
   }
 
-  routes.default_url_options[:host] = config.customization.dig(:mailer, :host)
+  routes.default_url_options[:host] = ENV.fetch('mailer_host', nil)
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   config.action_mailer.smtp_settings = {
-    user_name: config.customization.dig(:mailer, :user_name),
-    password: config.customization.dig(:mailer, :password),
-    address: config.customization.dig(:mailer, :address),
-    port: config.customization.dig(:mailer, :port),
-    authentication: config.customization.dig(:mailer, :authentication),
-    enable_starttls_auto: config.customization.dig(:mailer, :enable_starttls_auto),
-    domain: config.customization.dig(:mailer, :domain),
-    openssl_verify_mode: config.customization.dig(:mailer, :openssl_verify_mode)
+    user_name: ENV.fetch('mailer_user_name', nil),
+    password: ENV.fetch('mailer_password', nil),
+    address: ENV.fetch('mailer_address', nil),
+    port: ENV.fetch('mailer_port', nil),
+    authentication: ENV.fetch('mailer_authentication', nil),
+    enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', nil),
+    domain: ENV.fetch('mailer_domain', nil),
+    openssl_verify_mode: ENV.fetch('mailer_openssl_verify_mode', nil)
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
