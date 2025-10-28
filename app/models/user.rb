@@ -72,26 +72,22 @@ class User < ApplicationRecord
     last_theoretical.created_at > last_practical.created_at ? last_theoretical : last_practical
   end
 
-  def accreditation_expiry_date
-    latest_accreditation&.created_at&.+ ENV.fetch('ACCR_EXPIRY_YEARS', 2).years
-  end
-
   def accreditation_expired?
-    return true if latest_accreditation.nil?
+    return true if accreditation_expire_date.nil?
 
-    accreditation_expiry_date < Time.current
+    accreditation_expire_date < Time.current
   end
 
   def accreditation_expires_soon?(days = 30)
-    return false if latest_accreditation.nil?
+    return false if accreditation_expire_date.nil?
 
-    accreditation_expiry_date < days.days.from_now
+    accreditation_expire_date < days.days.from_now
   end
 
   def days_until_accreditation_expiry
-    return nil if latest_accreditation.nil?
+    return nil if accreditation_expire_date.nil?
 
-    (accreditation_expiry_date - Time.current).to_i / 1.day
+    (accreditation_expire_date - Time.current).to_i / 1.day
   end
 
   def can_take_test?(test)

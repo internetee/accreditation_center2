@@ -11,9 +11,9 @@ class TestAttempt < ApplicationRecord
   # before_validation :generate_access_code, on: :create
 
   scope :ordered, -> { order(created_at: :desc) }
-  scope :not_completed, -> { where(completed_at: nil) }
+  scope :not_completed, -> { where(completed_at: nil).where.not(started_at: nil) }
   scope :completed, -> { where.not(completed_at: nil).where.not(started_at: nil) }
-  scope :in_progress, -> { where(completed_at: nil) }
+  scope :in_progress, -> { where.not(started_at: nil).where(completed_at: nil) }
   scope :recent, -> { where('created_at > ?', 30.days.ago) }
   scope :passed, -> { where(passed: true) }
   scope :failed, -> { where(passed: false) }
@@ -26,15 +26,9 @@ class TestAttempt < ApplicationRecord
     %w[test user]
   end
 
-  def merge_vars!(h)
-    update!(vars: vars.merge(h.stringify_keys))
+  def merge_vars!(hash)
+    update!(vars: vars.merge(hash.stringify_keys))
   end
-
-  # def generate_access_code
-  #   return if access_code.present?
-
-  #   self.access_code = SecureRandom.hex(8)
-  # end
 
   def set_started_at
     self.started_at = Time.zone.now
@@ -46,6 +40,25 @@ class TestAttempt < ApplicationRecord
 
     # Send completion email notification
     AccreditationMailer.test_completion(user, self).deliver_now
+
+    # Sync accreditation to REPP if user is fully accredited
+    sync_accreditation_if_complete
+  end
+
+  def score_percentage
+    if test.practical?
+      return 0 if practical_task_results.empty?
+
+      correct_count = practical_task_results.count(&:correct?)
+
+      (correct_count.to_f / practical_task_results.count * 100).round(0)
+    else
+      return 0 if question_responses.empty?
+
+      correct_count = question_responses.count(&:correct?)
+
+      (correct_count.to_f / question_responses.count * 100).round(0)
+    end
   end
 
   def completed?
@@ -134,22 +147,6 @@ class TestAttempt < ApplicationRecord
     end
   end
 
-  def score_percentage
-    if test.practical?
-      return 0 if practical_task_results.empty?
-
-      correct_count = practical_task_results.count(&:correct?)
-
-      (correct_count.to_f / practical_task_results.count * 100).round(0)
-    else
-      return 0 if question_responses.empty?
-
-      correct_count = question_responses.count(&:correct?)
-
-      (correct_count.to_f / question_responses.count * 100).round(0)
-    end
-  end
-
   def passed?
     score_percentage >= test.passing_score_percentage
   end
@@ -196,5 +193,25 @@ class TestAttempt < ApplicationRecord
     where('completed_at IS NOT NULL AND completed_at < ?', 30.days.ago).find_each do |attempt|
       attempt.purge_details!
     end
+  end
+
+  private
+
+  def sync_accreditation_if_complete
+    return unless passed?
+
+    passed_tests = user.passed_tests.includes(:test)
+    # Check if user has both theoretical and practical tests passed
+    theoretical_passed = passed_tests.where(test: { test_type: :theoretical }).exists?
+    practical_passed = passed_tests.where(test: { test_type: :practical }).exists?
+
+    # Only sync if both tests are passed and this was the last one
+    return unless theoretical_passed && practical_passed
+
+    # Check if this is the most recent passed test
+    latest_passed = passed_tests.last
+
+    # This is the most recent test completion, sync to registry
+    AccreditationSyncJob.perform_later(user.id) if latest_passed == self
   end
 end

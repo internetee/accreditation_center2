@@ -54,6 +54,8 @@ class Users::SessionsController < Devise::SessionsController
     if user.new_record?
       user.email = response[:registrar_email]
       user.registrar_name = response[:registrar_name]
+      user.accreditation_date = response[:accreditation_date]
+      user.accreditation_expire_date = response[:accreditation_expire_date]
       user.role = 'user'
       user.password = password
       user.save!

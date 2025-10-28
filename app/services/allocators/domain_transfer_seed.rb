@@ -35,13 +35,10 @@ module Allocators
       count = (@cfg['count'] || 1).to_i
       count = 1 if count <= 0
 
-      bot_user = ENV['ACCR_BOT_USERNAME']
-      bot_pass = ENV['ACCR_BOT_PASSWORD']
       registrant = ENV['ACCR_BOT_CONTACT_CODE']
-      raise 'Allocator domain_transfer_seed: missing bot credentials' if bot_user.blank? || bot_pass.blank?
+      raise 'Allocator domain_transfer_seed: missing bot contact code' if registrant.blank?
 
-      ssl_opts = { verify: true, client_cert_file: ENV['CLIENT_BOT_CERTS_PATH'], client_key_file: ENV['CLIENT_BOT_KEY_PATH'] }.symbolize_keys
-      repp = ReppDomainService.new(username: bot_user, password: bot_pass, ssl: ssl_opts)
+      service = ReppDomainService.new
 
       1.upto(count) do |i|
         fqdn = "#{base}-#{@attempt.id}-#{i}-#{SecureRandom.hex(3)}.#{tld}"
@@ -55,7 +52,7 @@ module Allocators
           admin_contacts: [registrant]
         }
 
-        res = repp.create_domain(payload)
+        res = service.create_domain(payload)
         if res[:success] == false
           raise "Allocator domain_transfer_seed: create failed #{res[:errors] || res}"
         end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Client for REPP domain operations needed for seeding transfer tasks
-class ReppDomainService < ApiConnector
-  def initialize(username:, password:, ssl: {})
+class ReppDomainService < BotAuthService
+  def initialize
     @api_url_create = ENV['REPP_BASE_URL'].to_s + ENV['REPP_CREATE_DOMAIN'].to_s
-    super(username: username, password: password, ssl: ssl)
+    super()
   end
 
   # params example:
