@@ -6,7 +6,7 @@ class QuestionResponse < ApplicationRecord
 
   default_scope { order(created_at: :asc) }
 
-  scope :answered, -> { where.not(marked_for_later: true) }
+  scope :answered, -> { where.not(marked_for_later: true).where.not(selected_answer_ids: []) }
 
   def selected_answers
     Answer.where(id: selected_answer_ids)

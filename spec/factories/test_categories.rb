@@ -4,7 +4,6 @@ FactoryBot.define do
     sequence(:name_et) { |n| "Kategooria #{n}" }
     sequence(:name_en) { |n| "Category #{n}" }
     questions_per_category { 5 }
-    domain_rule_reference { '10.1' }
     domain_rule_url { 'https://google.com' }
     active { true }
   end
