@@ -72,7 +72,7 @@ class QuestionResponse < ApplicationRecord
   def practical_correct?
     return false if marked_for_later?
     return false unless practical_answered?
-    
+
     practical_valid?
   end
 end
