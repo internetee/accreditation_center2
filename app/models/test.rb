@@ -22,7 +22,7 @@ class Test < ApplicationRecord
   scope :active, -> { where(active: true) }
   default_scope { order(created_at: :desc) }
 
-  before_save :set_practical_test_passing_score
+  before_validation :set_practical_test_passing_score
 
   def active_ordered_test_categories_with_join_id
     sql = <<-SQL
@@ -85,15 +85,15 @@ class Test < ApplicationRecord
   private
 
   def practical_test_passing_score
-    if practical? && passing_score_percentage != 100
-      errors.add(:passing_score_percentage, 'must be 100% for practical tests')
-    end
+    return unless practical? && passing_score_percentage != 100
+
+    errors.add(:passing_score_percentage, 'must be 100% for practical tests')
   end
 
   def set_practical_test_passing_score
-    if practical?
-      self.passing_score_percentage = 100
-    end
+    return unless practical?
+
+    self.passing_score_percentage = 100
   end
 
   def generate_random_slug

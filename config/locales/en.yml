@@ -57,11 +57,16 @@ en:
         other: "%{count} days remaining"
       accreditation_expired: "Accreditation Expired"
       in_progress_tests: "In Progress Tests"
-      time_remaining: "Time Remaining: %{time}"
+      time_remaining: "Time Remaining"
       continue_test: "Continue Test"
       recent_history: "Recent History"
       start_test: "Start Test"
       view_results: "View Results"
+      progress: "Progress"
+      actions: "Actions"
+      test: "Test"
+      date: "Date"
+      score: "Score"
   tests:
     history_blocked_while_active: "You cannot view test history while a test is in progress."
     total_questions: "Total questions"
@@ -120,6 +125,7 @@ en:
     results:
       page_title: "Test results - %{test}"
       title: "Test results"
+      view_test: "View test"
   mailers:
     accreditation:
       test_completion:
