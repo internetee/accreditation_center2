@@ -24,20 +24,6 @@ class Test < ApplicationRecord
 
   before_validation :set_practical_test_passing_score
 
-  def active_ordered_test_categories_with_join_id
-    sql = <<-SQL
-      SELECT
-        tc.*,
-        tct.id as test_categories_test_id
-      FROM test_categories tc
-      INNER JOIN test_categories_tests tct ON tc.id = tct.test_category_id
-      WHERE tct.test_id = #{id}
-      ORDER BY tct.display_order ASC
-    SQL
-
-    TestCategory.active.find_by_sql(sql)
-  end
-
   translates :title, :description
 
   def self.ransackable_associations(_auth_object = nil)
@@ -46,6 +32,20 @@ class Test < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[title_et title_en description_et description_en created_at]
+  end
+
+  def active_ordered_test_categories_with_join_id
+    sql = <<-SQL
+      SELECT
+        tc.*,
+        tct.id as test_categories_test_id
+      FROM test_categories tc
+      INNER JOIN test_categories_tests tct ON tc.id = tct.test_category_id
+      WHERE tct.test_id = #{id} AND tc.active = TRUE
+      ORDER BY tct.display_order ASC
+    SQL
+
+    TestCategory.find_by_sql(sql)
   end
 
   def total_questions

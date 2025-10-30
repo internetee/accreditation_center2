@@ -233,6 +233,29 @@ RSpec.describe Test, type: :model do
         expect(test.total_components).to eq(0)
       end
     end
+
+    describe '#active_ordered_test_categories_with_join_id' do
+      it 'returns only active categories ordered by join display_order and includes join id' do
+        t = create(:test, :theoretical)
+        c1 = create(:test_category, active: true)
+        c2 = create(:test_category, active: true)
+        c3 = create(:test_category, active: false)
+
+        j2 = TestCategoriesTest.create!(test: t, test_category: c2, display_order: 1)
+        j1 = TestCategoriesTest.create!(test: t, test_category: c1, display_order: 2)
+        _j3 = TestCategoriesTest.create!(test: t, test_category: c3, display_order: 3)
+
+        result = t.active_ordered_test_categories_with_join_id
+
+        # only active categories
+        expect(result.map(&:id)).to match_array([c2.id, c1.id])
+        # ordered by join display_order (1 then 2)
+        expect(result.map(&:id)).to eq([c2.id, c1.id])
+        # each row includes the join id aliased as test_categories_test_id
+        expect(result.first.attributes).to have_key('test_categories_test_id')
+        expect(result.map { |r| r.attributes['test_categories_test_id'] }).to eq([j2.id, j1.id])
+      end
+    end
   end
 
   describe 'ransackable attributes and associations' do

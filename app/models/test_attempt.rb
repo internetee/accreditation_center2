@@ -35,7 +35,7 @@ class TestAttempt < ApplicationRecord
   def complete!
     self.completed_at = Time.zone.now
     self.score_percentage = score_percentage
-    self.passed = passed?
+    self.passed = score_passed?
     save!
 
     # Send completion email notification
@@ -147,7 +147,7 @@ class TestAttempt < ApplicationRecord
     end
   end
 
-  def passed?
+  def score_passed?
     score_percentage >= test.passing_score_percentage
   end
 
