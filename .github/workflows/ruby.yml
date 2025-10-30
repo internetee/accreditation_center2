@@ -48,7 +48,7 @@ jobs:
           DISABLE_SPRING: 1
         run: |
           cp config/application.yml.sample config/application.yml
-          bundle exec rake db:setup
+          bundle exec rake db:create db:migrate
           bundle exec rails assets:precompile
           bundle exec rspec
 

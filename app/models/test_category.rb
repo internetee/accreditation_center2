@@ -5,7 +5,6 @@ class TestCategory < ApplicationRecord
 
   validates :name_et, presence: true
   validates :name_en, presence: true
-  # validates :domain_rule_reference, presence: true
   validates :active, inclusion: { in: [true, false] }
   validates :domain_rule_url, format: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true
 

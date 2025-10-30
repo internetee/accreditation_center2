@@ -80,10 +80,6 @@ class TheoreticalTestsController < TestsController
                     alert: t('tests.answer_all_questions') and return
       end
       @test_attempt.complete!
-      @test_attempt.update!(
-        score_percentage: @test_attempt.score_percentage,
-        passed: @test_attempt.passed?
-      )
     end
 
     # If older than 30 days, do not show detailed responses

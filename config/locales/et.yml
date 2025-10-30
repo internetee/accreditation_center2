@@ -1,4 +1,20 @@
 et:
+  datetime:
+    distance_in_words:
+      x_minutes: "%{count} minutit"
+      x_seconds: "%{count} sekundit"
+      about_x_hours: "%{count} tundi"
+      about_x_days: "%{count} päeva"
+      about_x_weeks: "%{count} nädalat"
+      about_x_months: "%{count} kuud"
+      about_x_years: "%{count} aastat"
+      half_an_hour: "pool tundi"
+      less_than_x_minutes: "vähem kui %{count} minutit"
+      less_than_x_seconds: "vähem kui %{count} sekundit"
+      over_x_years: "üle %{count} aastat"
+      almost_x_years: "peaaegu %{count} aastat"
+      about_x_years: "%{count} aastat"
+      about_x_years: "%{count} aastat"
   time:
     formats:
       short: "%d.%m.%Y %H:%M"
@@ -62,11 +78,16 @@ et:
         other: "%{count} päeva jäänud"
       accreditation_expired: "Akrediteering on aegunud"
       in_progress_tests: "Pooleliolevad testid"
-      time_remaining: "Aega jäänud: %{time}"
+      time_remaining: "Aega jäänud"
       continue_test: "Jätka testi"
       recent_history: "Viimased proovid"
       start_test: "Alusta testi"
       view_results: "Vaata tulemusi"
+      progress: "Täidetud protsent"
+      actions: "Tegevused"
+      test: "Test"
+      date: "Kuupäev"
+      score: "Tulemus"
   tests:
     history_blocked_while_active: "Poolelioleva testi ajal ei saa testide ajalugu vaadata."
     total_questions: "Küsimusi kokku"
@@ -127,6 +148,7 @@ et:
     results:
       page_title: "Testi tulemused - %{test}"
       title: "Testi tulemused"
+      view_test: "Vaata testi"
   mailers:
     accreditation:
       test_completion:
