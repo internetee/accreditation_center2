@@ -68,9 +68,9 @@ class Users::SessionsController < Devise::SessionsController
 
   def redirect_after_sign_in(user)
     if user.admin?
-      redirect_to admin_dashboard_path, notice: "Welcome back, #{user.username}!"
+      redirect_to admin_dashboard_path, notice: t('devise.sessions.signed_in')
     else
-      redirect_to root_path, notice: "Welcome back, #{user.username}!"
+      redirect_to root_path, notice: t('devise.sessions.signed_in')
     end
   end
 end

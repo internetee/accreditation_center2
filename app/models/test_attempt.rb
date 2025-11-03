@@ -9,7 +9,7 @@ class TestAttempt < ApplicationRecord
   validates :access_code, presence: true, uniqueness: true
 
   scope :ordered, -> { order(created_at: :desc) }
-  scope :not_completed, -> { where(completed_at: nil).where.not(started_at: nil) }
+  scope :not_completed, -> { where(completed_at: nil) }
   scope :completed, -> { where.not(completed_at: nil).where.not(started_at: nil) }
   scope :in_progress, -> { where.not(started_at: nil).where(completed_at: nil) }
   scope :recent, -> { where('created_at > ?', 30.days.ago) }
