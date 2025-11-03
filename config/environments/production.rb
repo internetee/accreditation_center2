@@ -98,7 +98,7 @@ Rails.application.configure do
     address: ENV.fetch('mailer_address', nil),
     port: ENV.fetch('mailer_port', nil),
     authentication: ENV.fetch('mailer_authentication', nil),
-    enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', nil),
+    enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', false).to_s == 'true',
     domain: ENV.fetch('mailer_domain', nil),
     openssl_verify_mode: ENV.fetch('mailer_openssl_verify_mode', nil)
   }
