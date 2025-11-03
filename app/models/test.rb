@@ -22,21 +22,7 @@ class Test < ApplicationRecord
   scope :active, -> { where(active: true) }
   default_scope { order(created_at: :desc) }
 
-  before_save :set_practical_test_passing_score
-
-  def active_ordered_test_categories_with_join_id
-    sql = <<-SQL
-      SELECT
-        tc.*,
-        tct.id as test_categories_test_id
-      FROM test_categories tc
-      INNER JOIN test_categories_tests tct ON tc.id = tct.test_category_id
-      WHERE tct.test_id = #{id}
-      ORDER BY tct.display_order ASC
-    SQL
-
-    TestCategory.active.find_by_sql(sql)
-  end
+  before_validation :set_practical_test_passing_score
 
   translates :title, :description
 
@@ -46,6 +32,20 @@ class Test < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[title_et title_en description_et description_en created_at]
+  end
+
+  def active_ordered_test_categories_with_join_id
+    sql = <<-SQL
+      SELECT
+        tc.*,
+        tct.id as test_categories_test_id
+      FROM test_categories tc
+      INNER JOIN test_categories_tests tct ON tc.id = tct.test_category_id
+      WHERE tct.test_id = #{id} AND tc.active = TRUE
+      ORDER BY tct.display_order ASC
+    SQL
+
+    TestCategory.find_by_sql(sql)
   end
 
   def total_questions
@@ -85,15 +85,15 @@ class Test < ApplicationRecord
   private
 
   def practical_test_passing_score
-    if practical? && passing_score_percentage != 100
-      errors.add(:passing_score_percentage, 'must be 100% for practical tests')
-    end
+    return unless practical? && passing_score_percentage != 100
+
+    errors.add(:passing_score_percentage, 'must be 100% for practical tests')
   end
 
   def set_practical_test_passing_score
-    if practical?
-      self.passing_score_percentage = 100
-    end
+    return unless practical?
+
+    self.passing_score_percentage = 100
   end
 
   def generate_random_slug

@@ -129,6 +129,11 @@ en:
         test_categories: "Categories"
         test_questions: "Questions"
         test_attempts: "Attempts"
+        test_type: "Test Type"
+        components: "Components"
+        theoretical: "Theoretical"
+        practical: "Practical"
+        practical_tasks: "Practical Tasks"
       test_table:
         items:
           one: "test"

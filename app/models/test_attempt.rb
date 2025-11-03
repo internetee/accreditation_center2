@@ -8,8 +8,6 @@ class TestAttempt < ApplicationRecord
 
   validates :access_code, presence: true, uniqueness: true
 
-  # before_validation :generate_access_code, on: :create
-
   scope :ordered, -> { order(created_at: :desc) }
   scope :not_completed, -> { where(completed_at: nil).where.not(started_at: nil) }
   scope :completed, -> { where.not(completed_at: nil).where.not(started_at: nil) }
@@ -36,6 +34,8 @@ class TestAttempt < ApplicationRecord
 
   def complete!
     self.completed_at = Time.zone.now
+    self.score_percentage = score_percentage
+    self.passed = score_passed?
     save!
 
     # Send completion email notification
@@ -147,7 +147,7 @@ class TestAttempt < ApplicationRecord
     end
   end
 
-  def passed?
+  def score_passed?
     score_percentage >= test.passing_score_percentage
   end
 
@@ -184,7 +184,7 @@ class TestAttempt < ApplicationRecord
   def purge_details!
     transaction do
       question_responses.delete_all
-      update!(score_percentage: nil)
+      practical_task_results.delete_all
     end
   end
 

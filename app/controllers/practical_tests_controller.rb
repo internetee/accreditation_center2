@@ -111,10 +111,6 @@ class PracticalTestsController < TestsController
                   alert: t('tests.finish_all_tasks') and return
     end
     @test_attempt.complete!
-    @test_attempt.update!(
-      score_percentage: @test_attempt.score_percentage,
-      passed: @test_attempt.passed?
-    )
   end
 
   private
