@@ -1,10 +1,12 @@
 class PracticalTestsController < TestsController
+  # POST /practical_tests/:id/start
   def start
     super
 
     redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: 0)
   end
 
+  # GET /practical_tests/:id/question/:question_index
   def question
     @tasks = @test.practical_tasks.active.ordered
     @current_task_index = (params[:question_index] || 0).to_i
@@ -35,6 +37,7 @@ class PracticalTestsController < TestsController
     flash.now[:warning] = t('tests.time_warning', minutes: 5)
   end
 
+  # POST /practical_tests/:id/answer/:question_index
   def answer
     task_index = params[:question_index].to_i
     tasks = @test.practical_tasks.active.ordered
@@ -99,6 +102,7 @@ class PracticalTestsController < TestsController
     end
   end
 
+  # GET /practical_tests/:id/results
   def results
     # Finalize on first visit to results
     return unless @test_attempt.in_progress?

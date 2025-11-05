@@ -1,10 +1,14 @@
+# frozen_string_literal: true
+
 class TheoreticalTestsController < TestsController
+  # POST /theoretical_tests/:id/start
   def start
     super
     @test_attempt.initialize_question_set!
     redirect_to question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: 0)
   end
 
+  # GET /theoretical_tests/:id/question/:question_index
   def question
     # Only the randomized set for this attempt
     @questions = @test_attempt.questions
@@ -34,11 +38,12 @@ class TheoreticalTestsController < TestsController
     @answers = @current_question.answers.ordered
 
     # Show time warning if needed
-    if @test_attempt.time_warning?
-      flash.now[:warning] = t('tests.time_warning', minutes: 5)
-    end
+    return unless @test_attempt.time_warning?
+
+    flash.now[:warning] = t('tests.time_warning', minutes: TestAttempt::TIME_WARNING_MINUTES)
   end
 
+  # POST /theoretical_tests/:id/answer/:question_index
   def answer
     @current_question = @test_attempt.questions[params[:question_index].to_i]
     return head(:not_found) if @current_question.nil?
@@ -69,6 +74,7 @@ class TheoreticalTestsController < TestsController
     redirect_to question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: params[:question_index].to_i)
   end
 
+  # GET /theoretical_tests/:id/results
   def results
     # Finalize on first visit to results
     if @test_attempt.in_progress?

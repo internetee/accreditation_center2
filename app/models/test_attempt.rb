@@ -16,6 +16,9 @@ class TestAttempt < ApplicationRecord
   scope :passed, -> { where(passed: true) }
   scope :failed, -> { where(passed: false) }
 
+  TIME_WARNING_MINUTES = 5
+  DETAILS_EXPIRATION_DAYS = 30
+
   def self.ransackable_attributes(auth_object = nil)
     %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
   end
@@ -82,6 +85,7 @@ class TestAttempt < ApplicationRecord
     return test.time_limit_minutes * 60 if started_at.blank?
 
     elapsed = Time.zone.now - started_at
+
     remaining = (test.time_limit_minutes * 60) - elapsed.to_i
     [remaining, 0].max
   end
@@ -95,7 +99,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def time_warning?
-    time_remaining <= 5.minutes && time_remaining.positive?
+    time_remaining <= TIME_WARNING_MINUTES * 60 && time_remaining.positive?
   end
 
   def time_expired?
@@ -177,7 +181,7 @@ class TestAttempt < ApplicationRecord
 
   # Returns true if detailed results should no longer be shown (older than 30 days)
   def details_expired?
-    completed? && completed_at < 30.days.ago
+    completed? && completed_at < DETAILS_EXPIRATION_DAYS.days.ago
   end
 
   # Remove detailed responses while keeping the overall result

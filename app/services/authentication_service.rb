@@ -43,6 +43,8 @@ class AuthenticationService < ApiConnector
       registrar_name: data['registrar_name'],
       registrar_reg_no: data['registrar_reg_no'],
       registrar_email: data['registrar_email'],
+      accreditation_date: data['accreditation_date'],
+      accreditation_expire_date: data['accreditation_expire_date'],
     }
   end
 end

@@ -65,6 +65,12 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Devise helpers for request specs (sign_in, sign_out)
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Time helpers (travel_to, freeze_time)
+  config.include ActiveSupport::Testing::TimeHelpers, type: :request
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 
@@ -89,4 +95,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:each, type: :request) do
+    Rails.application.routes.default_url_options[:locale] = I18n.locale
+  end
 end
