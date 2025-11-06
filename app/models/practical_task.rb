@@ -1,5 +1,7 @@
 class PracticalTask < ApplicationRecord
   belongs_to :test
+  has_many :practical_task_results, dependent: :destroy
+
   positioned on: :test, column: :display_order
 
   scope :ordered, -> { order(:display_order) }

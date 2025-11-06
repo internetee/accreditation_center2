@@ -29,7 +29,7 @@ class TheoreticalTestsController < TestsController
     @max_allowed_index = first_unanswered_index || (@questions.count - 1)
 
     # Prevent navigating past the first unanswered question
-    if @current_question_index > @max_allowed_index
+    if @current_question_index > @max_allowed_index && @test_attempt.in_progress?
       redirect_to question_theoretical_test_path(@test, attempt: @test_attempt.access_code, question_index: @max_allowed_index),
                   alert: t('tests.answer_current_to_continue') and return
     end

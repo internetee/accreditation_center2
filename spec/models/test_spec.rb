@@ -60,6 +60,10 @@ RSpec.describe Test, type: :model do
 
     it 'has many test_attempts' do
       user = create(:user)
+      test_category = create(:test_category)
+      create(:test_categories_test, test: test, test_category: test_category)
+      question = create(:question, test_category: test_category)
+      create(:answer, question: question, correct: true)
       attempt1 = create(:test_attempt, test: test, user: user)
       attempt2 = create(:test_attempt, test: test, user: user)
 

@@ -26,7 +26,7 @@ class PracticalTestsController < TestsController
     @max_allowed_index = first_pending_index || (@tasks.count - 1)
 
     # Prevent navigating past the first pending task
-    if @current_task_index > @max_allowed_index
+    if @current_task_index > @max_allowed_index && @test_attempt.in_progress?
       redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @max_allowed_index),
                   alert: t('tests.task_current_to_continue') and return
     end
@@ -34,7 +34,7 @@ class PracticalTestsController < TestsController
     # Show time warning if needed
     return unless @test_attempt.time_warning?
 
-    flash.now[:warning] = t('tests.time_warning', minutes: 5)
+    flash.now[:warning] = t('tests.time_warning', minutes: TestAttempt::TIME_WARNING_MINUTES)
   end
 
   # POST /practical_tests/:id/answer/:question_index
@@ -55,51 +55,46 @@ class PracticalTestsController < TestsController
     ptr.status = :running
     ptr.save!
 
-    begin
-      timeout_seconds = (@current_task.conf['timeout_seconds'] || 60).to_i
+    timeout_seconds = (@current_task.conf['timeout_seconds'] || 60).to_i
 
-      result = nil
-      Timeout.timeout(timeout_seconds) do
-        validator_klass = @current_task.klass_name.to_s.safe_constantize
-        raise "Validator class not found: #{@current_task.klass_name}" unless validator_klass
+    result = nil
 
-        validator = validator_klass.new(
-          attempt: @test_attempt,
-          config: @current_task.conf,
-          inputs: inputs,
-          token: session[:auth_token]
-        )
-        result = validator.call
-      end
+    Timeout.timeout(timeout_seconds) do
+      validator_klass = @current_task.klass_name.to_s.safe_constantize
+      raise "Validator class not found: #{@current_task.klass_name}" unless validator_klass
 
-      # Persist result
-      ptr.result = result
-      ptr.status = result[:passed] ? :passed : :failed
-      ptr.save!
+      validator = validator_klass.new(
+        attempt: @test_attempt,
+        config: @current_task.conf,
+        inputs: inputs,
+        token: session[:auth_token]
+      )
+      result = validator.call
+    end
 
-      # Merge exported variables to attempt vars, if any
-      export_vars = result[:export_vars] || {}
-      @test_attempt.merge_vars!(export_vars) if export_vars.present?
+    # Persist result
+    ptr.result = result
+    ptr.status = result[:passed] ? :passed : :failed
+    ptr.save!
 
-      next_index = task_index + 1
-      next_index = task_index if next_index >= tasks.count
+    # Merge exported variables to attempt vars, if any
+    export_vars = result[:export_vars] || {}
+    @test_attempt.merge_vars!(export_vars) if export_vars.present?
 
-      if result[:passed]
-        flash[:notice] = t('tests.task_passed')
-        redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
-      else
-        flash[:alert] = result[:error].presence || t('tests.task_failed')
-        redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
-      end
-    rescue Timeout::Error
-      ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => t('tests.validation_timeout')))
-      flash[:alert] = t('tests.validation_timeout')
-      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
-    rescue => e
-      ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => e.message))
-      flash[:alert] = e.message
+    next_index = task_index + 1
+    next_index = task_index if next_index >= tasks.count
+
+    if result[:passed]
+      flash[:notice] = t('tests.task_passed')
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
+    else
+      flash[:alert] = result[:error].presence || t('tests.task_failed')
       redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
     end
+  rescue StandardError => e
+    ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => e.message))
+    flash[:alert] = e.message
+    redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
   end
 
   # GET /practical_tests/:id/results

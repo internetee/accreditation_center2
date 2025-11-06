@@ -7,6 +7,19 @@ class TestAttempt < ApplicationRecord
   has_many :practical_tasks, through: :practical_task_results
 
   validates :access_code, presence: true, uniqueness: true
+  validate :questions_have_answers, if: -> { test.theoretical? }, on: :create
+
+  def questions_have_answers
+    # Validate that there is at least one question with at least one correct answer in the test.
+    count = test.questions.joins(:answers)
+                .where(answers: { correct: true })
+                .distinct
+                .count
+
+    return if count.positive?
+
+    errors.add(:base, :questions_without_correct_answers, message: 'Test attempt must have at least one question with at least one correct answer')
+  end
 
   scope :ordered, -> { order(created_at: :desc) }
   scope :not_completed, -> { where(completed_at: nil) }

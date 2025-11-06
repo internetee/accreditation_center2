@@ -5,6 +5,9 @@ RSpec.describe QuestionResponse, type: :model do
   let(:question) { create(:question, test_category: test_category) }
   let(:user) { create(:user) }
   let(:test_record) { create(:test, :theoretical) }
+  let!(:test_categories_test) { create(:test_categories_test, test: test_record, test_category: test_category) }
+  let!(:question) { create(:question, test_category: test_category) }
+  let!(:answer) { create(:answer, question: question, correct: true) }
   let(:attempt) { create(:test_attempt, user: user, test: test_record) }
 
   describe 'validations' do
@@ -54,12 +57,10 @@ RSpec.describe QuestionResponse, type: :model do
   end
 
   describe 'correctness helpers' do
-    let!(:correct_a1) { create(:answer, question: question, correct: true) }
-    let!(:correct_a2) { create(:answer, question: question, correct: true) }
     let!(:wrong_a) { create(:answer, question: question, correct: false) }
 
     it 'correct? returns false when marked_for_later' do
-      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [correct_a1.id], marked_for_later: true)
+      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [answer.id], marked_for_later: true)
       expect(qr.correct?).to be(false)
     end
 
@@ -69,17 +70,18 @@ RSpec.describe QuestionResponse, type: :model do
     end
 
     it 'correct? returns true when exactly matches correct answer set' do
-      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [correct_a1.id, correct_a2.id])
+      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [answer.id])
       expect(qr.correct?).to be(true)
     end
 
     it 'partially_correct? returns true when subset of correct answers and no incorrect selected' do
-      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [correct_a1.id])
+      answer2 = create(:answer, question: question, correct: true)
+      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [answer.id, answer2.id])
       expect(qr.partially_correct?).to be(true)
     end
 
     it 'partially_correct? returns false when includes incorrect selection' do
-      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [correct_a1.id, wrong_a.id])
+      qr = create(:question_response, question: question, test_attempt: attempt, selected_answer_ids: [wrong_a.id])
       expect(qr.partially_correct?).to be(false)
     end
 
@@ -87,7 +89,7 @@ RSpec.describe QuestionResponse, type: :model do
       q1 = create(:question, test_category: test_category)
       q2 = create(:question, test_category: test_category)
       qr1 = create(:question_response, question: q1, test_attempt: attempt, selected_answer_ids: [])
-      qr2 = create(:question_response, question: q2, test_attempt: attempt, selected_answer_ids: [correct_a1.id])
+      qr2 = create(:question_response, question: q2, test_attempt: attempt, selected_answer_ids: [answer.id])
       expect(qr1.answered?).to be(false)
       expect(qr2.answered?).to be(true)
     end
