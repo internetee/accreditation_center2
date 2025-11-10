@@ -2,7 +2,7 @@ class AccreditationMailer < ApplicationMailer
   def expiry_warning(user, days_before)
     @user = user
     @days_before = days_before
-    @expiry_date = user.test_attempts.where(passed: true).order(:created_at).last.created_at + 1.year
+    @expiry_date = user.accreditation_expire_date
 
     mail(
       to: user.email,
@@ -12,7 +12,7 @@ class AccreditationMailer < ApplicationMailer
 
   def expiry_notification(user)
     @user = user
-    @expiry_date = user.test_attempts.where(passed: true).order(:created_at).last.created_at + 1.year
+    @expiry_date = user.accreditation_expire_date
 
     mail(
       to: user.email,
@@ -35,7 +35,7 @@ class AccreditationMailer < ApplicationMailer
     @expiring_users = expiring_users
 
     mail(
-      to: Rails.application.credentials.coordinator_email,
+      to: ENV.fetch('COORDINATOR_EMAIL', 'info@internet.ee'),
       subject: t('mailers.accreditation.coordinator_notification.subject', count: expiring_users.count)
     )
   end
