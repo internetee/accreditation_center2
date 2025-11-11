@@ -331,6 +331,7 @@ et:
       user_table:
         items:
           one: "kasutaja"
+          other: "kasutajaid"
     practical_tasks:
       updated: "Praktiline ülesanne salvestatud"
       created: "Praktiline ülesanne loodud"
