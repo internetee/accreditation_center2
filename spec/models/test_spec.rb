@@ -157,30 +157,6 @@ RSpec.describe Test, type: :model do
       end
     end
 
-    describe '#has_theoretical_questions?' do
-      it 'returns true for theoretical tests' do
-        theoretical_test = create(:test, :theoretical)
-        expect(theoretical_test.has_theoretical_questions?).to be(true)
-      end
-
-      it 'returns false for practical tests' do
-        practical_test = create(:test, :practical)
-        expect(practical_test.has_theoretical_questions?).to be(false)
-      end
-    end
-
-    describe '#has_practical_tasks?' do
-      it 'returns true for practical tests' do
-        practical_test = create(:test, :practical)
-        expect(practical_test.has_practical_tasks?).to be(true)
-      end
-
-      it 'returns false for theoretical tests' do
-        theoretical_test = create(:test, :theoretical)
-        expect(theoretical_test.has_practical_tasks?).to be(false)
-      end
-    end
-
     describe '#theoretical_questions_count' do
       it 'returns questions count for theoretical tests' do
         category = create(:test_category)

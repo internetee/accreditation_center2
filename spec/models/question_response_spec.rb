@@ -17,11 +17,11 @@ RSpec.describe QuestionResponse, type: :model do
       # For persisted records, on: :update validations run on valid? as well
       qr.selected_answer_ids = []
       expect(qr.valid?).to be(false)
-      expect(qr.errors[:selected_answer_ids]).to be_present
+      expect(qr.errors[:base]).to eq([I18n.t('tests.select_answer_or_marked_for_later')])
 
       # Saving should also fail without selection
       expect(qr.update(selected_answer_ids: [])).to be(false)
-      expect(qr.errors[:selected_answer_ids]).to be_present
+      expect(qr.errors[:base]).to eq([I18n.t('tests.select_answer_or_marked_for_later')])
 
       # when marked_for_later, it should allow empty
       qr.marked_for_later = true

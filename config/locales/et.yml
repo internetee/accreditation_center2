@@ -139,6 +139,7 @@ et:
     validation_timeout: "Validatsiooni aegumine"
     finish_all_tasks: "Palun täida kõik ülesanded enne lõpetamist."
     test_not_found: "Testi ei leitud"
+    select_answer_or_marked_for_later: "Palun vali vähemalt üks vastus või märgi küsimus hilisemaks."
     question:
       title: "%{test}"
       question_number: "Küsimus %{number}"

@@ -56,20 +56,12 @@ class Test < ApplicationRecord
     "#{time_limit_minutes} #{I18n.t('minutes')}"
   end
 
-  def has_theoretical_questions?
-    theoretical?
-  end
-
-  def has_practical_tasks?
-    practical?
-  end
-
   def theoretical_questions_count
-    questions.count if has_theoretical_questions?
+    questions.count if theoretical?
   end
 
   def practical_tasks_count
-    practical_tasks.count if has_practical_tasks?
+    practical_tasks.count if practical?
   end
 
   def total_components

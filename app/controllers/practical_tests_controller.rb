@@ -8,33 +8,13 @@ class PracticalTestsController < TestsController
 
   # GET /practical_tests/:id/question/:question_index
   def question
-    @tasks = @test.practical_tasks.active.ordered
-    @current_task_index = (params[:question_index] || 0).to_i
-    @current_task = @tasks[@current_task_index]
+    load_task_data
+    return if redirect_if_task_missing
 
-    if @current_task.nil?
-      redirect_to results_practical_test_path(@test, attempt: @test_attempt.access_code)
-      return
-    end
+    @max_allowed_index = calculate_max_allowed_index
+    return if redirect_if_navigation_blocked
 
-    # Determine the first pending task index to restrict forward navigation
-    results_by_tid = @test_attempt.practical_task_results.index_by(&:practical_task_id)
-    first_pending_index = @tasks.index do |t|
-      result = results_by_tid[t.id]
-      result.nil? || result.status == 'pending' || result.status == 'failed'
-    end
-    @max_allowed_index = first_pending_index || (@tasks.count - 1)
-
-    # Prevent navigating past the first pending task
-    if @current_task_index > @max_allowed_index && @test_attempt.in_progress?
-      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @max_allowed_index),
-                  alert: t('tests.task_current_to_continue') and return
-    end
-
-    # Show time warning if needed
-    return unless @test_attempt.time_warning?
-
-    flash.now[:warning] = t('tests.time_warning', minutes: TestAttempt::TIME_WARNING_MINUTES)
+    show_time_warning_if_needed
   end
 
   # POST /practical_tests/:id/answer/:question_index
@@ -44,57 +24,18 @@ class PracticalTestsController < TestsController
     @current_task = tasks[task_index]
     return head(:not_found) if @current_task.nil?
 
-    # ensure result row exists
-    ptr = @test_attempt.practical_task_results.find_or_initialize_by(practical_task: @current_task)
+    ptr = initialize_task_result
+    inputs = prepare_inputs
+    ptr.save_running_status!(inputs)
 
-    # permit only declared input fields
-    raw_inputs = params[:inputs].is_a?(ActionController::Parameters) ? params[:inputs].permit!.to_h : (params[:inputs] || {})
-    inputs = filter_inputs(@current_task, raw_inputs)
+    result = run_validator(inputs)
+    ptr.persist_result!(result)
+    merge_export_vars(result)
 
-    ptr.inputs = inputs
-    ptr.status = :running
-    ptr.save!
-
-    timeout_seconds = (@current_task.conf['timeout_seconds'] || 60).to_i
-
-    result = nil
-
-    Timeout.timeout(timeout_seconds) do
-      validator_klass = @current_task.klass_name.to_s.safe_constantize
-      raise "Validator class not found: #{@current_task.klass_name}" unless validator_klass
-
-      validator = validator_klass.new(
-        attempt: @test_attempt,
-        config: @current_task.conf,
-        inputs: inputs,
-        token: session[:auth_token]
-      )
-      result = validator.call
-    end
-
-    # Persist result
-    ptr.result = result
-    ptr.status = result[:passed] ? :passed : :failed
-    ptr.save!
-
-    # Merge exported variables to attempt vars, if any
-    export_vars = result[:export_vars] || {}
-    @test_attempt.merge_vars!(export_vars) if export_vars.present?
-
-    next_index = task_index + 1
-    next_index = task_index if next_index >= tasks.count
-
-    if result[:passed]
-      flash[:notice] = t('tests.task_passed')
-      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
-    else
-      flash[:alert] = result[:error].presence || t('tests.task_failed')
-      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
-    end
+    next_index = calculate_next_task_index(task_index, tasks.count)
+    redirect_after_result(result, task_index, next_index)
   rescue StandardError => e
-    ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => e.message))
-    flash[:alert] = e.message
-    redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
+    handle_answer_error(ptr, e, task_index)
   end
 
   # GET /practical_tests/:id/results
@@ -114,8 +55,91 @@ class PracticalTestsController < TestsController
 
   private
 
-  def filter_inputs(task, raw)
-    allowed = task.input_fields.map { |f| f['name'] }
-    raw.to_h.slice(*allowed)
+  def load_task_data
+    @tasks = @test.practical_tasks.active.ordered
+    @current_task_index = (params[:question_index] || 0).to_i
+    @current_task = @tasks[@current_task_index]
+  end
+
+  def redirect_if_task_missing
+    return false unless @current_task.nil?
+
+    redirect_to results_practical_test_path(@test, attempt: @test_attempt.access_code)
+    true
+  end
+
+  def calculate_max_allowed_index
+    results_by_tid = @test_attempt.practical_task_results.index_by(&:practical_task_id)
+    first_pending_index = @tasks.index do |t|
+      result = results_by_tid[t.id]
+      result.nil? || result.status == 'pending' || result.status == 'failed'
+    end
+    first_pending_index || (@tasks.count - 1)
+  end
+
+  def redirect_if_navigation_blocked
+    return false unless @current_task_index > @max_allowed_index && @test_attempt.in_progress?
+
+    redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @max_allowed_index),
+                alert: t('tests.task_current_to_continue')
+    true
+  end
+
+  def show_time_warning_if_needed
+    return unless @test_attempt.time_warning?
+
+    flash.now[:warning] = t('tests.time_warning', minutes: TestAttempt::TIME_WARNING_MINUTES)
+  end
+
+  def initialize_task_result
+    @test_attempt.practical_task_results.find_or_initialize_by(practical_task: @current_task)
+  end
+
+  def prepare_inputs
+    raw_inputs = params[:inputs].is_a?(ActionController::Parameters) ? params[:inputs].permit!.to_h : (params[:inputs] || {})
+    allowed = @current_task.input_fields.map { |f| f['name'] }
+    raw_inputs.to_h.slice(*allowed)
+  end
+
+  def run_validator(inputs)
+    timeout_seconds = (@current_task.conf['timeout_seconds'] || 60).to_i
+    result = nil
+
+    Timeout.timeout(timeout_seconds) do
+      validator_klass = @current_task.klass_name.to_s.safe_constantize
+      raise "Validator class not found: #{@current_task.klass_name}" unless validator_klass
+
+      validator = validator_klass.new(attempt: @test_attempt, config: @current_task.conf,
+                                      inputs: inputs, token: session[:auth_token])
+      result = validator.call
+    end
+
+    result
+  end
+
+  def merge_export_vars(result)
+    export_vars = result[:export_vars] || {}
+    @test_attempt.merge_vars!(export_vars) if export_vars.present?
+  end
+
+  def calculate_next_task_index(current_index, tasks_count)
+    next_index = current_index + 1
+    next_index >= tasks_count ? current_index : next_index
+  end
+
+  def redirect_after_result(result, task_index, next_index)
+    if result[:passed]
+      flash[:notice] = t('tests.task_passed')
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
+    else
+      flash[:alert] = result[:error].presence || t('tests.task_failed')
+      redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
+    end
+  end
+
+  def handle_answer_error(ptr, error, task_index)
+    ptr.update!(status: :failed, result: (ptr.result || {}).merge('error' => error.message))
+    flash[:alert] = error.message
+    redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
   end
 end

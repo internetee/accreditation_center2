@@ -118,6 +118,7 @@ en:
     validation_timeout: "Validation timeout"
     finish_all_tasks: "Please complete all tasks before finishing."
     test_not_found: "Test not found"
+    select_answer_or_marked_for_later: "Please select at least one answer or mark the question for later."
     question:
       title: "%{test}"
       question_number: "Question %{number}"

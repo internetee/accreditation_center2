@@ -133,11 +133,19 @@ RSpec.describe 'TheoreticalTests', type: :request do
     expect(question_response1.reload.selected_answer_ids).to be_empty
   end
 
+  it 'accepts an answer, saves the answer and marks the question for later' do
+    post answer_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0), params: { answer_id: 123, marked_for_later: true }
+
+    expect(response).to redirect_to(question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 1))
+    expect(question_response1.reload.marked_for_later).to be(true)
+    expect(question_response1.reload.selected_answer_ids).to eq([123])
+  end
+
   it 'rejects an answer and returns to the current question if the answer is invalid' do
     post answer_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0), params: { answer_id: nil }
 
     expect(response).to redirect_to(question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0))
-    expect(flash[:alert]).to include('Validation failed')
+    expect(flash[:alert]).to include(I18n.t('tests.select_answer_or_marked_for_later'))
   end
 
   it 'rejects ans answer and redirects to results if the test attempt is expired' do
