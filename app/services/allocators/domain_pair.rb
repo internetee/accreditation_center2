@@ -90,8 +90,6 @@ module Allocators
       ensure_idn_conversion(result)
     end
 
-    private
-
     def apply_diacritics(ascii)
       ascii.chars.map do |char|
         if should_replace_vowel?(char)
