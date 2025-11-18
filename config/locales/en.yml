@@ -138,6 +138,14 @@ en:
       coordinator_notification:
         subject: "Accreditation Expiry Alert - %{count} Users"
   validators:
+    change_registrant:
+      source_domain_not_found: "Source domain not found: %{domain}"
+      target_domain_not_found: "Target domain not found: %{domain}"
+      source_domain_registrant_missing: "Source domain registrant missing: %{domain}"
+      target_domain_registrant_missing: "Target domain registrant missing: %{domain}"
+      target_domain_registrant_not_replaced: "Target domain %{domain} registrant not replaced with source registrant"
+    create_and_cancel_invoice:
+      no_recently_cancelled_invoices: "No recently cancelled invoices found (last %{window} minutes)"
     create_contacts_validator:
       organization_contact_not_found: "Organization contact not found"
       private_contact_not_found: "Private contact not found"
@@ -147,3 +155,24 @@ en:
       priv_required_fields_missing: "Priv required fields missing"
       org_contact_not_recent: "Org contact not recent"
       priv_contact_not_recent: "Priv contact not recent"
+    delete_domain_verified_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_not_in_pending_delete_status: "Domain %{domain} is not in pendingDelete status"
+    register_domains_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_wrong_period: "Domain %{domain} has wrong period (want %{period})"
+      domain_missing_registrant: "Domain %{domain} missing registrant"
+      domain_wrong_registrant: "Domain %{domain} wrong registrant"
+    renew_domain_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_expire_time_missing: "Domain %{domain} expire time missing"
+      domain_not_renewed: "Domain %{domain} not renewed"
+    transfer_domains_validator:
+      domains_array_missing: "Validator config must include 'domains' array"
+      domain_not_found: "Domain not found: %{domain}"
+      domain_registrar_info_missing: "Domain %{domain} registrar info missing"
+      domain_registrar_mismatch: "Domain %{domain} registrar mismatch"
+    update_nameservers_validator:
+      nameservers_config_missing_or_empty: "Nameservers config missing or empty"
+      domain_not_found: "Domain not found: %{domain}"
+      nameservers_mismatch: "Nameservers mismatch for domain: %{domain}"

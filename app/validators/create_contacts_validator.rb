@@ -1,77 +1,94 @@
 # app/validators/create_contacts_validator.rb
 class CreateContactsValidator < BaseTaskValidator
+  # Config (optional):
+  # {
+  #   "window_minutes": 15
+  # }
+  #
+  # Validates that the user created two contacts recently.
+  # Uses Accreditation API endpoint that lists contacts for the current registrar.
   def call
-    org_id  = @inputs['org_contact_id']
-    priv_id = @inputs['priv_contact_id']
-
-    # Configurable time window for recent creation (default 15 minutes)
-    window_minutes = (@config['window_minutes'] || 1440000).to_i
-    window_minutes = 15 if window_minutes <= 0
-    cutoff_time = Time.current - window_minutes.minutes
-
+    org_id, priv_id = contact_ids
+    _window_minutes, cutoff_time = compute_window_and_cutoff
     api = []
-    org = begin
-      with_audit(api) { @service.contact_info(id: org_id) }
-    rescue
-      nil
-    end
-    per = begin
-      with_audit(api) { @service.contact_info(id: priv_id) }
-    rescue
-      nil
-    end
 
+    org_contact = fetch_contact_with_audit(api, org_id)
+    priv_contact = fetch_contact_with_audit(api, priv_id)
+
+    errors = validate_contacts(org_contact, priv_contact, cutoff_time)
+    return failure(api, errors) unless errors.empty?
+
+    pass(
+      api,
+      { org: org_contact, per: priv_contact },
+      { 'org_contact_id' => org_id, 'priv_contact_id' => priv_id }
+    )
+  end
+
+  def contact_ids
+    [@inputs['org_contact_id'], @inputs['priv_contact_id']]
+  end
+
+  def fetch_contact_with_audit(api, contact_id)
+    with_audit(api, 'contact_info') { @service.contact_info(id: contact_id) }
+  end
+
+  def validate_contacts(org, priv, cutoff_time)
     errors = []
-    errors << I18n.t('validators.create_contacts_validator.organization_contact_not_found') unless org
-    errors << I18n.t('validators.create_contacts_validator.private_contact_not_found') unless per
-    errors << I18n.t('validators.create_contacts_validator.org_type_mismatch')  unless org && org.dig(:ident, :type)  == 'org'
-    errors << I18n.t('validators.create_contacts_validator.priv_type_mismatch') unless per && per.dig(:ident, :type)  == 'priv'
-    errors << I18n.t('validators.create_contacts_validator.org_required_fields_missing')  unless org && required_fields_present?(org)
-    errors << I18n.t('validators.create_contacts_validator.priv_required_fields_missing') unless per && required_fields_present?(per)
+    errors.concat(presence_errors(org, priv))
+    errors.concat(type_errors(org, priv))
+    errors.concat(field_errors(org, priv))
+    errors.concat(recency_errors(org, priv, cutoff_time))
+    errors.compact
+  end
 
-    # Check if contacts were created recently
-    errors << I18n.t('validators.create_contacts_validator.org_contact_not_recent') if org && !recently_created?(org, cutoff_time)
-    errors << I18n.t('validators.create_contacts_validator.priv_contact_not_recent') if per && !recently_created?(per, cutoff_time)
+  def presence_errors(org, priv)
+    [].tap do |errors|
+      errors << I18n.t('validators.create_contacts_validator.organization_contact_not_found') unless org
+      errors << I18n.t('validators.create_contacts_validator.private_contact_not_found') unless priv
+    end
+  end
 
-    passed = errors.empty?
-    export = passed ? { 'org_contact_id' => org_id, 'priv_contact_id' => priv_id } : {}
+  def type_errors(org, priv)
+    [].tap do |errors|
+      errors << I18n.t('validators.create_contacts_validator.org_type_mismatch') unless valid_type?(org, 'org')
+      errors << I18n.t('validators.create_contacts_validator.priv_type_mismatch') unless valid_type?(priv, 'priv')
+    end
+  end
 
-    {
-      passed: passed,
-      score: passed ? 1.0 : 0.0,
-      evidence: { org: org, per: per },
-      error: passed ? nil : errors.join('; '),
-      api_audit: api,
-      export_vars: export
-    }
+  def field_errors(org, priv)
+    [].tap do |errors|
+      unless org && required_fields_present?(org)
+        errors << I18n.t('validators.create_contacts_validator.org_required_fields_missing')
+      end
+      unless priv && required_fields_present?(priv)
+        errors << I18n.t('validators.create_contacts_validator.priv_required_fields_missing')
+      end
+    end
+  end
+
+  def recency_errors(org, priv, cutoff_time)
+    [].tap do |errors|
+      unless recent_enough?(org, cutoff_time)
+        errors << I18n.t('validators.create_contacts_validator.org_contact_not_recent')
+      end
+      unless recent_enough?(priv, cutoff_time)
+        errors << I18n.t('validators.create_contacts_validator.priv_contact_not_recent')
+      end
+    end
+  end
+
+  def valid_type?(contact, expected_type)
+    contact && contact.dig(:ident, :type) == expected_type
   end
 
   def required_fields_present?(contact)
-    %i[code name ident phone email].all? { |k| contact[k].present? }
+    %i[code name ident phone email].all? { |k| contact && contact[k].present? }
   end
 
-  def recently_created?(contact, cutoff_time)
-    created_at = parse_time(contact[:created_at])
-    return false if created_at.nil?
-
-    created_at >= cutoff_time
-  end
-
-  def parse_time(val)
-    return val if val.is_a?(Time) || val.is_a?(ActiveSupport::TimeWithZone)
-    return nil if val.nil?
-
-    Time.zone.parse(val.to_s) rescue nil
-  end
-
-  def with_audit(api)
-    t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    res = yield
-    api << { op: 'contact_info', ok: true, ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
-    res
-  rescue => e
-    api << { op: 'contact_info', ok: false, error: e.message }
-    raise
+  def recent_enough?(contact, cutoff_time)
+    created_at = parse_time(contact&.fetch(:created_at, nil))
+    created_at.present? && created_at >= cutoff_time
   end
 
   def api_service_adapter

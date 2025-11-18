@@ -155,12 +155,41 @@ et:
       test_completion:
         subject: "Test on lõpetatud - %{test}"
   validators:
+    change_registrant:
+      source_domain_not_found: "Lähtedomeeni ei leitud: %{domain}"
+      target_domain_not_found: "Sihtdomeeni ei leitud: %{domain}"
+      source_domain_registrant_missing: "Lähtedomeeni registreerija puudub: %{domain}"
+      target_domain_registrant_missing: "Sihtdomeeni registreerija puudub: %{domain}"
+      target_domain_registrant_not_replaced: "Sihtdomeeni %{domain} registreerija ei ole asendatud lähtedomeeni registreerijaga"
+    create_and_cancel_invoice:
+      no_recently_cancelled_invoices: "Hiljutist tühistatud arve ei leitud (viimased %{window} minutit)"
     create_contacts_validator:
       organization_contact_not_found: "Organisatsiooni kontakt ei leitud"
       private_contact_not_found: "Privaatse kontakti ei leitud"
-      org_type_mismatch: "Organisatsiooni kontakti tüüp ei vasta"
-      priv_type_mismatch: "Privaatse kontakti tüüp ei vasta"
+      org_type_mismatch: "Organisatsiooni kontakti tüüp ei vasta õigele kontakti tüüpile"
+      priv_type_mismatch: "Privaatse kontakti tüüp ei vasta õigele kontakti tüüpile"
       org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
       priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"
       org_contact_not_recent: "Organisatsiooni kontakt ei ole hiljuti loodud"
       priv_contact_not_recent: "Privaatse kontakt ei ole hiljuti loodud"
+    delete_domain_verified_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_not_in_pending_delete_status: "Domeen %{domain} ei ole pendingDelete staatuses"
+    register_domains_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_wrong_period: "Domeenil %{domain} on vale periood (soovitud: %{period})"
+      domain_missing_registrant: "Domeenil %{domain} puudub registreerija"
+      domain_wrong_registrant: "Domeenil %{domain} on vale registreerija"
+    renew_domain_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_expire_time_missing: "Domeeni %{domain} aegumiskuupäev puudub"
+      domain_not_renewed: "Domeen %{domain} ei ole pikendatud"
+    transfer_domains_validator:
+      domains_array_missing: "Validatori konfiguratsioon peab sisaldama 'domains' massiivi"
+      domain_not_found: "Domeen '%{domain}' ei leitud"
+      domain_registrar_info_missing: "Domeeni %{domain} registreerija info puudub"
+      domain_registrar_mismatch: "Domeeni %{domain} registreerija ei vasta õigele registreerijale"
+    update_nameservers_validator:
+      nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"
