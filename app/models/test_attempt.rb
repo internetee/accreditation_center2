@@ -32,11 +32,11 @@ class TestAttempt < ApplicationRecord
   TIME_WARNING_MINUTES = 5
   DETAILS_EXPIRATION_DAYS = 30
 
-  def self.ransackable_attributes(auth_object = nil)
+  def self.ransackable_attributes(_auth_object = nil)
     %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
   end
 
-  def self.ransackable_associations(auth_object = nil)
+  def self.ransackable_associations(_auth_object = nil)
     %w[test user]
   end
 
@@ -209,6 +209,16 @@ class TestAttempt < ApplicationRecord
   def self.purge_old_details!
     where('completed_at IS NOT NULL AND completed_at < ?', 30.days.ago).find_each do |attempt|
       attempt.purge_details!
+    end
+  end
+
+  def build_duplicate
+    dup.tap do |new_attempt|
+      new_attempt.started_at = nil
+      new_attempt.completed_at = nil
+      new_attempt.passed = nil
+      new_attempt.score_percentage = nil
+      new_attempt.access_code = SecureRandom.hex(8)
     end
   end
 

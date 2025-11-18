@@ -5,9 +5,9 @@ class Admin::PracticalTaskResultsController < Admin::BaseController
 
   def index
     @practical_task_results = @practical_task.practical_task_results
-                                           .includes(:test_attempt, :user)
-                                           .order(created_at: :desc)
-    
+                                             .includes(:test_attempt, :user)
+                                             .order(created_at: :desc)
+
     @pagy, @practical_task_results = pagy(@practical_task_results, limit: session[:page_size], page: @page)
   end
 

@@ -1,6 +1,10 @@
 et:
   datetime:
     distance_in_words:
+      x_days: "%{count} päeva"
+      x_weeks: "%{count} nädalat"
+      x_months: "%{count} kuud"
+      x_years: "%{count} aastat"
       x_minutes: "%{count} minutit"
       x_seconds: "%{count} sekundit"
       about_x_hours: "%{count} tundi"
@@ -20,6 +24,15 @@ et:
       short: "%d.%m.%Y %H:%M"
       long: "%d. %B %Y %H:%M"
       default: "%d.%m.%Y %H:%M"
+  date:
+    month_names:
+      [~, Jaanuar, Veebruar, Märts, Aprill, Mai, Juuni, Juuli, August, September, Oktoober, November, Detsember]
+    abbr_month_names:
+      [~, Jaan, Veeb, Märts, Apr, Mai, Juuni, Juuli, Aug, Sep, Okt, Nov, Det]
+    formats:
+      default: "%d.%m.%Y"
+      month_year: "%d. %B %Y"
+      month_year_short: "%b, %Y"
   search: "Otsi"
   language: "eesti keeles"
   minutes: "minutit"

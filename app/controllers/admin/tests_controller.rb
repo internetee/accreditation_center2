@@ -27,8 +27,7 @@ class Admin::TestsController < Admin::BaseController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @test.update(test_params)
@@ -54,21 +53,10 @@ class Admin::TestsController < Admin::BaseController
   end
 
   def duplicate
-    new_test = @test.dup
-    new_test.title_et = "#{@test.title_et} (Copy)"
-    new_test.title_en = "#{@test.title_en} (Copy)"
-    new_test.description_et = "#{@test.description_et} (Copy)" if @test.description_et.present?
-    new_test.description_en = "#{@test.description_en} (Copy)" if @test.description_en.present?
-    new_test.active = false
+    new_test = @test.build_duplicate
 
     if new_test.save
-      # Duplicate categories and questions
-      @test.test_categories_tests.each do |category_test|
-        new_category_test = category_test.dup
-        new_category_test.test = new_test
-        new_category_test.save
-      end
-
+      duplicate_associations(new_test)
       redirect_to edit_admin_test_path(new_test), notice: t('admin.tests.duplicated')
     else
       redirect_to admin_test_path(@test), alert: t('admin.tests.duplication_failed')
@@ -88,5 +76,28 @@ class Admin::TestsController < Admin::BaseController
       :display_order, :active, :test_type, test_category_ids: []
     )
   end
+
+  def duplicate_associations(new_test)
+    duplicate_test_categories(new_test)
+    duplicate_practical_tasks(new_test)
+  end
+
+  def duplicate_test_categories(new_test)
+    @test.test_categories_tests.find_each do |category_test|
+      new_category_test = category_test.dup
+      new_category_test.test = new_test
+      new_category_test.save!
+    end
+  end
+
+  def duplicate_practical_tasks(new_test)
+    return unless @test.practical?
+
+    @test.practical_tasks.find_each do |task|
+      new_task = task.dup
+      new_task.test = new_test
+      new_task.display_order = task.display_order
+      new_task.save!
+    end
+  end
 end
- 

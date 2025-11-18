@@ -98,4 +98,16 @@ class Test < ApplicationRecord
       end
     end
   end
+
+  public
+
+  def build_duplicate
+    dup.tap do |new_test|
+      new_test.title_et = "#{title_et} (Copy)"
+      new_test.title_en = "#{title_en} (Copy)"
+      new_test.description_et = "#{description_et} (Copy)" if description_et.present?
+      new_test.description_en = "#{description_en} (Copy)" if description_en.present?
+      new_test.active = false
+    end
+  end
 end

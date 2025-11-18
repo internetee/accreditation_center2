@@ -1,5 +1,5 @@
 class Admin::TestCategoriesController < Admin::BaseController
-  before_action :set_test_category, only: %w[show edit update destroy activate deactivate]
+  before_action :set_test_category, only: %w[show edit update destroy]
   before_action :set_pagy_params, only: %i[index]
 
   def index
@@ -22,8 +22,7 @@ class Admin::TestCategoriesController < Admin::BaseController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def show
     @questions = @test_category.questions.order(display_order: :asc)
@@ -42,16 +41,6 @@ class Admin::TestCategoriesController < Admin::BaseController
   def destroy
     @test_category.destroy
     redirect_to admin_test_categories_path, notice: t('admin.test_categories.destroyed')
-  end
-
-  def activate
-    @test_category.update!(active: true)
-    redirect_to admin_test_categories_path, notice: t('admin.test_categories.activated')
-  end
-
-  def deactivate
-    @test_category.update!(active: false)
-    redirect_to admin_test_categories_path, notice: t('admin.test_categories.deactivated')
   end
 
   private
