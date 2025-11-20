@@ -113,7 +113,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
     let(:mail) { described_class.coordinator_notification(expiring_users) }
 
     before do
-      allow(ENV).to receive(:fetch).with('COORDINATOR_EMAIL', 'info@internet.ee').and_return('coordinator@example.com')
+      ENV['COORDINATOR_EMAIL'] = 'coordinator@example.com'
     end
 
     it 'sends to the coordinator email' do
@@ -141,7 +141,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
 
     context 'when COORDINATOR_EMAIL is set' do
       before do
-        allow(ENV).to receive(:fetch).with('COORDINATOR_EMAIL', 'info@internet.ee').and_return('custom@example.com')
+        ENV['COORDINATOR_EMAIL'] = 'custom@example.com'
       end
 
       it 'uses the custom coordinator email' do
@@ -152,13 +152,43 @@ RSpec.describe AccreditationMailer, type: :mailer do
 
     context 'when COORDINATOR_EMAIL is not set' do
       before do
-        allow(ENV).to receive(:fetch).with('COORDINATOR_EMAIL', 'info@internet.ee').and_return('info@internet.ee')
+        ENV['COORDINATOR_EMAIL'] = 'info@internet.ee'
       end
 
       it 'uses the default coordinator email' do
         mail = described_class.coordinator_notification(expiring_users)
         expect(mail.to).to eq(['info@internet.ee'])
       end
+    end
+  end
+
+  describe '#assignment_failed' do
+    let(:user) { create(:user, email: 'registrar@example.com') }
+    let(:failures) do
+      [
+        Attempts::AutoAssign::Failure.new(test_type: 'theoretical', error_message: 'No tests available'),
+        Attempts::AutoAssign::Failure.new(test_type: 'practical', error_message: 'Provisioning failed')
+      ]
+    end
+    let(:mail) { described_class.assignment_failed(user, failures) }
+
+    before do
+      ENV['COORDINATOR_EMAIL'] = 'coord@example.com'
+    end
+
+    it 'sends to the coordinator email' do
+      expect(mail.to).to eq(['coord@example.com'])
+    end
+
+    it 'uses the assignment failed subject' do
+      expect(mail.subject).to eq("Automatic Test Assignment Failed for #{user.username}")
+    end
+
+    it 'lists each failure in the body' do
+      expect(mail.body.encoded).to include('Theoretical')
+      expect(mail.body.encoded).to include('No tests available')
+      expect(mail.body.encoded).to include('Practical')
+      expect(mail.body.encoded).to include('Provisioning failed')
     end
   end
 end

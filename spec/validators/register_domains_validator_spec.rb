@@ -29,7 +29,6 @@ RSpec.describe RegisterDomainsValidator do
   let(:created_time) { Time.zone.parse('2024-01-01 00:00:00') }
   let(:domain_info_template) do
     {
-      success: true,
       created_at: created_time,
       expire_time: validator.send(:calculate_expiry, created_time, '1y'),
       registrant: { code: org_contact_code },

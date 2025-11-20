@@ -22,6 +22,18 @@ en:
   ago: "ago"
   access_denied_admin: "Admin users cannot access user pages"
   no_translation: "Sorry, no translation available for this language"
+  errors:
+    invalid_credentials: "Invalid credentials"
+    access_denied: "Access denied"
+    object_not_found: "Object not found"
+    invalid_data_format: "Invalid data format."
+    service_error: "Service error."
+    unexpected_response: "Unexpected response from service"
+    service_timeout: "Service timeout"
+    cannot_connect_to_service: "Cannot connect to service"
+    network_error: "Network error"
+    service_temporarily_unavailable: "Service temporarily unavailable"
+    api_endpoint_not_configured: "API endpoint not configured"
   nav:
     dashboard: "Dashboard"
     tests: "Tests"
@@ -29,6 +41,7 @@ en:
     users: "Users"
   users:
     sessions:
+      assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
       new:
         title: "Eesti Interneti SA Accreditation Center"
         login: "Sign in"
@@ -137,6 +150,8 @@ en:
         subject: "Accreditation Expired - Action Required"
       coordinator_notification:
         subject: "Accreditation Expiry Alert - %{count} Users"
+      assignment_failed:
+        subject: "Automatic Test Assignment Failed for %{username}"
   validators:
     change_registrant:
       source_domain_not_found: "Source domain not found: %{domain}"

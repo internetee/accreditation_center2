@@ -18,7 +18,7 @@ class Admin::TestCategoriesController < Admin::BaseController
       redirect_to admin_test_category_path(@test_category), notice: t('admin.test_categories.created')
     else
       flash.now[:alert] = @test_category.errors.full_messages.join(', ')
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -34,7 +34,7 @@ class Admin::TestCategoriesController < Admin::BaseController
       redirect_to admin_test_category_path(@test_category), notice: t('admin.test_categories.updated')
     else
       flash.now[:alert] = @test_category.errors.full_messages.join(', ')
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

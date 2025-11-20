@@ -22,6 +22,16 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
     end
   end
 
+  describe 'GET /admin/tests/:test_id/test_attempts/new' do
+    it 'renders the new page' do
+      get new_admin_test_test_attempt_path(test_record)
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:new)
+      expect(assigns(:users)).not_to include(user)
+    end
+  end
+
   describe 'GET /admin/tests/:test_id/test_attempts/:id' do
     it 'renders the show page' do
       get admin_test_test_attempt_path(test_record, test_attempt)
@@ -45,6 +55,18 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
       expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
       expect(flash[:notice]).to eq(I18n.t('admin.test_attempts.assigned'))
     end
+
+    it 'renders the new page with error when assignment fails' do
+      new_user = create(:user)
+
+      allow(Attempts::Assign).to receive(:call!).and_raise(StandardError, 'Assignment failed')
+
+      post admin_test_test_attempts_path(test_record), params: { test_attempt: { user_id: new_user.id } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to render_template(:new)
+      expect(flash[:alert]).to eq('Error assigning test: Assignment failed')
+    end
   end
 
   describe 'POST /admin/tests/:test_id/test_attempts/:id/reassign' do
@@ -55,6 +77,16 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
 
       expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
       expect(flash[:notice]).to eq(I18n.t('admin.test_attempts.reassigned'))
+    end
+
+    it 'renders the new page with error when reassign fails' do
+      invalid_attempt = build(:test_attempt, test: test_record, user: user, access_code: nil)
+      allow_any_instance_of(TestAttempt).to receive(:build_duplicate).and_return(invalid_attempt)
+
+      post reassign_admin_test_test_attempt_path(test_record, test_attempt)
+
+      expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
+      expect(flash[:alert]).to eq(I18n.t('admin.test_attempts.reassign_failed'))
     end
   end
 

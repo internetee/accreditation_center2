@@ -6,7 +6,7 @@ class Users::SessionsController < Devise::SessionsController
   # POST /resource/sign_in
   def create
     username, password = user_credentials
-    return render_invalid_credentials unless credentials_present?(username, password)
+    return handle_invalid_credentials unless credentials_present?(username, password)
 
     user = User.find_by(username: username)
 
@@ -34,9 +34,9 @@ class Users::SessionsController < Devise::SessionsController
     username.present? && password.present?
   end
 
-  def render_invalid_credentials
-    flash.now[:alert] = t('devise.failure.invalid', authentication_keys: 'username')
-    render :new, status: :unauthorized
+  def handle_invalid_credentials
+    flash[:alert] = t('devise.failure.invalid', authentication_keys: 'username')
+    redirect_to new_user_session_path
   end
 
   def local_admin?(user, password)
@@ -50,12 +50,13 @@ class Users::SessionsController < Devise::SessionsController
     user = find_or_create_api_user(response, password)
     sign_in(user)
     session[:auth_token] = ApiTokenService.new(username: username, password: password).generate
+    assign_test_attempts(user) if ENV['AUTO_ASSIGN_TEST_ATTEMPTS'].to_s == 'true'
     redirect_after_sign_in(user)
   end
 
   def handle_failed_auth(response)
-    flash.now[:alert] = response[:message]
-    render :new, status: :unauthorized
+    flash[:alert] = response[:message]
+    redirect_to new_user_session_path
   end
 
   def find_or_create_api_user(response, password)
@@ -78,5 +79,19 @@ class Users::SessionsController < Devise::SessionsController
     else
       redirect_to root_path, notice: t('devise.sessions.signed_in')
     end
+  end
+
+  def assign_test_attempts(user)
+    failures = Attempts::AutoAssign.new(user: user).call
+    return if failures.empty?
+
+    flash[:alert] = t('users.sessions.assignment_failed')
+    notify_assignment_failures(user, failures)
+  end
+
+  def notify_assignment_failures(user, failures)
+    AccreditationMailer.assignment_failed(user, failures).deliver_now
+  rescue StandardError => e
+    Rails.logger.error("Automatic test assignment notification failed for #{user.username}: #{e.message}")
   end
 end

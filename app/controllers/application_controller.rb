@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   def handle_update_error(error)
     flash.now[:alert] = error.message
     respond_to do |format|
-      format.json { render json: { error: error.message }, status: :unprocessable_entity }
+      format.json { render json: { error: error.message }, status: :unprocessable_content }
       format.turbo_stream { render turbo_stream: turbo_stream.update('flash', partial: 'common/flash') }
     end
   end

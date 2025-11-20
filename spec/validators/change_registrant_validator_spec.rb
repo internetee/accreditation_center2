@@ -18,8 +18,8 @@ RSpec.describe ChangeRegistrantValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(100.0, 100.5, 200.0, 200.5)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, registrant: { code: 'REG1' } },
-          { success: true, registrant: { code: 'REG1' } }
+          { registrant: { code: 'REG1' } },
+          { registrant: { code: 'REG1' } }
         )
       end
 
@@ -41,7 +41,9 @@ RSpec.describe ChangeRegistrantValidator do
     context 'when source domain info lookup fails' do
       before do
         allow(Process).to receive(:clock_gettime).and_return(100.0, 100.1)
-        allow(service).to receive(:domain_info).and_return(nil)
+        allow(service).to receive(:domain_info).and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
       end
 
       it 'fails with descriptive error' do
@@ -77,8 +79,8 @@ RSpec.describe ChangeRegistrantValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(100.0, 100.1, 200.0, 200.1)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, registrant: { code: 'REG1' } },
-          { success: true, registrant: { code: 'REG2' } }
+          { registrant: { code: 'REG1' } },
+          { registrant: { code: 'REG2' } }
         )
       end
 
@@ -109,8 +111,8 @@ RSpec.describe ChangeRegistrantValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(100.0, 100.5, 200.0, 200.5)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, registrant: { code: 'REG1' } },
-          { success: true, registrant: { code: 'REG1' } }
+          { registrant: { code: 'REG1' } },
+          { registrant: { code: 'REG1' } }
         )
       end
 
@@ -127,8 +129,8 @@ RSpec.describe ChangeRegistrantValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(100.0, 100.1, 200.0, 200.1)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, registrant: {} },
-          { success: true, registrant: { code: nil } }
+          { registrant: {} },
+          { registrant: { code: nil } }
         )
       end
 

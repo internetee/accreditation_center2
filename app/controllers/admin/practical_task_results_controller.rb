@@ -21,7 +21,7 @@ class Admin::PracticalTaskResultsController < Admin::BaseController
       redirect_to admin_test_practical_task_practical_task_result_path(@test, @practical_task, @practical_task_result), 
                   notice: t('admin.practical_task_results.updated')
     else
-      render :show, status: :unprocessable_entity
+      render :show, status: :unprocessable_content
     end
   end
 

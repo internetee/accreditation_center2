@@ -40,7 +40,7 @@ RSpec.describe ApiConnector do
       connector
       result = connector.make_request(:get, nil)
 
-      expect(result).to eq(success: false, message: 'API endpoint not configured', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.api_endpoint_not_configured'), data: nil)
       expect(connection).not_to have_received(:send)
     end
 
@@ -68,7 +68,25 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Forbidden', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.access_denied'), data: nil)
+    end
+
+    it 'returns custom error for 404 status' do
+      response = instance_double(Faraday::Response, status: 404, body: { 'errors' => 'Not Found' })
+      allow(connection).to receive(:send).and_return(response)
+
+      result = connector.make_request(:get, url)
+
+      expect(result).to eq(success: false, message: I18n.t('errors.object_not_found'), data: nil)
+    end
+
+    it 'returns custom error for 422 status' do
+      response = instance_double(Faraday::Response, status: 422, body: { 'errors' => 'Invalid Data' })
+      allow(connection).to receive(:send).and_return(response)
+
+      result = connector.make_request(:get, url)
+
+      expect(result).to eq(success: false, message: I18n.t('errors.invalid_data'), data: nil)
     end
 
     it 'returns default message for 500 status without errors payload' do
@@ -77,7 +95,7 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Service error', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.service_error'), data: nil)
     end
 
     it 'handles Faraday timeout errors' do
@@ -85,7 +103,7 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Service timeout', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.service_timeout'), data: nil)
     end
 
     it 'handles connection failures' do
@@ -93,7 +111,7 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Cannot connect to service', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.cannot_connect_to_service'), data: nil)
     end
 
     it 'handles Faraday errors' do
@@ -101,7 +119,7 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Network error', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.network_error'), data: nil)
     end
 
     it 'handles generic errors' do
@@ -109,7 +127,7 @@ RSpec.describe ApiConnector do
 
       result = connector.make_request(:get, url)
 
-      expect(result).to eq(success: false, message: 'Service temporarily unavailable', data: nil)
+      expect(result).to eq(success: false, message: I18n.t('errors.service_temporarily_unavailable'), data: nil)
     end
   end
 end

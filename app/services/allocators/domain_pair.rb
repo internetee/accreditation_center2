@@ -111,6 +111,7 @@ module Allocators
     end
 
     def ensure_idn_conversion(result)
+      # if the result is already ASCII-only, return it
       return result unless result.ascii_only?
 
       result = apply_fallback_replacements(result)

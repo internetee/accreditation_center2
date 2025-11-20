@@ -1,0 +1,8 @@
+Automatic test assignment failed for <%= @user.username %> (<%= @user.email %>).
+
+Please review the account and assign the missing tests manually.
+
+<% @failures.each do |failure| %>
+- <%= failure.test_type.to_s.humanize %>: <%= failure.error_message %>
+<% end %>
+

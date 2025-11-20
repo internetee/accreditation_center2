@@ -17,7 +17,7 @@ RSpec.describe DeleteDomainVerifiedValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, statuses: { pendingDelete: true } }
+          { statuses: { pendingDelete: true } }
         )
       end
 
@@ -34,7 +34,9 @@ RSpec.describe DeleteDomainVerifiedValidator do
     context 'when domain info is missing' do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
-        allow(service).to receive(:domain_info).and_return(nil)
+        allow(service).to receive(:domain_info).and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
       end
 
       it 'fails with not found error' do
@@ -52,7 +54,7 @@ RSpec.describe DeleteDomainVerifiedValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, statuses: { ok: true } }
+          { statuses: { ok: true } }
         )
       end
 
@@ -73,7 +75,7 @@ RSpec.describe DeleteDomainVerifiedValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).and_return(
-          { success: true, statuses: { pendingDelete: true } }
+          { statuses: { pendingDelete: true } }
         )
       end
 

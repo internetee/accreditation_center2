@@ -1,85 +1,53 @@
 require 'rails_helper'
 
 RSpec.describe DomainService do
-  let(:base_url) { 'https://api.example.com' }
-  let(:endpoint) { '/repp/v1/domains' }
-  let(:token) { 'domain-token' }
-  let(:connection) { instance_double(Faraday::Connection) }
+  let(:token) { 'token' }
 
-  before do
-    ENV['BASE_URL'] = base_url
-    ENV['GET_DOMAIN_INFO'] = endpoint
-    allow_any_instance_of(ApiConnector).to receive(:build_connection).and_return(connection)
+  it 'returns success payload on valid credentials' do
+    service = described_class.new(token: 'token')
+    stub_request(:get, "#{ENV['BASE_URL']}#{ENV['GET_DOMAIN_INFO']}?name=example.ee")
+      .with(headers: { 'Authorization' => "Basic #{token}" })
+      .and_return(
+        status: 200,
+        body: { domain: { name: 'example.ee', status: 'ok' } }.to_json
+      )
+
+    expect(service.domain_info(name: 'example.ee')).to include({ name: 'example.ee', status: 'ok' })
   end
 
-  describe '#initialize' do
-    it 'configures API url and headers' do
-      service = described_class.new(token: token)
+  it 'returns failure payload on invalid credentials' do
+    service = described_class.new(token: 'token')
+    stub_request(:get, "#{ENV['BASE_URL']}#{ENV['GET_DOMAIN_INFO']}?name=example.ee")
+      .with(headers: { 'Authorization' => "Basic #{token}" })
+      .and_return(
+        status: 401,
+        body: { code: 2202, message: 'Invalid authorization information' }.to_json
+      )
 
-      expect(service.instance_variable_get(:@api_url_info)).to eq("#{base_url}#{endpoint}")
-      expect(service.instance_variable_get(:@headers)).to eq('Authorization' => "Basic #{token}")
-    end
+    expect(service.domain_info(name: 'example.ee')).to include(success: false, data: nil, message: I18n.t('errors.invalid_credentials'))
   end
 
-  describe '#domain_info' do
-    let(:service) { described_class.new(token: token) }
-    let(:headers) { service.instance_variable_get(:@headers) }
-    let(:url) { "#{base_url}#{endpoint}?name=example.ee" }
+  it 'returns domain not found error on domain not found' do
+    service = described_class.new(token: 'token')
+    stub_request(:get, "#{ENV['BASE_URL']}#{ENV['GET_DOMAIN_INFO']}?name=example.ee")
+      .with(headers: { 'Authorization' => "Basic #{token}" })
+      .and_return(
+        status: 404,
+        body: { errors: 'Domain not found' }.to_json
+      )
 
-    it 'returns the response when request fails' do
-      error_response = { success: false, message: 'Not found', data: nil }
-      allow(service).to receive(:make_request).and_return(error_response)
+    expect(service.domain_info(name: 'example.ee')).to include(success: false, data: nil, message: I18n.t('errors.object_not_found'))
+  end
 
-      expect(service.domain_info(name: 'example.ee')).to eq(error_response)
-    end
+  it 'returns invalid data format error on invalid data format' do
+    service = described_class.new(token: 'token')
+    stub_request(:get, "#{ENV['BASE_URL']}#{ENV['GET_DOMAIN_INFO']}?name=example.ee")
+      .with(headers: { 'Authorization' => "Basic #{token}" })
+      .and_return(
+        status: 200,
+        body: 'invalid data format'
+      )
 
-    it 'symbolizes hash payload from API directly' do
-      response = {
-        success: true,
-        data: { 'domain' => { 'name' => 'example.ee', 'status' => 'ok' } }
-      }
-
-      expect(service).to receive(:make_request).with(:get, url, { headers: headers }).and_return(response)
-
-      result = service.domain_info(name: 'example.ee')
-
-      expect(result).to eq(name: 'example.ee', status: 'ok')
-    end
-
-    it 'symbolizes JSON string payload from API' do
-      payload = {
-        domain: {
-          name: 'example.ee',
-          registrar: 'Example Registrar'
-        }
-      }.to_json
-
-      allow(service).to receive(:make_request).and_return(success: true, data: payload)
-
-      result = service.domain_info(name: 'example.ee')
-
-      expect(result).to eq(name: 'example.ee', registrar: 'Example Registrar')
-    end
-
-    it 'symbolizes payload without domain key' do
-      response = {
-        success: true,
-        data: { 'name' => 'example.ee', 'status' => 'inactive' }
-      }
-
-      allow(service).to receive(:make_request).and_return(response)
-
-      result = service.domain_info(name: 'example.ee')
-
-      expect(result).to eq(name: 'example.ee', status: 'inactive')
-    end
-
-    it 'escapes domain name in query' do
-      expect(service).to receive(:make_request)
-        .with(:get, "#{base_url}#{endpoint}?name=example.ee%2Ftest", { headers: headers })
-        .and_return(success: false, message: 'error', data: nil)
-
-      service.domain_info(name: 'example.ee/test')
-    end
+    expect(service.domain_info(name: 'example.ee')).to include(success: false, data: nil, message: I18n.t('errors.unexpected_response'))
   end
 end

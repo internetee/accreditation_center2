@@ -21,7 +21,7 @@ class CreateAndCancelInvoiceValidator < BaseTaskValidator
   private
 
   def recent_cancelled_invoices(invoices, cutoff)
-    return [] if invoices.nil?
+    return [] if invalid_invoice_payload?(invoices)
 
     invoices.select do |inv|
       cancelled_at = parse_time(inv[:cancelled_at])
@@ -39,5 +39,9 @@ class CreateAndCancelInvoiceValidator < BaseTaskValidator
 
   def api_service_adapter
     InvoiceService.new(token: @token)
+  end
+
+  def invalid_invoice_payload?(invoices)
+    invoices.nil? || (invoices.is_a?(Hash) && invoices[:success] == false)
   end
 end

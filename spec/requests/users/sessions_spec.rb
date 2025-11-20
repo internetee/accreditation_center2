@@ -50,8 +50,8 @@ RSpec.describe Users::SessionsController, type: :request do
       it 'renders new with unauthorized and flash' do
         post user_session_path, params: params
 
-        expect(response).to have_http_status(:unauthorized)
-        expect(response.body).to include(I18n.t('devise.failure.invalid', authentication_keys: 'username'))
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to eq(I18n.t('devise.failure.invalid', authentication_keys: 'username'))
       end
     end
 
@@ -94,8 +94,8 @@ RSpec.describe Users::SessionsController, type: :request do
 
         post user_session_path, params: params
 
-        expect(response).to have_http_status(:unauthorized)
-        expect(response.body).to include('Invalid authorization information')
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to eq('Invalid authorization information')
         expect(session[:auth_token]).to be_nil
       end
     end

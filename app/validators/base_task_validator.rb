@@ -53,10 +53,18 @@ class BaseTaskValidator
   def with_audit(api, operation)
     t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     res = yield
-    api << { op: operation, ok: !res.nil?, ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
+    api << { op: operation, ok: api_audit_ok?(res), ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
     res
   rescue StandardError => e
     api << { op: operation, ok: false, error: e.message }
     nil
+  end
+
+  def api_audit_ok?(res)
+    return false if res.nil?
+    return true if res.is_a?(Hash) && res[:success] != false
+    return true if res.is_a?(Array)
+
+    false
   end
 end

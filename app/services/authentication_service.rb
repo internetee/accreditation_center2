@@ -10,10 +10,8 @@ class AuthenticationService < ApiConnector
 
   # Authenticate user via API using GET request
   def authenticate_user
-    # Use base class make_request method with error handling
     result = make_request(:get, @api_url, { headers: @headers })
 
-    # Handle authentication-specific response processing
     if result[:success]
       handle_auth_success(result[:data])
     else
@@ -24,12 +22,12 @@ class AuthenticationService < ApiConnector
   private
 
   def handle_auth_success(data)
-    # Check if the response has the expected structure
+    data = parse_json(data)
+
     if data.is_a?(Hash) && data['code'] == 1000
       success_auth_response(data['data'])
     else
-      # If not the expected structure, treat as direct data
-      success_auth_response(data)
+      error_response(nil, I18n.t('errors.unexpected_response'))
     end
   end
 

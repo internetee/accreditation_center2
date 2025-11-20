@@ -46,3 +46,6 @@ COORDINATOR_EMAIL: "info@internet.ee,info2@internet.ee"
 COORDINATOR_ACCR_EXPIRY_NOTIFICATION_DAYS: 14
 # Days before expiry to notify users separated by comma
 ACCR_EXPIRY_NOTIFICATION_DAYS: '14,7'
+
+# Automatically assign test attempts to users after sign in
+AUTO_ASSIGN_TEST_ATTEMPTS: false

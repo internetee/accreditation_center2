@@ -44,8 +44,12 @@ class CreateContactsValidator < BaseTaskValidator
 
   def presence_errors(org, priv)
     [].tap do |errors|
-      errors << I18n.t('validators.create_contacts_validator.organization_contact_not_found') unless org
-      errors << I18n.t('validators.create_contacts_validator.private_contact_not_found') unless priv
+      if org.nil? || org[:success] == false
+        errors << I18n.t('validators.create_contacts_validator.organization_contact_not_found')
+      end
+      if priv.nil? || priv[:success] == false
+        errors << I18n.t('validators.create_contacts_validator.private_contact_not_found')
+      end
     end
   end
 

@@ -14,17 +14,6 @@
           <%= link_to t(:edit), edit_admin_test_path(@test), class: 'button button--primary' %>
         </div>
         <div class="col-xs-auto">
-          <% if @test.active? %>
-            <%= link_to t(:deactivate), deactivate_admin_test_path(@test),  
-                        class: 'button button--error',
-                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_deactivate') } %>
-          <% else %>
-            <%= link_to t(:activate), activate_admin_test_path(@test),
-                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_activate') },
-                        class: 'button button--secondary' %>
-          <% end %>
-        </div>
-        <div class="col-xs-auto">
           <%= link_to t(:duplicate), duplicate_admin_test_path(@test),
                       class: 'button button--primary',
                       data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_duplicate') } %>

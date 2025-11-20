@@ -32,11 +32,9 @@ RSpec.describe TransferDomainsValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           registrar: { name: 'User Registrar' }
         )
         allow(service).to receive(:domain_info).with(name: 'other.ee').and_return(
-          success: true,
           registrar: { name: 'User Registrar' }
         )
       end
@@ -55,7 +53,9 @@ RSpec.describe TransferDomainsValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(success: false)
-        allow(service).to receive(:domain_info).with(name: 'other.ee').and_return(success: true, registrar: { name: 'User Registrar' })
+        allow(service).to receive(:domain_info).with(name: 'other.ee').and_return(
+          registrar: { name: 'User Registrar' }
+        )
       end
 
       it 'fails with not found error' do
@@ -72,11 +72,9 @@ RSpec.describe TransferDomainsValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           registrar: nil
         )
         allow(service).to receive(:domain_info).with(name: 'other.ee').and_return(
-          success: true,
           registrar: { name: 'User Registrar' }
         )
       end
@@ -94,11 +92,9 @@ RSpec.describe TransferDomainsValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           registrar: { name: 'Other Registrar' }
         )
         allow(service).to receive(:domain_info).with(name: 'other.ee').and_return(
-          success: true,
           registrar: { name: 'User Registrar' }
         )
       end

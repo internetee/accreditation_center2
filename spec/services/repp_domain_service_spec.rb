@@ -14,16 +14,6 @@ RSpec.describe ReppDomainService do
     ENV['ACCR_BOT_PASSWORD'] = bot_password
     ENV['CLIENT_BOT_CERTS_PATH'] = '/path/to/cert'
     ENV['CLIENT_BOT_KEY_PATH'] = '/path/to/key'
-
-    # Mock ApiConnector to avoid actual HTTP calls
-    allow_any_instance_of(ApiConnector).to receive(:build_connection).and_return(double('connection'))
-    allow_any_instance_of(described_class).to receive(:make_request).and_return(
-      {
-        success: true,
-        data: {},
-        message: 'Success'
-      }
-    )
   end
 
   describe '#initialize' do
@@ -52,94 +42,65 @@ RSpec.describe ReppDomainService do
     let(:expected_body) { { domain: params }.to_json }
 
     it 'makes a POST request with correct body' do
-      expect(service).to receive(:make_request).with(
-        :post,
-        api_url,
-        hash_including(
-          headers: headers,
-          body: expected_body
-        )
-      ).and_return({ success: true, data: {}, message: 'Success' })
-
-      service.create_domain(params)
-    end
-
-    it 'returns error response when request fails' do
-      error_response = { success: false, message: 'Domain already exists', data: nil }
-      allow(service).to receive(:make_request).and_return(error_response)
-
-      result = service.create_domain(params)
-      expect(result).to eq(error_response)
-    end
-
-    context 'when request succeeds' do
-      it 'returns symbolized data from hash response' do
-        response = {
-          success: true,
-          data: {
-            'domain' => {
-              'name' => 'example.ee',
-              'status' => 'ok'
+      stub_request(:post, api_url)
+        .with(headers: headers, body: expected_body)
+        .and_return(
+          status: 200,
+          body: {
+            data: {
+              domain: { name: 'example.ee', transfer_code: '1234567890', id: '1234567890' }
             }
-          }
-        }
-
-        allow(service).to receive(:make_request).and_return(response)
-
-        result = service.create_domain(params)
-        expect(result).to eq(domain: { name: 'example.ee', status: 'ok' })
-      end
-
-      it 'parses JSON string and returns symbolized data' do
-        json_payload = {
-          domain: {
-            name: 'example.ee',
-            registrant: 'ORG123'
-          }
-        }.to_json
-
-        allow(service).to receive(:make_request).and_return(
-          success: true,
-          data: json_payload
+          }.to_json
         )
 
-        result = service.create_domain(params)
-        expect(result).to eq(domain: { name: 'example.ee', registrant: 'ORG123' })
-      end
+      expect(service.create_domain(params)).to include(
+        domain: { name: 'example.ee', transfer_code: '1234567890', id: '1234567890' }
+      )
+    end
 
-      it 'extracts data from nested data key' do
-        response = {
-          success: true,
-          data: {
-            'data' => {
-              'domain' => {
-                'name' => 'example.ee',
-                'status' => 'active'
-              }
-            }
-          }
-        }
+    it 'returns domain not found error on domain not created' do
+      stub_request(:post, api_url)
+        .with(headers: headers, body: expected_body)
+        .and_return(
+          status: 400,
+          body: { code: 2104, message: 'Active price missing for this operation!' }.to_json
+        )
 
-        allow(service).to receive(:make_request).and_return(response)
+      expect(service.create_domain(params)).to include(
+        success: false,
+        data: nil,
+        message: I18n.t('errors.unexpected_response')
+      )
+    end
 
-        result = service.create_domain(params)
-        expect(result).to eq(domain: { name: 'example.ee', status: 'active' })
-      end
+    it 'returns failure payload on invalid credentials' do
+      stub_request(:post, api_url)
+        .with(headers: headers, body: expected_body)
+        .and_return(
+          status: 401,
+          body: { code: 2202, message: 'Invalid authorization information' }.to_json
+        )
 
-      it 'handles response without nested data key' do
-        response = {
-          success: true,
-          data: {
-            'name' => 'example.ee',
-            'status' => 'pending'
-          }
-        }
+      expect(service.create_domain(params)).to include(
+        success: false,
+        data: nil,
+        message: I18n.t('errors.invalid_credentials')
+      )
+    end
 
-        allow(service).to receive(:make_request).and_return(response)
+    it 'returns invalid data format error on invalid data format' do
+      stub_request(:post, api_url)
+        .with(headers: headers, body: expected_body)
+        .and_return(
+          status: 200,
+          body: 'invalid data format'
+        )
 
-        result = service.create_domain(params)
-        expect(result).to eq(name: 'example.ee', status: 'pending')
-      end
+      expect(service.create_domain(params)).to include(
+        success: false,
+        data: nil,
+        message: I18n.t('errors.unexpected_response')
+      )
     end
   end
 end

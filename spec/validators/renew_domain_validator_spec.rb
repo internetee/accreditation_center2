@@ -19,7 +19,6 @@ RSpec.describe RenewDomainValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           created_at: created_time,
           expire_time: expire_time
         )
@@ -55,7 +54,6 @@ RSpec.describe RenewDomainValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           created_at: created_time,
           expire_time: nil
         )
@@ -75,7 +73,6 @@ RSpec.describe RenewDomainValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example.ee').and_return(
-          success: true,
           created_at: created_time,
           expire_time: created_time
         )
@@ -117,7 +114,6 @@ RSpec.describe RenewDomainValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'custom.ee').and_return(
-          success: true,
           created_at: created_time,
           expire_time: expire_time
         )

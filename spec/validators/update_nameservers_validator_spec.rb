@@ -46,11 +46,9 @@ RSpec.describe UpdateNameserversValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
         allow(service).to receive(:domain_info).with(name: 'example1.ee').and_return(
-          success: true,
           nameservers: [{ hostname: 'ns1.custom.test' }]
         )
         allow(service).to receive(:domain_info).with(name: 'example2.ee').and_return(
-          success: true,
           nameservers: [{ hostname: 'NS2.custom.test' }, { hostname: 'ns2.example.test' }]
         )
       end
@@ -69,7 +67,6 @@ RSpec.describe UpdateNameserversValidator do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
         allow(service).to receive(:domain_info).with(name: 'example1.ee').and_return(success: false)
         allow(service).to receive(:domain_info).with(name: 'example2.ee').and_return(
-          success: true,
           nameservers: [{ hostname: 'ns2.custom.test' }, { hostname: 'ns2.example.test' }]
         )
       end
@@ -88,11 +85,9 @@ RSpec.describe UpdateNameserversValidator do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
         allow(service).to receive(:domain_info).with(name: 'example1.ee').and_return(
-          success: true,
           nameservers: [{ hostname: 'ns1.example.test' }, { hostname: 'ns9.example.test' }]
         )
         allow(service).to receive(:domain_info).with(name: 'example2.ee').and_return(
-          success: true,
           nameservers: ['ns2.custom.test', 'ns2.example.test']
         )
       end

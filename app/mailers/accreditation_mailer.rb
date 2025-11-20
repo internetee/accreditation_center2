@@ -39,4 +39,14 @@ class AccreditationMailer < ApplicationMailer
       subject: t('mailers.accreditation.coordinator_notification.subject', count: expiring_users.count)
     )
   end
+
+  def assignment_failed(user, failures)
+    @user = user
+    @failures = failures
+
+    mail(
+      to: ENV.fetch('COORDINATOR_EMAIL', 'info@internet.ee'),
+      subject: t('mailers.accreditation.assignment_failed.subject', username: user.username)
+    )
+  end
 end

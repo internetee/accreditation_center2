@@ -101,19 +101,44 @@ RSpec.describe Allocators::DomainPair do
         stub_const('Faker', Module.new)
         internet_module = Module.new do
           def self.domain_word
-            'CustomWord'
+            'Faker'
           end
         end
         stub_const('Faker::Internet', internet_module)
       end
 
-      it 'uses Faker provided labels' do
-        allow(SimpleIDN).to receive(:to_ascii).and_call_original
+      it 'uses Faker provided labels with idn conversion' do
+        expect(SimpleIDN).to receive(:to_ascii).and_call_original
 
         allocator.call
 
-        expect(vars['domain1']).to start_with('customword')
-        expect(vars['domain2']).to include('ä').or include('õ').or include('ü').or include('ö')
+        expect(vars['domain1']).to start_with('faker')
+        expect(vars['domain2']).to eq('fäker-123-abcdef.ee')
+        expect(vars['domain2_ascii']).to eq('xn--fker-123-abcdef-0kb.ee')
+      end
+    end
+
+    context 'with Faker enabled and defined with ascii fallback' do
+      let(:config) { { 'use_faker' => true } }
+
+      before do
+        stub_const('Faker', Module.new)
+        internet_module = Module.new do
+          def self.domain_word
+            'wrd'
+          end
+        end
+        stub_const('Faker::Internet', internet_module)
+      end
+
+      it 'uses Faker provided labels and applies fallback replacements' do
+        expect(SimpleIDN).to receive(:to_ascii).and_call_original
+
+        allocator.call
+
+        expect(vars['domain1']).to start_with('wrd')
+        expect(vars['domain2']).to eq('wrdä-123-abcdef.ee')
+        expect(vars['domain2_ascii']).to eq('xn--wrd-123-abcdef-7hb.ee')
       end
     end
   end

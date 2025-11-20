@@ -44,8 +44,12 @@ RSpec.describe CreateContactsValidator do
 
     context 'when contacts are missing' do
       before do
-        allow(service).to receive(:contact_info).with(id: 'ORG-1').and_return(nil)
-        allow(service).to receive(:contact_info).with(id: 'PRIV-1').and_return(nil)
+        allow(service).to receive(:contact_info).with(id: 'ORG-1').and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
+        allow(service).to receive(:contact_info).with(id: 'PRIV-1').and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
       end
 

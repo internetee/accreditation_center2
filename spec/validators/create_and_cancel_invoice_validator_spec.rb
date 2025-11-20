@@ -44,7 +44,9 @@ RSpec.describe CreateAndCancelInvoiceValidator do
     context 'when no invoices within window' do
       before do
         allow(Time).to receive(:current).and_return(Time.zone.now)
-        allow(service).to receive(:cancelled_invoices).and_return([])
+        allow(service).to receive(:cancelled_invoices).and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
       end
 
@@ -53,7 +55,7 @@ RSpec.describe CreateAndCancelInvoiceValidator do
 
         expect(result[:passed]).to be(false)
         expect(result[:errors]).to include(I18n.t('validators.create_and_cancel_invoice.no_recently_cancelled_invoices', window: 10))
-        expect(result[:api_audit].first[:ok]).to be(true)
+        expect(result[:api_audit].first[:ok]).to be(false)
       end
     end
 
@@ -79,7 +81,9 @@ RSpec.describe CreateAndCancelInvoiceValidator do
 
       before do
         allow(Time).to receive(:current).and_return(Time.zone.now)
-        allow(service).to receive(:cancelled_invoices).and_return([])
+        allow(service).to receive(:cancelled_invoices).and_return(
+          { success: false, message: I18n.t('errors.unexpected_response'), data: nil }
+        )
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
       end
 

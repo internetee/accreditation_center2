@@ -56,6 +56,18 @@ et:
   ago: "tagasi"
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
   no_translation: "Tõlge pole saadaval"
+  errors:
+    invalid_credentials: "Vale kasutajanimi või parool"
+    access_denied: "Pole juurdepääsu"
+    object_not_found: "Objekt ei leitud"
+    invalid_data_format: "Vale andmete formaat"
+    service_error: "Teenuse tõrge"
+    unexpected_response: "Ootamatu vastus teenusest"
+    service_timeout: "Teenuse aegumine"
+    cannot_connect_to_service: "Ei saa ühendust teenusega"
+    network_error: "Võrgutõrge"
+    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
+    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -63,6 +75,7 @@ et:
     users: "Kasutajad"
   users:
     sessions:
+      assignment_failed: "Automaatne testide määramine ebaõnnestus. Koordinaatoritele saadeti teavitus."
       new:
         title: "Eesti Interneti SA Akrediteerimiskeskus"
         login: "Logi sisse"
@@ -167,6 +180,8 @@ et:
     accreditation:
       test_completion:
         subject: "Test on lõpetatud - %{test}"
+      assignment_failed:
+        subject: "Automaatne testide määramine ebaõnnestus kasutajal %{username}"
   validators:
     change_registrant:
       source_domain_not_found: "Lähtedomeeni ei leitud: %{domain}"

@@ -20,7 +20,7 @@ class Admin::TestAttemptsController < Admin::BaseController
   rescue StandardError => e
     @users = User.not_admin.order(:email)
     flash.now[:alert] = "Error assigning test: #{e.message}"
-    render :new, status: :unprocessable_entity
+    render :new, status: :unprocessable_content
   end
 
   def show

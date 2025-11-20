@@ -16,14 +16,12 @@ class DomainService < ApiConnector
     return result unless result[:success]
 
     data = result[:data]
-    data = JSON.parse(data) if data.is_a?(String)
+    data = parse_json(data)
 
-    payload = if data.is_a?(Hash) && data.key?('domain')
-                data['domain']
-              else
-                data
-              end
-
-    symbolize_keys_deep(payload)
+    if data.is_a?(Hash) && data.key?('domain')
+      symbolize_keys_deep(data['domain'])
+    else
+      error_response(nil, I18n.t('errors.unexpected_response'))
+    end
   end
 end

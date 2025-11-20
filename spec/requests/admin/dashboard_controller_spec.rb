@@ -23,5 +23,14 @@ RSpec.describe 'Admin::DashboardController', type: :request do
       expect(assigns(:recent_activity)).to include(recent_attempt)
       expect(assigns(:expiring_accreditations)).to include(expiring_user)
     end
+
+    it 'redirects to root path when user is not admin' do
+      sign_out admin
+      sign_in create(:user), scope: :user
+      get admin_dashboard_path
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('Access denied. Admin privileges required.')
+    end
   end
 end

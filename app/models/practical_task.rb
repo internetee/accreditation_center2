@@ -8,6 +8,8 @@ class PracticalTask < ApplicationRecord
   scope :active, -> { where(active: true) }
 
   validates :display_order, presence: true, numericality: { greater_than: 0 }
+  validates :body_et, presence: true
+  validates :body_en, presence: true
 
   translates :title, :body
 

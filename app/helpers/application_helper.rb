@@ -41,12 +41,12 @@ module ApplicationHelper
 
   def format_time(seconds)
     return '0:00' if seconds.nil? || seconds <= 0
-    
+
     hours = seconds / 3600
     minutes = (seconds % 3600) / 60
     remaining_seconds = seconds % 60
-    
-    if hours > 0
+
+    if hours.positive?
       format('%d:%02d:%02d', hours, minutes, remaining_seconds)
     else
       format('%d:%02d', minutes, remaining_seconds)
