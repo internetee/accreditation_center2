@@ -81,7 +81,7 @@ gem "dartsass-rails", "~> 0.5.1"
 
 gem 'action_policy'
 
-gem 'traco'
+gem 'traco', '>= 6.0.0'
 
 gem 'pagy', '~> 9.3' # omit patch digit
 gem 'ransack'
