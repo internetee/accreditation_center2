@@ -169,6 +169,7 @@ et:
     question:
       title: "%{test}"
       question_number: "Küsimus %{number}"
+      task_number: "Ülesanne %{number}"
     task:
       title: "%{test}"
       task_number: "Ülesanne %{number}"

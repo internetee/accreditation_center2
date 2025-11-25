@@ -132,7 +132,7 @@ class PracticalTestsController < TestsController
       flash[:notice] = t('tests.task_passed')
       redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: next_index)
     else
-      flash[:alert] = result[:error].presence || t('tests.task_failed')
+      flash[:alert] = result[:errors]&.first.presence || t('tests.task_failed')
       redirect_to question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: task_index)
     end
   end

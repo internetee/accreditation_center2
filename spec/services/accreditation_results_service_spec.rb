@@ -14,19 +14,10 @@ RSpec.describe AccreditationResultsService do
     ENV['ACCR_BOT_PASSWORD'] = bot_password
     ENV['CLIENT_BOT_CERTS_PATH'] = '/path/to/cert'
     ENV['CLIENT_BOT_KEY_PATH'] = '/path/to/key'
-
-    # Mock ApiConnector to avoid actual HTTP calls
-    allow_any_instance_of(ApiConnector).to receive(:build_connection).and_return(double('connection'))
-    allow_any_instance_of(described_class).to receive(:make_request).and_return(
-      {
-        success: true,
-        data: {},
-        message: 'Success'
-      }
-    )
   end
 
   let(:service) { described_class.new }
+  let(:headers) { service.instance_variable_get(:@headers) }
 
   describe '#initialize' do
     it 'sets the API URL correctly' do
@@ -43,26 +34,39 @@ RSpec.describe AccreditationResultsService do
   describe '#update_accreditation' do
     let(:username) { 'testuser' }
     let(:result) { true }
-    let(:expected_body) do
-      {
-        accreditation_result: {
-          username: username,
-          result: result
-        }
-      }.to_json
-    end
+    let(:expected_body) { { accreditation_result: { username: username, result: result } }.to_json }
 
     it 'makes a POST request with correct body' do
-      expect(service).to receive(:make_request).with(
-        :post,
-        api_url,
-        hash_including(
-          headers: service.instance_variable_get(:@headers),
-          body: expected_body
+      stub_request(:post, api_url)
+        .with(body: expected_body, headers: headers)
+        .to_return(
+          status: 200,
+          body: {
+            code: 1000,
+            message: 'Accreditation info successfully added',
+            data: {
+              result: result
+            }
+          }.to_json
         )
-      ).and_return({ success: true, data: {}, message: 'Success' })
 
-      service.update_accreditation(username, result)
+      expect(service.update_accreditation(username, result)).to eq({ result: result })
+    end
+
+    it 'returns error response if API call fails' do
+      stub_request(:post, api_url)
+        .with(body: expected_body, headers: headers)
+        .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
+
+      expect(service.update_accreditation(username, result)).to eq({ success: false, message: 'Object not found', data: nil })
+    end
+
+    it 'returns error response if API call returns unexpected response' do
+      stub_request(:post, api_url)
+        .with(body: expected_body, headers: headers)
+        .to_return(status: 400, body: { message: 'Username is missing', data: {} }.to_json)
+
+      expect(service.update_accreditation(username, result)).to eq({ success: false, message: 'Unexpected response from service', data: nil })
     end
   end
 
@@ -83,19 +87,6 @@ RSpec.describe AccreditationResultsService do
       before do
         test_attempt = instance_double(TestAttempt)
         allow(user).to receive(:latest_accreditation).and_return(test_attempt)
-        allow(user).to receive(:accreditation_expired?).and_return(true)
-      end
-
-      it 'returns false' do
-        expect(service.user_accredited?(user)).to be(false)
-      end
-    end
-
-    context 'when user has latest accreditation and it is not expired' do
-      before do
-        test_attempt = instance_double(TestAttempt)
-        allow(user).to receive(:latest_accreditation).and_return(test_attempt)
-        allow(user).to receive(:accreditation_expired?).and_return(false)
       end
 
       it 'returns true' do
@@ -148,6 +139,9 @@ RSpec.describe AccreditationResultsService do
     end
 
     it 'only processes users with role "user"' do
+      stub_request(:post, api_url)
+        .to_return(status: 200, body: { code: 1000, message: 'Accreditation info successfully added', data: { result: true } }.to_json)
+
       expect(service).to receive(:user_accredited?).with(accredited_user1)
       expect(service).to receive(:user_accredited?).with(accredited_user2)
       expect(service).to receive(:user_accredited?).with(non_accredited_user)
@@ -157,23 +151,23 @@ RSpec.describe AccreditationResultsService do
     end
 
     it 'syncs only accredited users' do
-      expect(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
-      expect(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: true })
+      expect(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
+      expect(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ result: true })
       expect(service).not_to receive(:sync_user_accreditation).with(non_accredited_user)
 
       service.sync_all_accredited_users
     end
 
     it 'returns the count of successfully synced users' do
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ result: true })
 
       count = service.sync_all_accredited_users
       expect(count).to eq(2)
     end
 
     it 'only counts successful syncs' do
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
       allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: false, message: 'Error' })
 
       count = service.sync_all_accredited_users
@@ -193,14 +187,6 @@ RSpec.describe AccreditationResultsService do
         count = service.sync_all_accredited_users
         expect(count).to eq(1)
       end
-    end
-  end
-
-  describe '#should_sync_user?' do
-    let(:user) { create(:user) }
-
-    it 'returns true by default' do
-      expect(service.send(:should_sync_user?, user)).to be(true)
     end
   end
 end

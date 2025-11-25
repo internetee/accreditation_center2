@@ -176,8 +176,8 @@ en:
     register_domains_validator:
       domain_not_found: "Domain not found: %{domain}"
       domain_wrong_period: "Domain %{domain} has wrong period (want %{period})"
-      domain_missing_registrant: "Domain %{domain} missing registrant"
-      domain_wrong_registrant: "Domain %{domain} wrong registrant"
+      domain_missing_registrant: "Domain %{domain} has missing registrant"
+      domain_wrong_registrant: "Domain %{domain} has incorrect registrant"
     renew_domain_validator:
       domain_not_found: "Domain not found: %{domain}"
       domain_expire_time_missing: "Domain %{domain} expire time missing"

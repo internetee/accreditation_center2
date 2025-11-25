@@ -33,16 +33,24 @@ class AccreditationResultsService < BotAuthService
       }
     }.to_json
 
-    make_request(:post, @api_url, { headers: @headers, body: body })
+    result = make_request(:post, @api_url, { headers: @headers, body: body })
+    return result unless result[:success]
+
+    data = result[:data]
+    data = parse_json(data)
+
+    if data.is_a?(Hash) && data.key?('data')
+      symbolize_keys_deep(data['data'])
+    else
+      error_response(nil, I18n.t('errors.unexpected_response'))
+    end
   end
 
   # Check if user is accredited (both tests passed and not expired)
   # @param user [User] User to check
   # @return [Boolean] True if user is accredited
   def user_accredited?(user)
-    return false if user.latest_accreditation.nil?
-
-    !user.accreditation_expired?
+    !user.latest_accreditation.nil?
   end
 
   # Sync accreditation for a user if they're newly accredited
@@ -62,7 +70,7 @@ class AccreditationResultsService < BotAuthService
     User.where(role: 'user').find_each do |user|
       if user_accredited?(user) && should_sync_user?(user)
         result = sync_user_accreditation(user)
-        synced_count += 1 if result[:success]
+        synced_count += 1 unless result[:success] == false
       end
     end
 

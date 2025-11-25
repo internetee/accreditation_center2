@@ -9,7 +9,7 @@ class Admin::TestAttemptsController < Admin::BaseController
 
   def new
     # Get users who haven't been assigned this test yet
-    assigned_user_ids = @test.test_attempts.not_completed.pluck(:user_id)
+    assigned_user_ids = @test.test_attempts.not_completed.reject(&:time_expired?).pluck(:user_id)
     @users = User.not_admin.where.not(id: assigned_user_ids).order(:email)
   end
 

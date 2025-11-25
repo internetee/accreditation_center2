@@ -11,7 +11,7 @@
 <div class="page page--test-question">
   <div class="page--header">
     <div class="wrapper">
-      <div class="row center-xs">
+      <div class="row center-xs" style="margin-bottom: 5px;">
         <% @tasks.each_with_index do |task, index| %>
           <% result = @test_attempt.practical_task_results.find_by(practical_task: task) %>
           <% status_class = result&.status || 'pending' %>

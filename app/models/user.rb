@@ -73,9 +73,7 @@ class User < ApplicationRecord
   end
 
   def accreditation_expired?
-    return true if accreditation_expire_date.nil?
-
-    accreditation_expire_date < Time.current
+    accreditation_expire_date.present? && accreditation_expire_date < Time.current
   end
 
   def accreditation_expires_soon?(days = 30)
