@@ -5,57 +5,59 @@ class TransferDomainsValidator < BaseTaskValidator
   #   {
   #     "domains": ["{{xfer_domain}}"]
   #   }
+  #
+  # Validates that:
+  # - The domains are transferred from bot registrar to user registrar
+  #
+  # Returns:
+  #   passed(bool), score(0..1), evidence(Hash), error(String|nil), api_audit(Array), export_vars(Hash)
   def call
-    errs = []
-    api  = []
+    api = []
+    expected_domains = resolved_domains
 
-    expected_domains = Array(@config['domains']).map { |d| Mustache.render(d.to_s, @attempt.vars) }.compact.uniq
+    return failure(api, [domains_missing_message]) if expected_domains.empty?
 
-    if expected_domains.empty?
-      return fail(api, ["validator config must include 'domains' array"])
-    end
+    errors = expected_domains.flat_map { |fqdn| validate_transfer(api, fqdn) }
+    return failure(api, errors) unless errors.empty?
 
-    # For each domain, check it exists and is now sponsored by current registrar
-    expected_domains.each do |fqdn|
-      info = info_with_audit(api, fqdn)
-      if info[:success] == false
-        errs << "#{fqdn} not found"
-        next
-      end
-
-      registrar = info.dig(:registrar, :name)
-      if registrar.blank?
-        errs << "#{fqdn} registrar info missing"
-      end
-
-      if registrar != @attempt.user.registrar_name
-        errs << "#{fqdn} registrar mismatch"
-      end
-    end
-
-    return pass(api, { expected_domains: expected_domains }) if errs.empty?
-
-    fail(api, errs)
+    pass(api, expected_domains: expected_domains)
   end
 
   private
 
-  def info_with_audit(api, name)
-    t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    res = @service.domain_info(name: name)
-    api << { op: 'domain_info', name: name, ok: !res.nil?, ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
-    res
-  rescue => e
-    api << { op: 'domain_info', name: name, ok: false, error: e.message }
-    nil
+  def resolved_domains
+    Array(@config['domains']).map { |d| Mustache.render(d.to_s, @attempt.vars) }.compact.uniq
   end
 
-  def pass(api, evidence = {})
-    { passed: true, score: 1.0, evidence: evidence, error: nil, api_audit: api, export_vars: {} }
+  def domains_missing_message
+    I18n.t('validators.transfer_domains_validator.domains_array_missing')
   end
 
-  def fail(api, errs)
-    { passed: false, score: 0.0, evidence: {}, error: errs.join('; '), api_audit: api, export_vars: {} }
+  def validate_transfer(api, domain_name)
+    info = fetch_domain_info(api, domain_name)
+    return [domain_not_found_message(domain_name)] if info.blank? || info[:success] == false
+
+    errors = []
+    registrar = info.dig(:registrar, :name)
+    errors << registrar_missing_message(domain_name) if registrar.blank?
+    errors << registrar_mismatch_message(domain_name) if registrar.present? && registrar != @attempt.user.registrar_name
+    errors
+  end
+
+  def fetch_domain_info(api, name)
+    with_audit(api, 'domain_info') { @service.domain_info(name: name) }
+  end
+
+  def domain_not_found_message(name)
+    I18n.t('validators.transfer_domains_validator.domain_not_found', domain: name)
+  end
+
+  def registrar_missing_message(name)
+    I18n.t('validators.transfer_domains_validator.domain_registrar_info_missing', domain: name)
+  end
+
+  def registrar_mismatch_message(name)
+    I18n.t('validators.transfer_domains_validator.domain_registrar_mismatch', domain: name)
   end
 
   def api_service_adapter

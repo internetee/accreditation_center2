@@ -29,13 +29,13 @@
         </td>
         <td>
           <div class="components-info">
-            <% if test.has_theoretical_questions? %>
+            <% if test.theoretical? %>
               <span class="component-item">
                 <i class="fas fa-question-circle"></i>
                 <%= test.theoretical_questions_count %> <%= t('admin.tests.index.questions') %>
               </span>
             <% end %>
-            <% if test.has_practical_tasks? %>
+            <% if test.practical? %>
               <span class="component-item">
                 <i class="fas fa-tasks"></i>
                 <%= test.practical_tasks_count %> <%= t('admin.tests.index.practical_tasks') %>

@@ -1,5 +1,5 @@
 class Admin::TestAttemptsController < Admin::BaseController
-  before_action :set_test, except: [:show]
+  before_action :set_test
   before_action :set_test_attempt, only: %i[show reassign extend_time destroy]
   before_action :set_pagy_params, only: %i[index]
 
@@ -9,7 +9,7 @@ class Admin::TestAttemptsController < Admin::BaseController
 
   def new
     # Get users who haven't been assigned this test yet
-    assigned_user_ids = @test.test_attempts.not_completed.pluck(:user_id)
+    assigned_user_ids = @test.test_attempts.not_completed.reject(&:time_expired?).pluck(:user_id)
     @users = User.not_admin.where.not(id: assigned_user_ids).order(:email)
   end
 
@@ -17,10 +17,10 @@ class Admin::TestAttemptsController < Admin::BaseController
     user = User.not_admin.find(test_attempt_params[:user_id])
     @test_attempt = Attempts::Assign.call!(user: user, test: @test)
     redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.assigned')
-  rescue => e
+  rescue StandardError => e
     @users = User.not_admin.order(:email)
     flash.now[:alert] = "Error assigning test: #{e.message}"
-    render :new, status: :unprocessable_entity
+    render :new, status: :unprocessable_content
   end
 
   def show
@@ -28,13 +28,7 @@ class Admin::TestAttemptsController < Admin::BaseController
   end
 
   def reassign
-    # Duplicate the test_attempt for the same user and test, including its attributes except id, timestamps, and status
-    new_attempt = @test_attempt.dup
-    new_attempt.started_at = nil
-    new_attempt.completed_at = nil
-    new_attempt.passed = nil
-    new_attempt.score_percentage = nil
-    new_attempt.access_code = SecureRandom.hex(8)
+    new_attempt = @test_attempt.build_duplicate
 
     if new_attempt.save
       redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.reassigned')

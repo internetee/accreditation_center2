@@ -24,8 +24,7 @@ class Admin::AnswersController < Admin::BaseController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     respond_to do |format|
@@ -51,14 +50,6 @@ class Admin::AnswersController < Admin::BaseController
         render turbo_stream: turbo_stream.remove(@answer)
       }
     end
-  end
-
-  def reorder
-    params[:answer_ids].each_with_index do |answer_id, index|
-      Answer.where(id: answer_id).update_all(display_order: index + 1)
-    end
-
-    head :ok
   end
 
   private

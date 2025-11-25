@@ -70,11 +70,13 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "rails-controller-testing"
   gem "selenium-webdriver"
   
   # Code coverage
   gem "simplecov", require: false
   gem "simplecov-lcov", require: false
+  gem 'webmock'
 end
 
 gem "dartsass-rails", "~> 0.5.1"

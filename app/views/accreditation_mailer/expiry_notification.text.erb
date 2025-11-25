@@ -3,9 +3,9 @@ Accreditation Expired
 Dear <%= @user.username %>,
 
 🚨 YOUR ACCREDITATION HAS EXPIRED!
-Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+Expiry Date: <%= @expiry_date&.strftime('%B %d, %Y') %>
 
-Your registrar accreditation expired on <%= @expiry_date.strftime('%B %d, %Y') %>. You are no longer authorized to perform registrar operations.
+Your registrar accreditation expired on <%= @expiry_date&.strftime('%B %d, %Y') %>. You are no longer authorized to perform registrar operations.
 
 IMMEDIATE ACTION REQUIRED:
 - You must stop all registrar operations immediately

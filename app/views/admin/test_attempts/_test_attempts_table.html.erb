@@ -22,7 +22,7 @@
       <tr>
         <td>
           <div class="user-info">
-            <span class="user-name"><%= link_to attempt.user.username, admin_user_path(attempt.user) %></span>
+            <span class="user-name"><%= attempt.user.username %></span>
             [<span class="user-email"><%= attempt.user.email %></span>]
           </div>
         </td>
@@ -31,7 +31,9 @@
         <td>
           <% if attempt.completed? && attempt.started_at %>
             <%= distance_of_time_in_words(attempt.started_at, attempt.completed_at) %>
-          <% elsif attempt.started_at %>
+          <% elsif attempt.time_expired? && !attempt.completed? %>
+            <%= t('.time_expired') %>
+          <% elsif attempt.in_progress? %>
             <%= distance_of_time_in_words(attempt.started_at, Time.zone.now) %>
           <% else %>
             <%= t('.not_started') %>
@@ -54,7 +56,7 @@
         <td class="table--action">
           <%#= icon_link_to 'fas fa-eye', admin_test_test_attempt_path(@test, attempt), class: 'simple_tooltip', data: { 'tippy-content': t(:view) } %>
           
-          <% if attempt.failed? %>
+          <% if attempt.failed? || attempt.time_expired? %>
             <%= icon_link_to 'fas fa-redo', reassign_admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
                 data: { 'tippy-content': t('.reassign_test'), turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_reassign') } %>
@@ -64,7 +66,7 @@
                 data: { 'tippy-content': t('.remove_assignment'), turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_remove_assignment') } %>
           <% end %>
           
-          <% if attempt.in_progress? %>
+          <% if attempt.in_progress? && !attempt.time_expired? %>
             <%= icon_link_to 'fas fa-clock', extend_time_admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
                 data: { 'tippy-content': t('.extend_time'), turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_extend_time') } %>

@@ -9,7 +9,7 @@ The following users have accreditations that are expiring soon and may need atte
 <% @expiring_users.each do |user| %>
 - <%= user.username %> (<%= user.email %>)
   Registrar: <%= user.registrar_name %>
-  Expiry Date: <%= user.accreditation_expiry_date&.strftime('%B %d, %Y') %>
+  Expiry Date: <%= user.accreditation_expire_date&.strftime('%B %d, %Y') %>
   Days Until Expiry: <%= user.days_until_accreditation_expiry %>
 
 <% end %>

@@ -2,7 +2,7 @@ class QuestionResponse < ApplicationRecord
   belongs_to :test_attempt
   belongs_to :question
 
-  validates :selected_answer_ids, presence: true, unless: :marked_for_later?, on: :update
+  validate :selected_answer_or_marked_for_later, on: :update
 
   default_scope { order(created_at: :asc) }
 
@@ -35,16 +35,31 @@ class QuestionResponse < ApplicationRecord
   end
 
   def status
-    if marked_for_later? && test_attempt.in_progress?
-      'marked_for_later'
-    elsif correct? && test_attempt.completed?
-      'correct'
-    elsif !correct? && test_attempt.completed?
-      'incorrect'
-    elsif answered?
-      'correct'
-    else
-      'unanswered'
+    return 'marked_for_later' if marked_for_later_in_progress?
+    return 'correct' if completed_and_correct?
+    return 'incorrect' if completed_and_incorrect?
+    return 'correct' if answered?
+
+    'unanswered'
+  end
+
+  private
+
+  def marked_for_later_in_progress?
+    marked_for_later? && test_attempt.in_progress?
+  end
+
+  def completed_and_correct?
+    correct? && test_attempt.completed?
+  end
+
+  def completed_and_incorrect?
+    !correct? && test_attempt.completed?
+  end
+
+  def selected_answer_or_marked_for_later
+    if !marked_for_later? && (selected_answer_ids.blank? || selected_answer_ids.empty?)
+      errors.add(:base, I18n.t('tests.select_answer_or_marked_for_later'))
     end
   end
 end

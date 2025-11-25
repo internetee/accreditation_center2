@@ -264,6 +264,7 @@ et:
         actions: "Tegevused"
         user: "Kasutaja"
         in_progress: "Pooleli"
+        time_expired: "Aegunud"
         not_started: "Pole alustatud"
         passed: "Läbitud"
         failed: "Ebaõnnestunud"

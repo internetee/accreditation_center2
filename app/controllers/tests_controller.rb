@@ -37,7 +37,11 @@ class TestsController < ApplicationController
 
   # Prevent viewing history while a test attempt is in progress for the same account
   def block_history_during_active_attempt!
-    return unless current_user.test_attempts.in_progress.exists? && @test_attempt.completed?
+    other_in_progress_attempt = current_user.test_attempts.includes(:test)
+                                            .in_progress.where.not(id: @test_attempt.id)
+                                            .where(test: { test_type: @test.test_type })
+                                            .exists?
+    return if !other_in_progress_attempt || @test_attempt.in_progress?
 
     redirect_to root_path, alert: I18n.t('tests.history_blocked_while_active')
   end

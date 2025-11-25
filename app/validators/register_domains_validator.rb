@@ -1,61 +1,124 @@
 # app/validators/register_domains_validator.rb
 class RegisterDomainsValidator < BaseTaskValidator
+  # Config:
+  # {
+  #   "periods": {
+  #     "{{domain1}}": "1y",
+  #     "{{domain2}}": "2y"
+  #   },
+  #   "enforce_registrant_from_task1": true
+  # }
+  #
+  # Validates that:
+  # - The domains are registered with the correct period
+  # - The registrant is the correct one
+  #
+  # Returns:
+  #   passed(bool), score(0..1), evidence(Hash), error(String|nil), api_audit(Array), export_vars(Hash)
   def call
-    # Expect Task 1 to have exported these:
-    org_id  = v(:org_contact_id)
-    priv_id = v(:priv_contact_id)
+    api = []
+    evidence = {}
+    errors = []
 
-    errs = []
-    api  = []
+    domain_configs.each do |domain|
+      info = fetch_domain_info(api, domain[:name])
+      if info.nil? || info[:success] == false
+        errors << domain_not_found_message(domain[:name])
+        next
+      end
 
-    # Resolve domains from config (already Mustache-rendered in controller)
-    periods = @config['periods'] || {}
-    k1, k2 = periods.keys[0].to_s, periods.keys[1].to_s
-    d1 = Mustache.render(k1, @attempt.vars)
-    d2 = Mustache.render(k2, @attempt.vars)
-    y1 = periods[periods.keys[0]]
-    y2 = periods[periods.keys[1]]
+      domain_errors = validate_domain(info, domain)
+      if domain_errors.empty?
+        evidence[domain[:key]] = info
+      else
+        errors.concat(domain_errors)
+      end
+    end
 
-    # info for domain1 (ASCII)
-    dom1 = info_with_audit(api, d1)
+    return failure(api, errors) unless errors.empty?
 
-    errs << "#{d1} not found" and return fail(api, errs) if dom1[:success] == false
-
-    errs << "#{d1} wrong period (want #{y1})" if dom1[:expire_time].to_date != calculate_expiry(dom1[:created_at], y1)
-    errs << "#{d1} missing registrant" unless dom1[:registrant].present?
-    errs << "#{d1} wrong registrant" if @config['enforce_registrant_from_task1'] && dom1.dig(:registrant, :code) != org_id
-
-    # info for domain2 (ASCII punycode)
-    dom2 = info_with_audit(api, d2)
-    errs << "#{d2} not found" and return fail(api, errs) if dom2[:success] == false
-
-    errs << "#{d2} wrong period (want #{y2})" if dom2[:expire_time].to_date != calculate_expiry(dom2[:created_at], y2)
-    errs << "#{d2} missing registrant" unless dom2[:registrant].present?
-    errs << "#{d2} wrong registrant" if @config['enforce_registrant_from_task1'] && dom2.dig(:registrant, :code) != priv_id
-
-    return pass(api, dom1: dom1, dom2: dom2) if errs.empty?
-
-    fail(api, errs)
+    pass(api, evidence)
   end
 
   private
 
-  def info_with_audit(api, name)
-    t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    res = @service.domain_info(name: name) # for IDN we passed punycode
-    api << { op: 'domain_info', name: name, ok: !res.nil?, ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
-    res
-  rescue => e
-    api << { op: 'domain_info', name: name, ok: false, error: e.message }
-    nil
+  def domain_configs
+    periods = @config['periods'] || {}
+    keys = periods.keys
+    [
+      {
+        key: :dom1,
+        name: Mustache.render(keys[0].to_s, @attempt.vars),
+        period: periods[keys[0]].to_s,
+        registrant: v(:org_contact_id)
+      },
+      {
+        key: :dom2,
+        name: Mustache.render(keys[1].to_s, @attempt.vars),
+        period: periods[keys[1]].to_s,
+        registrant: v(:priv_contact_id)
+      }
+    ]
   end
 
-  def pass(api, evidence = {})
-    { passed: true, score: 1.0, evidence: evidence, error: nil, api_audit: api, export_vars: {} }
+  def fetch_domain_info(api, name)
+    with_audit(api, 'domain_info') { @service.domain_info(name: name) }
   end
 
-  def fail(api, errs)
-    { passed: false, score: 0.0, evidence: {}, error: errs.join('; '), api_audit: api, export_vars: {} }
+  def domain_not_found_message(name)
+    I18n.t('validators.register_domains_validator.domain_not_found', domain: name)
+  end
+
+  def validate_domain(info, domain)
+    errors = []
+    errors.concat(period_errors(info, domain))
+    errors.concat(registrant_presence_errors(info, domain))
+    errors.concat(registrant_match_errors(info, domain))
+    errors
+  end
+
+  def period_errors(info, domain)
+    return [] if period_matches?(info, domain[:period])
+
+    [
+      I18n.t(
+        'validators.register_domains_validator.domain_wrong_period',
+        domain: domain[:name],
+        period: domain[:period]
+      )
+    ]
+  end
+
+  def registrant_presence_errors(info, domain)
+    return [] if info[:registrant].present?
+
+    [
+      I18n.t(
+        'validators.register_domains_validator.domain_missing_registrant',
+        domain: domain[:name]
+      )
+    ]
+  end
+
+  def registrant_match_errors(info, domain)
+    return [] unless enforce_registrant?
+    return [] if info.dig(:registrant, :code) == domain[:registrant]
+
+    [
+      I18n.t(
+        'validators.register_domains_validator.domain_wrong_registrant',
+        domain: domain[:name]
+      )
+    ]
+  end
+
+  def period_matches?(info, expected_period)
+    expected_expiry = calculate_expiry(info[:created_at], expected_period)
+    info[:expire_time].present? && expected_expiry.present? && info[:expire_time].to_date == expected_expiry.to_date
+  end
+
+  def enforce_registrant?
+    @config['enforce_registrant_from_task1']
   end
 
   def api_service_adapter
@@ -63,25 +126,27 @@ class RegisterDomainsValidator < BaseTaskValidator
   end
 
   def calculate_expiry(created, period)
-    return nil if created.nil? || period.nil?
+    return nil if created.blank? || period.blank?
 
-    # Parse period string
+    value, unit = parse_period(period)
+    return nil unless value && unit
+
+    apply_period(created.to_date, value, unit)
+  end
+
+  def parse_period(period)
     match = period.match(/\A(\d+)([ym])\z/i)
-    return nil unless match
+    return [nil, nil] unless match
 
-    value = match[1].to_i
-    unit = match[2].downcase
+    [match[1].to_i, match[2].downcase]
+  end
 
-    expiry =
-      case unit
-      when 'y'
-        (created.to_date.advance(years: value) + 1.day).beginning_of_day
-      when 'm'
-        (created.to_date.advance(months: value) + 1.day).beginning_of_day
-      else
-        return nil
-      end
-
-    expiry
+  def apply_period(date, value, unit)
+    case unit
+    when 'y'
+      (date.advance(years: value) + 1.day).beginning_of_day
+    when 'm'
+      (date.advance(months: value) + 1.day).beginning_of_day
+    end
   end
 end

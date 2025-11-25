@@ -136,8 +136,8 @@
       <div class="form--row">
         <div class="form--field">
           <div class="checkbox">
-            <%= check_box_tag 'test[active]', true, @test.active? %>
-            <%= label_tag 'test_active' do %>
+            <%= form.check_box :active %>
+            <%= form.label :active do %>
               <span><%= t('.active') %></span>
             <% end %>
           </div>

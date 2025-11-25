@@ -17,12 +17,14 @@ class ReppDomainService < BotAuthService
   def create_domain(params)
     body = { domain: params }.to_json
     result = make_request(:post, @api_url_create, { headers: @headers, body: body })
-
     return result unless result[:success]
 
     data = result[:data]
-    data = JSON.parse(data) if data.is_a?(String)
-    payload = data.is_a?(Hash) && data.key?('data') ? data['data'] : data
-    symbolize_keys_deep(payload)
+    data = parse_json(data)
+    if data.is_a?(Hash) && data.key?('data')
+      symbolize_keys_deep(data['data'])
+    else
+      error_response(nil, I18n.t('errors.unexpected_response'))
+    end
   end
 end

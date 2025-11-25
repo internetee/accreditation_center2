@@ -39,3 +39,13 @@ ACCR_BOT_REGISTRAR_NAME: "ACCREDITATION EIS"
 
 CLIENT_BOT_CERTS_PATH: '/opt/ca/certs/accr_bot.crt.pem'
 CLIENT_BOT_KEY_PATH:  '/opt/ca/private/accr_bot.key.pem'
+
+# Coordinator email address(es) separated by comma
+COORDINATOR_EMAIL: "info@internet.ee,info2@internet.ee"
+# Days before expiry to notify coordinator
+COORDINATOR_ACCR_EXPIRY_NOTIFICATION_DAYS: 14
+# Days before expiry to notify users separated by comma
+ACCR_EXPIRY_NOTIFICATION_DAYS: '14,7'
+
+# Automatically assign test attempts to users after sign in
+AUTO_ASSIGN_TEST_ATTEMPTS: false

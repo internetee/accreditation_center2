@@ -7,6 +7,19 @@ class TestAttempt < ApplicationRecord
   has_many :practical_tasks, through: :practical_task_results
 
   validates :access_code, presence: true, uniqueness: true
+  validate :questions_have_answers, if: -> { test.theoretical? }, on: :create
+
+  def questions_have_answers
+    # Validate that there is at least one question with at least one correct answer in the test.
+    count = test.questions.joins(:answers)
+                .where(answers: { correct: true })
+                .distinct
+                .count
+
+    return if count.positive?
+
+    errors.add(:base, :questions_without_correct_answers, message: 'Test attempt must have at least one question with at least one correct answer')
+  end
 
   scope :ordered, -> { order(created_at: :desc) }
   scope :not_completed, -> { where(completed_at: nil) }
@@ -16,11 +29,14 @@ class TestAttempt < ApplicationRecord
   scope :passed, -> { where(passed: true) }
   scope :failed, -> { where(passed: false) }
 
-  def self.ransackable_attributes(auth_object = nil)
+  TIME_WARNING_MINUTES = 5
+  DETAILS_EXPIRATION_DAYS = 30
+
+  def self.ransackable_attributes(_auth_object = nil)
     %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
   end
 
-  def self.ransackable_associations(auth_object = nil)
+  def self.ransackable_associations(_auth_object = nil)
     %w[test user]
   end
 
@@ -82,6 +98,7 @@ class TestAttempt < ApplicationRecord
     return test.time_limit_minutes * 60 if started_at.blank?
 
     elapsed = Time.zone.now - started_at
+
     remaining = (test.time_limit_minutes * 60) - elapsed.to_i
     [remaining, 0].max
   end
@@ -95,7 +112,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def time_warning?
-    time_remaining <= 5.minutes && time_remaining.positive?
+    time_remaining <= TIME_WARNING_MINUTES * 60 && time_remaining.positive?
   end
 
   def time_expired?
@@ -177,7 +194,7 @@ class TestAttempt < ApplicationRecord
 
   # Returns true if detailed results should no longer be shown (older than 30 days)
   def details_expired?
-    completed? && completed_at < 30.days.ago
+    completed? && completed_at < DETAILS_EXPIRATION_DAYS.days.ago
   end
 
   # Remove detailed responses while keeping the overall result
@@ -192,6 +209,16 @@ class TestAttempt < ApplicationRecord
   def self.purge_old_details!
     where('completed_at IS NOT NULL AND completed_at < ?', 30.days.ago).find_each do |attempt|
       attempt.purge_details!
+    end
+  end
+
+  def build_duplicate
+    dup.tap do |new_attempt|
+      new_attempt.started_at = nil
+      new_attempt.completed_at = nil
+      new_attempt.passed = nil
+      new_attempt.score_percentage = nil
+      new_attempt.access_code = SecureRandom.hex(8)
     end
   end
 

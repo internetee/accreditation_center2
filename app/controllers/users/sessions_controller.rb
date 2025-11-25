@@ -5,19 +5,12 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    username = params[:user][:username]
-    password = params[:user][:password]
-
-    # Validate input
-    if username.blank? || password.blank?
-      flash.now[:alert] = t('devise.failure.invalid', authentication_keys: 'username')
-      render :new, status: :unauthorized
-      return
-    end
+    username, password = user_credentials
+    return handle_invalid_credentials unless credentials_present?(username, password)
 
     user = User.find_by(username: username)
 
-    if user&.valid_password?(password) && user.admin?
+    if local_admin?(user, password)
       sign_in(user)
       redirect_after_sign_in(user)
     else
@@ -31,27 +24,45 @@ class Users::SessionsController < Devise::SessionsController
     super
   end
 
-  # protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_in_params
-  #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
-  # end
-
   private
 
+  def user_credentials
+    [params.dig(:user, :username), params.dig(:user, :password)]
+  end
+
+  def credentials_present?(username, password)
+    username.present? && password.present?
+  end
+
+  def handle_invalid_credentials
+    flash[:alert] = t('devise.failure.invalid', authentication_keys: 'username')
+    redirect_to new_user_session_path
+  end
+
+  def local_admin?(user, password)
+    user&.valid_password?(password) && user.admin?
+  end
+
   def api_authenticate_user(username, password)
-    auth_service = AuthenticationService.new(username: username, password: password)
-    response = auth_service.authenticate_user
+    response = AuthenticationService.new(username: username, password: password).authenticate_user
+    return handle_failed_auth(response) unless response[:success]
 
-    unless response[:success]
-      flash.now[:alert] = response[:message]
-      render :new, status: :unauthorized
-      return
-    end
+    user = find_or_create_api_user(response, password)
+    sign_in(user)
+    session[:auth_token] = ApiTokenService.new(username: username, password: password).generate
+    assign_test_attempts(user) if ENV['AUTO_ASSIGN_TEST_ATTEMPTS'].to_s == 'true'
+    redirect_after_sign_in(user)
+  end
 
-    user = User.find_or_initialize_by(username: response[:username])
-    if user.new_record?
+  def handle_failed_auth(response)
+    flash[:alert] = response[:message]
+    redirect_to new_user_session_path
+  end
+
+  def find_or_create_api_user(response, password)
+    User.find_or_initialize_by(username: response[:username]).tap do |user|
+      next unless user.new_record?
+
       user.email = response[:registrar_email]
       user.registrar_name = response[:registrar_name]
       user.accreditation_date = response[:accreditation_date]
@@ -60,10 +71,6 @@ class Users::SessionsController < Devise::SessionsController
       user.password = password
       user.save!
     end
-
-    sign_in(user)
-    session[:auth_token] = ApiTokenService.new(username: username, password: password).generate
-    redirect_after_sign_in(user)
   end
 
   def redirect_after_sign_in(user)
@@ -72,5 +79,19 @@ class Users::SessionsController < Devise::SessionsController
     else
       redirect_to root_path, notice: t('devise.sessions.signed_in')
     end
+  end
+
+  def assign_test_attempts(user)
+    failures = Attempts::AutoAssign.new(user: user).call
+    return if failures.empty?
+
+    flash[:alert] = t('users.sessions.assignment_failed')
+    notify_assignment_failures(user, failures)
+  end
+
+  def notify_assignment_failures(user, failures)
+    AccreditationMailer.assignment_failed(user, failures).deliver_now
+  rescue StandardError => e
+    Rails.logger.error("Automatic test assignment notification failed for #{user.username}: #{e.message}")
   end
 end

@@ -60,6 +60,10 @@ RSpec.describe Test, type: :model do
 
     it 'has many test_attempts' do
       user = create(:user)
+      test_category = create(:test_category)
+      create(:test_categories_test, test: test, test_category: test_category)
+      question = create(:question, test_category: test_category)
+      create(:answer, question: question, correct: true)
       attempt1 = create(:test_attempt, test: test, user: user)
       attempt2 = create(:test_attempt, test: test, user: user)
 
@@ -150,30 +154,6 @@ RSpec.describe Test, type: :model do
     describe '#estimated_duration' do
       it 'returns formatted duration string' do
         expect(test.estimated_duration).to eq("60 #{I18n.t('minutes')}")
-      end
-    end
-
-    describe '#has_theoretical_questions?' do
-      it 'returns true for theoretical tests' do
-        theoretical_test = create(:test, :theoretical)
-        expect(theoretical_test.has_theoretical_questions?).to be(true)
-      end
-
-      it 'returns false for practical tests' do
-        practical_test = create(:test, :practical)
-        expect(practical_test.has_theoretical_questions?).to be(false)
-      end
-    end
-
-    describe '#has_practical_tasks?' do
-      it 'returns true for practical tests' do
-        practical_test = create(:test, :practical)
-        expect(practical_test.has_practical_tasks?).to be(true)
-      end
-
-      it 'returns false for theoretical tests' do
-        theoretical_test = create(:test, :theoretical)
-        expect(theoretical_test.has_practical_tasks?).to be(false)
       end
     end
 

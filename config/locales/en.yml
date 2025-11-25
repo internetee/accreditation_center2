@@ -22,6 +22,18 @@ en:
   ago: "ago"
   access_denied_admin: "Admin users cannot access user pages"
   no_translation: "Sorry, no translation available for this language"
+  errors:
+    invalid_credentials: "Invalid credentials"
+    access_denied: "Access denied"
+    object_not_found: "Object not found"
+    invalid_data_format: "Invalid data format."
+    service_error: "Service error."
+    unexpected_response: "Unexpected response from service"
+    service_timeout: "Service timeout"
+    cannot_connect_to_service: "Cannot connect to service"
+    network_error: "Network error"
+    service_temporarily_unavailable: "Service temporarily unavailable"
+    api_endpoint_not_configured: "API endpoint not configured"
   nav:
     dashboard: "Dashboard"
     tests: "Tests"
@@ -29,6 +41,7 @@ en:
     users: "Users"
   users:
     sessions:
+      assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
       new:
         title: "Eesti Interneti SA Accreditation Center"
         login: "Sign in"
@@ -118,6 +131,7 @@ en:
     validation_timeout: "Validation timeout"
     finish_all_tasks: "Please complete all tasks before finishing."
     test_not_found: "Test not found"
+    select_answer_or_marked_for_later: "Please select at least one answer or mark the question for later."
     question:
       title: "%{test}"
       question_number: "Question %{number}"
@@ -136,7 +150,17 @@ en:
         subject: "Accreditation Expired - Action Required"
       coordinator_notification:
         subject: "Accreditation Expiry Alert - %{count} Users"
+      assignment_failed:
+        subject: "Automatic Test Assignment Failed for %{username}"
   validators:
+    change_registrant:
+      source_domain_not_found: "Source domain not found: %{domain}"
+      target_domain_not_found: "Target domain not found: %{domain}"
+      source_domain_registrant_missing: "Source domain registrant missing: %{domain}"
+      target_domain_registrant_missing: "Target domain registrant missing: %{domain}"
+      target_domain_registrant_not_replaced: "Target domain %{domain} registrant not replaced with source registrant"
+    create_and_cancel_invoice:
+      no_recently_cancelled_invoices: "No recently cancelled invoices found (last %{window} minutes)"
     create_contacts_validator:
       organization_contact_not_found: "Organization contact not found"
       private_contact_not_found: "Private contact not found"
@@ -146,3 +170,24 @@ en:
       priv_required_fields_missing: "Priv required fields missing"
       org_contact_not_recent: "Org contact not recent"
       priv_contact_not_recent: "Priv contact not recent"
+    delete_domain_verified_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_not_in_pending_delete_status: "Domain %{domain} is not in pendingDelete status"
+    register_domains_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_wrong_period: "Domain %{domain} has wrong period (want %{period})"
+      domain_missing_registrant: "Domain %{domain} has missing registrant"
+      domain_wrong_registrant: "Domain %{domain} has incorrect registrant"
+    renew_domain_validator:
+      domain_not_found: "Domain not found: %{domain}"
+      domain_expire_time_missing: "Domain %{domain} expire time missing"
+      domain_not_renewed: "Domain %{domain} not renewed"
+    transfer_domains_validator:
+      domains_array_missing: "Validator config must include 'domains' array"
+      domain_not_found: "Domain not found: %{domain}"
+      domain_registrar_info_missing: "Domain %{domain} registrar info missing"
+      domain_registrar_mismatch: "Domain %{domain} registrar mismatch"
+    update_nameservers_validator:
+      nameservers_config_missing_or_empty: "Nameservers config missing or empty"
+      domain_not_found: "Domain not found: %{domain}"
+      nameservers_mismatch: "Nameservers mismatch for domain: %{domain}"

@@ -56,20 +56,12 @@ class Test < ApplicationRecord
     "#{time_limit_minutes} #{I18n.t('minutes')}"
   end
 
-  def has_theoretical_questions?
-    theoretical?
-  end
-
-  def has_practical_tasks?
-    practical?
-  end
-
   def theoretical_questions_count
-    questions.count if has_theoretical_questions?
+    questions.count if theoretical?
   end
 
   def practical_tasks_count
-    practical_tasks.count if has_practical_tasks?
+    practical_tasks.count if practical?
   end
 
   def total_components
@@ -104,6 +96,18 @@ class Test < ApplicationRecord
       unless Test.exists?(slug: random_slug)
         return random_slug
       end
+    end
+  end
+
+  public
+
+  def build_duplicate
+    dup.tap do |new_test|
+      new_test.title_et = "#{title_et} (Copy)"
+      new_test.title_en = "#{title_en} (Copy)"
+      new_test.description_et = "#{description_et} (Copy)" if description_et.present?
+      new_test.description_en = "#{description_en} (Copy)" if description_en.present?
+      new_test.active = false
     end
   end
 end

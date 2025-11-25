@@ -13,58 +13,63 @@ class ChangeRegistrantValidator < BaseTaskValidator
   # Returns:
   #   passed(bool), score(0..1), evidence(Hash), error(String|nil), api_audit(Array), export_vars(Hash)
   def call
-    errs = []
-    api  = []
+    api = []
+    errors = []
 
+    source_domain, xfer_domain = resolve_domains
+    source_info = fetch_domain_info(source_domain, :source_domain_not_found, api, errors)
+    target_info = fetch_domain_info(xfer_domain, :target_domain_not_found, api, errors)
+
+    source_code = target_code = nil
+    if source_info && target_info
+      source_code, target_code = validate_registrants(source_domain, xfer_domain, source_info, target_info, errors)
+    end
+
+    return failure(api, errors) unless errors.empty?
+
+    pass(
+      api,
+      { xfer_domain: { name: xfer_domain, registrant_code: target_code }, source_domain: { name: source_domain, registrant_code: source_code } }
+    )
+  end
+
+  private
+
+  def resolve_domains
     xfer_tmpl   = @config['xfer_domain']   || '{{xfer_domain}}'
     source_tmpl = @config['source_domain'] || '{{domain1}}'
 
     xfer_domain   = Mustache.render(xfer_tmpl.to_s, @attempt.vars)
     source_domain = Mustache.render(source_tmpl.to_s, @attempt.vars)
 
-    # Fetch info for source and target domains
-    src = info_with_audit(api, source_domain)
-    errs << "#{source_domain} not found" and return fail(api, errs) if src.nil? || src[:success] == false
-
-    tgt = info_with_audit(api, xfer_domain)
-    errs << "#{xfer_domain} not found" and return fail(api, errs) if tgt.nil? || tgt[:success] == false
-
-    # Validate source registrant has email deliverable to current user
-    src_reg_code = src.dig(:registrant, :code)
-
-    errs << "#{source_domain} registrant missing" unless src_reg_code.present?
-
-    # Validate xfer_domain registrant replaced with source registrant
-    tgt_reg_code = tgt.dig(:registrant, :code)
-    errs << "#{xfer_domain} registrant missing" unless tgt_reg_code.present?
-    errs << "#{xfer_domain} registrant not replaced with source registrant" if tgt_reg_code.present? && src_reg_code.present? && tgt_reg_code != src_reg_code
-
-    return pass(api, {
-      xfer_domain: { name: xfer_domain, registrant_code: tgt_reg_code },
-      source_domain: { name: source_domain, registrant_code: src_reg_code }
-    }) if errs.empty?
-
-    fail(api, errs)
+    [source_domain, xfer_domain]
   end
 
-  private
+  def fetch_domain_info(name, translation_key, api, errors)
+    info = with_audit(api, 'domain_info') { @service.domain_info(name: name) }
+    return info if info.present? && info[:success] != false
 
-  def info_with_audit(api, name)
-    t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    res = @service.domain_info(name: name)
-    api << { op: 'domain_info', name: name, ok: !res.nil?, ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
-    res
-  rescue => e
-    api << { op: 'domain_info', name: name, ok: false, error: e.message }
+    errors << I18n.t("validators.change_registrant.#{translation_key}", domain: name)
     nil
   end
 
-  def pass(api, evidence = {})
-    { passed: true, score: 1.0, evidence: evidence, error: nil, api_audit: api, export_vars: {} }
-  end
+  def validate_registrants(source_domain, xfer_domain, source_info, target_info, errors)
+    src_reg_code = source_info.dig(:registrant, :code)
+    tgt_reg_code = target_info.dig(:registrant, :code)
 
-  def fail(api, errs)
-    { passed: false, score: 0.0, evidence: {}, error: errs.join('; '), api_audit: api, export_vars: {} }
+    unless src_reg_code.present?
+      errors << I18n.t('validators.change_registrant.source_domain_registrant_missing', domain: source_domain)
+    end
+
+    unless tgt_reg_code.present?
+      errors << I18n.t('validators.change_registrant.target_domain_registrant_missing', domain: xfer_domain)
+    end
+
+    if src_reg_code.present? && tgt_reg_code.present? && tgt_reg_code != src_reg_code
+      errors << I18n.t('validators.change_registrant.target_domain_registrant_not_replaced', domain: xfer_domain)
+    end
+
+    [src_reg_code, tgt_reg_code]
   end
 
   def api_service_adapter

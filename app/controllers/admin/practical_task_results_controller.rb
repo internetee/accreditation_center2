@@ -5,9 +5,9 @@ class Admin::PracticalTaskResultsController < Admin::BaseController
 
   def index
     @practical_task_results = @practical_task.practical_task_results
-                                           .includes(:test_attempt, :user)
-                                           .order(created_at: :desc)
-    
+                                             .includes(:test_attempt, :user)
+                                             .order(created_at: :desc)
+
     @pagy, @practical_task_results = pagy(@practical_task_results, limit: session[:page_size], page: @page)
   end
 
@@ -21,7 +21,7 @@ class Admin::PracticalTaskResultsController < Admin::BaseController
       redirect_to admin_test_practical_task_practical_task_result_path(@test, @practical_task, @practical_task_result), 
                   notice: t('admin.practical_task_results.updated')
     else
-      render :show, status: :unprocessable_entity
+      render :show, status: :unprocessable_content
     end
   end
 

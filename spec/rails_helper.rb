@@ -22,7 +22,7 @@ end
 
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
@@ -65,6 +65,12 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Devise helpers for request specs (sign_in, sign_out)
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Time helpers (travel_to, freeze_time)
+  config.include ActiveSupport::Testing::TimeHelpers, type: :request
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 
@@ -89,4 +95,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:each, type: :request) do
+    Rails.application.routes.default_url_options[:locale] = I18n.locale
+  end
 end

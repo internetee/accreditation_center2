@@ -90,8 +90,8 @@
       <div class="form--row">
         <div class="form--field">
           <div class="checkbox">
-            <%= check_box_tag 'test_category[active]', true, @test_category.active? %>
-            <%= label_tag 'test_category_active' do %>
+            <%= form.check_box :active %>
+            <%= form.label :active do %>
               <span><%= t('.active') %></span>
             <% end %>
           </div>

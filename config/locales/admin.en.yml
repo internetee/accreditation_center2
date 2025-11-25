@@ -262,6 +262,7 @@ en:
         actions: "Actions"
         user: "User"
         in_progress: "In Progress"
+        time_expired: "Time Expired"
         not_started: "Not Started"
         passed: "Passed"
         failed: "Failed"

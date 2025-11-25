@@ -17,7 +17,7 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= link_to user.username, admin_user_path(user) %></td>
+        <td><%= user.username %></td>
         <td><%= user.email %></td>
         <td><%= user.test_attempts.count %></td>
         <td><%= l(user.last_sign_in_at, format: :short) if user.last_sign_in_at %></td>

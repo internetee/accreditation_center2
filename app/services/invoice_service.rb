@@ -10,17 +10,15 @@ class InvoiceService < ApiConnector
 
   def cancelled_invoices
     result = make_request(:get, @api_url, { headers: @headers })
-    return [] unless result[:success]
+    return result unless result[:success]
 
     data = result[:data]
-    data = JSON.parse(data) if data.is_a?(String)
+    data = parse_json(data)
 
-    invoices = if data.is_a?(Hash) && data.key?('invoices')
-                 data['invoices']
-               else
-                 data
-               end
-
-    Array(invoices).map { |h| symbolize_keys_deep(h) }
+    if data.is_a?(Hash) && data.key?('invoices')
+      Array(data['invoices']).map { |h| symbolize_keys_deep(h) }
+    else
+      error_response(nil, I18n.t('errors.unexpected_response'))
+    end
   end
 end

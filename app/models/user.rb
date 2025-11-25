@@ -61,9 +61,9 @@ class User < ApplicationRecord
 
   def latest_accreditation
     # Get the last passed theoretical and practical tests
-    tests = passed_tests.includes(:test).order(:created_at)
-    last_theoretical = tests.where(test: { test_type: :theoretical }).last
-    last_practical = tests.where(test: { test_type: :practical }).last
+    passed_test_attempts = passed_tests.includes(:test).order(:created_at)
+    last_theoretical = passed_test_attempts.where(test: { test_type: :theoretical }).last
+    last_practical = passed_test_attempts.where(test: { test_type: :practical }).last
 
     # Only return accreditation if both tests are passed
     return nil if last_theoretical.nil? || last_practical.nil?
@@ -73,9 +73,7 @@ class User < ApplicationRecord
   end
 
   def accreditation_expired?
-    return true if accreditation_expire_date.nil?
-
-    accreditation_expire_date < Time.current
+    accreditation_expire_date.present? && accreditation_expire_date < Time.current
   end
 
   def accreditation_expires_soon?(days = 30)

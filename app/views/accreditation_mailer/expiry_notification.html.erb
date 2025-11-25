@@ -7,10 +7,10 @@
   
   <div class="alert alert-danger">
     <strong>Your accreditation has expired!</strong>
-    <br>Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+    <br>Expiry Date: <%= @expiry_date&.strftime('%B %d, %Y') %>
   </div>
   
-  <p>Your registrar accreditation expired on <strong><%= @expiry_date.strftime('%B %d, %Y') %></strong>. You are no longer authorized to perform registrar operations.</p>
+  <p>Your registrar accreditation expired on <strong><%= @expiry_date&.strftime('%B %d, %Y') %></strong>. You are no longer authorized to perform registrar operations.</p>
   
   <p><strong>Immediate Action Required:</strong></p>
   <ul>
