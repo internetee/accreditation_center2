@@ -8,7 +8,7 @@ RSpec.describe AccreditationResultsService do
   let(:bot_password) { 'secret_password' }
 
   before do
-    ENV['BASE_URL'] = base_url
+    ENV['REPP_BASE_URL'] = base_url
     ENV['REPP_ACCREDITATION_RESULTS_URL'] = repp_url
     ENV['ACCR_BOT_USERNAME'] = bot_username
     ENV['ACCR_BOT_PASSWORD'] = bot_password
