@@ -17,7 +17,7 @@ class AccreditationResultsService < BotAuthService
   # Initialize the service with accr_bot credentials
   # credentials are loaded from application.yml
   def initialize
-    @api_url = ENV['BASE_URL'] + ENV['REPP_ACCREDITATION_RESULTS_URL']
+    @api_url = ENV['REPP_BASE_URL'] + ENV['REPP_ACCREDITATION_RESULTS_URL']
     super()
   end
 
