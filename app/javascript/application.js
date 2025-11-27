@@ -1,7 +1,6 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
-import "cookieconsent-config"
 import '@popperjs/core'
 import Header from "src/header"
 import Select from "src/select"

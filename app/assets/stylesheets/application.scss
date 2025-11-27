@@ -96,15 +96,15 @@
 }
 
  /* Cookie Consent */
- #cc--main {
+ #cc-main {
   /** Change font **/
   --cc-font-family: $font-primary;
 
   /** Change button primary color to black **/
   --cc-btn-primary-bg: #0085CA;
   --cc-btn-primary-border-color: #0085CA;
-  --cc-btn-primary-hover-bg: #037ebc;
-  --cc-btn-primary-hover-border-color: #037ebc;
+  --cc-btn-primary-hover-bg: #0085CA;
+  --cc-btn-primary-hover-border-color: #0085CA;
 
   /** Also make toggles the same color as the button **/
   --cc-toggle-bg-on: var(--cc-btn-primary-bg);

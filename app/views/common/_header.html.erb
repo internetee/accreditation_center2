@@ -13,11 +13,11 @@
         <%= render 'common/logo' %>
         <% if current_user %>
             <%= render 'common/menu_main' %>
-            <div class="actions">
-                <%= button_tag class: 'button button--menu', data: { 'menu-toggle': '' } do %>
-                    <i aria-hidden="true" class="fas fa-bars"></i>
-                <% end %>
-            </div>
         <% end %>
+        <div class="actions">
+            <%= button_tag class: 'button button--menu', data: { 'menu-toggle': '' } do %>
+                <i aria-hidden="true" class="fas fa-bars"></i>
+            <% end %>
+        </div>
     </div>
 </header>
