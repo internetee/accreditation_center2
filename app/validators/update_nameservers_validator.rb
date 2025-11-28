@@ -89,7 +89,7 @@ class UpdateNameserversValidator < BaseTaskValidator
   end
 
   def set_matches?(actual, expected)
-    actual.sort == expected.sort
+    (expected - actual).empty?
   end
 
   def api_service_adapter

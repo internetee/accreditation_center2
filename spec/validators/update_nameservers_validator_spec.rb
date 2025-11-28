@@ -62,6 +62,26 @@ RSpec.describe UpdateNameserversValidator do
       end
     end
 
+    context 'when one domain has required nameserver plus additional ones' do
+      before do
+        allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
+        allow(service).to receive(:domain_info).with(name: 'example1.ee').and_return(
+          nameservers: [{ hostname: 'ns1.custom.test' }, { hostname: 'extra-ns.example.test' }]
+        )
+        allow(service).to receive(:domain_info).with(name: 'example2.ee').and_return(
+          nameservers: [{ hostname: 'ns2.custom.test' }, { hostname: 'ns2.example.test' }]
+        )
+      end
+
+      it 'passes with evidence containing expected and actual sets' do
+        result = validator.call
+
+        expect(result[:passed]).to be(true)
+        expect(result[:evidence][:dom1][:actual]).to match_array(%w[extra-ns.example.test ns1.custom.test])
+        expect(result[:evidence][:dom2][:actual]).to match_array(%w[ns2.custom.test ns2.example.test])
+      end
+    end
+
     context 'when domain info is not found' do
       before do
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05)
