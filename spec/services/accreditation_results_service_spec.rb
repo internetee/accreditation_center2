@@ -31,75 +31,11 @@ RSpec.describe AccreditationResultsService do
     end
   end
 
-  describe '#update_accreditation' do
+  describe '#sync_user_accreditation' do
     let(:user) { create(:user, username: 'testuser') }
     let(:result) { true }
     let(:expected_body) { { accreditation_result: { username: user.username, result: result } }.to_json }
     let(:accreditation_date) { DateTime.current }
-
-    it 'makes a POST request with correct body' do
-      stub_request(:post, api_url)
-        .with(body: expected_body, headers: headers)
-        .to_return(
-          status: 200,
-          body: {
-            code: 1000,
-            message: 'Accreditation info successfully added',
-            data: {
-              username: user.username,
-              accreditation_date: accreditation_date,
-              accreditation_expire_date: (accreditation_date + 24.months)
-            }
-          }.to_json
-        )
-
-      expect(service.update_accreditation(user.username, result)).to include({ username: 'testuser' })
-    end
-
-    it 'returns error response if API call fails' do
-      stub_request(:post, api_url)
-        .with(body: expected_body, headers: headers)
-        .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
-
-      expect(service.update_accreditation(user.username, result)).to eq({ success: false, message: 'Object not found', data: nil })
-    end
-
-    it 'returns error response if API call returns unexpected response' do
-      stub_request(:post, api_url)
-        .with(body: expected_body, headers: headers)
-        .to_return(status: 400, body: { message: 'Username is missing', data: {} }.to_json)
-
-      expect(service.update_accreditation(user.username, result)).to eq({ success: false, message: 'Unexpected response from service', data: nil })
-    end
-  end
-
-  describe '#user_accredited?' do
-    let(:user) { create(:user) }
-
-    context 'when user has no latest accreditation' do
-      before do
-        allow(user).to receive(:latest_accreditation).and_return(nil)
-      end
-
-      it 'returns false' do
-        expect(service.user_accredited?(user)).to be(false)
-      end
-    end
-
-    context 'when user has latest accreditation but it is expired' do
-      before do
-        test_attempt = instance_double(TestAttempt)
-        allow(user).to receive(:latest_accreditation).and_return(test_attempt)
-      end
-
-      it 'returns true' do
-        expect(service.user_accredited?(user)).to be(true)
-      end
-    end
-  end
-
-  describe '#sync_user_accreditation' do
-    let(:user) { create(:user, username: 'testuser') }
 
     context 'when user is not accredited' do
       before do
@@ -121,9 +57,45 @@ RSpec.describe AccreditationResultsService do
       end
 
       it 'calls update_accreditation with username and true' do
-        expect(service).to receive(:update_accreditation).with(user.username, true).and_return({ success: true })
+        stub_request(:post, api_url)
+          .with(body: expected_body, headers: headers)
+          .to_return(
+            status: 200,
+            body: {
+              code: 1000,
+              message: 'Accreditation info successfully added',
+              data: {
+                username: user.username,
+                accreditation_date: accreditation_date,
+                accreditation_expire_date: (accreditation_date + 24.months)
+              }
+            }.to_json
+          )
 
-        service.sync_user_accreditation(user)
+        expect(service.sync_user_accreditation(user)).to eq({ success: true, message: 'Accreditation synced successfully' })
+        expect(user.accreditation_date.to_date).to eq(accreditation_date.to_date)
+        expect(user.accreditation_expire_date.to_date).to eq((accreditation_date + 24.months).to_date)
+      end
+
+      it 'returns error response if API call fails' do
+        stub_request(:post, api_url)
+          .with(body: expected_body, headers: headers)
+          .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
+
+        expect(service.sync_user_accreditation(user)).to eq({ success: false, message: 'Failed to update accreditation' })
+      end
+
+      it 'returns error response if API call returns unexpected response' do
+        stub_request(:post, api_url)
+          .with(body: expected_body, headers: headers)
+          .to_return(status: 400, body: { message: 'Username is missing', data: {} }.to_json)
+
+        expect(service.sync_user_accreditation(user)).to eq({ success: false, message: 'Failed to update accreditation' })
+      end
+
+      it 'returns error reponse if StandardError is raised' do
+        allow(service).to receive(:update_accreditation).and_raise(StandardError, 'Unexpected error')
+        expect(service.sync_user_accreditation(user)).to eq({ success: false, message: 'Failed to sync accreditation for user testuser: Unexpected error' })
       end
     end
   end
@@ -154,23 +126,23 @@ RSpec.describe AccreditationResultsService do
     end
 
     it 'syncs only accredited users' do
-      expect(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
-      expect(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ result: true })
+      expect(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
+      expect(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: true })
       expect(service).not_to receive(:sync_user_accreditation).with(non_accredited_user)
 
       service.sync_all_accredited_users
     end
 
     it 'returns the count of successfully synced users' do
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ result: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: true })
 
       count = service.sync_all_accredited_users
       expect(count).to eq(2)
     end
 
     it 'only counts successful syncs' do
-      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ result: true })
+      allow(service).to receive(:sync_user_accreditation).with(accredited_user1).and_return({ success: true })
       allow(service).to receive(:sync_user_accreditation).with(accredited_user2).and_return({ success: false, message: 'Error' })
 
       count = service.sync_all_accredited_users

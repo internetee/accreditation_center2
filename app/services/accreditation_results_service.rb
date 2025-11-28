@@ -21,6 +21,50 @@ class AccreditationResultsService < BotAuthService
     super()
   end
 
+  # Sync accreditation for a user if they're newly accredited
+  # @param user [User] User to sync
+  # @return [Hash] Response from API
+  def sync_user_accreditation(user)
+    return { success: false, message: 'User not accredited' } unless user_accredited?(user)
+
+    result = update_accreditation(user.username, true)
+
+    return { success: false, message: 'Failed to update accreditation' } if result.nil? || result[:success] == false
+
+    user.update!(
+      accreditation_date: result[:accreditation_date],
+      accreditation_expire_date: result[:accreditation_expire_date]
+    )
+
+    { success: true, message: 'Accreditation synced successfully' }
+  rescue StandardError => e
+    { success: false, message: "Failed to sync accreditation for user #{user.username}: #{e.message}" }
+  end
+
+  # Sync all newly accredited users
+  # @return [Integer] Number of users synced
+  def sync_all_accredited_users
+    synced_count = 0
+
+    User.where(role: 'user').find_each do |user|
+      if user_accredited?(user) && should_sync_user?(user)
+        result = sync_user_accreditation(user)
+        synced_count += 1 unless result[:success] == false
+      end
+    end
+
+    synced_count
+  end
+
+  private
+
+  # Check if user is accredited (both tests passed and not expired)
+  # @param user [User] User to check
+  # @return [Boolean] True if user is accredited
+  def user_accredited?(user)
+    !user.latest_accreditation.nil?
+  end
+
   # Update accreditation date for a user
   # @param username [String] Username to update
   # @param result [Boolean] Accreditation result
@@ -45,39 +89,6 @@ class AccreditationResultsService < BotAuthService
       error_response(nil, I18n.t('errors.unexpected_response'))
     end
   end
-
-  # Check if user is accredited (both tests passed and not expired)
-  # @param user [User] User to check
-  # @return [Boolean] True if user is accredited
-  def user_accredited?(user)
-    !user.latest_accreditation.nil?
-  end
-
-  # Sync accreditation for a user if they're newly accredited
-  # @param user [User] User to sync
-  # @return [Hash] Response from API
-  def sync_user_accreditation(user)
-    return { success: false, message: 'User not accredited' } unless user_accredited?(user)
-
-    update_accreditation(user.username, true)
-  end
-
-  # Sync all newly accredited users
-  # @return [Integer] Number of users synced
-  def sync_all_accredited_users
-    synced_count = 0
-
-    User.where(role: 'user').find_each do |user|
-      if user_accredited?(user) && should_sync_user?(user)
-        result = sync_user_accreditation(user)
-        synced_count += 1 unless result[:success] == false
-      end
-    end
-
-    synced_count
-  end
-
-  private
 
   # Check if user needs to be synced
   # Skip if already synced recently (within last hour)
