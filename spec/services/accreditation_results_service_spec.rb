@@ -32,9 +32,10 @@ RSpec.describe AccreditationResultsService do
   end
 
   describe '#update_accreditation' do
-    let(:username) { 'testuser' }
+    let(:user) { create(:user, username: 'testuser') }
     let(:result) { true }
-    let(:expected_body) { { accreditation_result: { username: username, result: result } }.to_json }
+    let(:expected_body) { { accreditation_result: { username: user.username, result: result } }.to_json }
+    let(:accreditation_date) { DateTime.current }
 
     it 'makes a POST request with correct body' do
       stub_request(:post, api_url)
@@ -45,12 +46,14 @@ RSpec.describe AccreditationResultsService do
             code: 1000,
             message: 'Accreditation info successfully added',
             data: {
-              result: result
+              username: user.username,
+              accreditation_date: accreditation_date,
+              accreditation_expire_date: (accreditation_date + 24.months)
             }
           }.to_json
         )
 
-      expect(service.update_accreditation(username, result)).to eq({ result: result })
+      expect(service.update_accreditation(user.username, result)).to include({ username: 'testuser' })
     end
 
     it 'returns error response if API call fails' do
@@ -58,7 +61,7 @@ RSpec.describe AccreditationResultsService do
         .with(body: expected_body, headers: headers)
         .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
 
-      expect(service.update_accreditation(username, result)).to eq({ success: false, message: 'Object not found', data: nil })
+      expect(service.update_accreditation(user.username, result)).to eq({ success: false, message: 'Object not found', data: nil })
     end
 
     it 'returns error response if API call returns unexpected response' do
@@ -66,7 +69,7 @@ RSpec.describe AccreditationResultsService do
         .with(body: expected_body, headers: headers)
         .to_return(status: 400, body: { message: 'Username is missing', data: {} }.to_json)
 
-      expect(service.update_accreditation(username, result)).to eq({ success: false, message: 'Unexpected response from service', data: nil })
+      expect(service.update_accreditation(user.username, result)).to eq({ success: false, message: 'Unexpected response from service', data: nil })
     end
   end
 

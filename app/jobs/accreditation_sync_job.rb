@@ -17,6 +17,11 @@ class AccreditationSyncJob < ApplicationJob
       return
     end
 
+    user.update!(
+      accreditation_date: result[:accreditation_date],
+      accreditation_expire_date: result[:accreditation_expire_date]
+    )
+
     Rails.logger.info "Successfully synced accreditation for user #{user.username}"
   rescue StandardError => e
     Rails.logger.error "Accreditation sync failed for user ID #{user_id}: #{e.message}"

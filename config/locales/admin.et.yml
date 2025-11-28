@@ -269,7 +269,7 @@ et:
         passed: "Läbitud"
         failed: "Ebaõnnestunud"
         reassign_test: "Määra test uuesti"
-        remove_assignment: "Eemalda määramine"
+        remove_assignment: "Eemalda"
         extend_time: "Pikenda aega"
         confirm_reassign: "Kas olete kindel, et soovite selle testi kasutajale uuesti määrata?"
         confirm_remove_assignment: "Kas olete kindel, et soovite selle testi määramise eemaldada? Seda tegevust ei saa tagasi pöörata."
@@ -299,7 +299,7 @@ et:
         no_answer_provided: "Vastust ei antud"
         no_responses_recorded: "Selle proovi jaoks vastuseid ei salvestatud"
         reassign_test: "Määra test uuesti"
-        remove_assignment: "Eemalda määramine"
+        remove_assignment: "Eemalda"
         confirm_reassign: "Kas olete kindel, et soovite selle testi kasutajale uuesti määrata?"
         confirm_remove_assignment: "Kas olete kindel, et soovite selle testi määramise eemaldada? Seda tegevust ei saa tagasi pöörata."
       new:
