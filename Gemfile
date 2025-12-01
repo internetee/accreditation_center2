@@ -98,3 +98,5 @@ gem 'mustache', '~> 1.0'
 gem 'simpleidn'
 
 gem 'faker'
+
+gem 'coderay', '~> 1.1', '>= 1.1.2'

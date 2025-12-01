@@ -29,33 +29,23 @@
         <td><%= l(attempt.started_at, format: :short) if attempt.started_at %></td>
         <td><%= l(attempt.completed_at, format: :short) if attempt.completed_at %></td>
         <td>
-          <% if attempt.completed? && attempt.started_at %>
-            <%= distance_of_time_in_words(attempt.started_at, attempt.completed_at) %>
-          <% elsif attempt.time_expired? && !attempt.completed? %>
-            <%= t('.time_expired') %>
-          <% elsif attempt.in_progress? %>
-            <%= distance_of_time_in_words(attempt.started_at, Time.zone.now) %>
-          <% else %>
-            <%= t('.not_started') %>
-          <% end %>
+          <%= render partial: 'admin/test_attempts/duration', locals: { attempt: attempt } %>
         </td>
         <td>
           <span class="score-value"><%= number_to_percentage(attempt.score_percentage, precision: 1) %></span>
         </td>
         <td>
           <% if attempt.passed? %>
-            <span class="badge badge-success"><%= t('.passed') %></span>
+            <span class="label label-success"><%= t('admin.test_attempts.show.passed') %></span>
           <% elsif attempt.failed? %>
-            <span class="badge badge-danger"><%= t('.failed') %></span>
+            <span class="label label-danger"><%= t('admin.test_attempts.show.failed') %></span>
           <% elsif attempt.not_started? %>
-            <span class="badge badge-warning"><%= t('.not_started') %></span>
+            <span class="label label-warning"><%= t('admin.test_attempts.show.not_started') %></span>
           <% else %>
-            <span class="badge badge-warning"><%= t('.in_progress') %></span>
+            <span class="label label-warning"><%= t('admin.test_attempts.show.in_progress') %></span>
           <% end %>
         </td>
         <td class="table--action">
-          <%#= icon_link_to 'fas fa-eye', admin_test_test_attempt_path(@test, attempt), class: 'simple_tooltip', data: { 'tippy-content': t(:view) } %>
-          
           <% if attempt.failed? || attempt.time_expired? %>
             <%= icon_link_to 'fas fa-redo', reassign_admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
@@ -70,6 +60,10 @@
             <%= icon_link_to 'fas fa-clock', extend_time_admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
                 data: { 'tippy-content': t('.extend_time'), turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_extend_time') } %>
+          <% else %>
+            <%= icon_link_to 'fas fa-eye', admin_test_test_attempt_path(@test, attempt), 
+                class: 'simple_tooltip', 
+                data: { 'tippy-content': t('.view_attempt'), turbo: false } %>
           <% end %>
         </td>
       </tr>
