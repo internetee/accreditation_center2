@@ -6,7 +6,7 @@ ARG RUBY_VERSION=3.4.4
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
-WORKDIR /rails
+WORKDIR /opt/webapps/app
 
 # Set production environment
 ENV RAILS_ENV="production" \
@@ -59,7 +59,7 @@ FROM base
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
+COPY --from=build /opt/webapps/app /opt/webapps/app
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
