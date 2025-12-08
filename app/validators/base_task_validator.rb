@@ -1,5 +1,7 @@
 # app/validators/base_task_validator.rb
 class BaseTaskValidator
+  DEFAULT_WINDOW_MINUTES = 120
+
   def initialize(attempt:, config:, inputs:, token: nil)
     @attempt = attempt
     @config = config
@@ -35,8 +37,8 @@ class BaseTaskValidator
   end
 
   def compute_window_and_cutoff
-    window = (@config['window_minutes'] || 15).to_i
-    window = 15 if window <= 0
+    window = (@config['window_minutes'] || DEFAULT_WINDOW_MINUTES).to_i
+    window = DEFAULT_WINDOW_MINUTES if window <= 0
     cutoff = Time.current - window.minutes
 
     [window, cutoff]
