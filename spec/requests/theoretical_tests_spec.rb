@@ -71,11 +71,29 @@ RSpec.describe 'TheoreticalTests', type: :request do
     expect(flash[:alert]).to eq(I18n.t('tests.history_blocked_while_active'))
   end
 
+  it 'serves a question and renders the question template if test attempt is completed and another test attempt is not started yet' do
+    test_attempt.update(started_at: Time.current, completed_at: Time.current)
+    create(:test_attempt, user: user, test: test, started_at: nil)
+    get question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to have_http_status(:ok)
+    expect(response).to render_template(:question)
+  end
+
   it 'serves a question and redirects to results if the question index is greater than the number of questions' do
     test_attempt.update(started_at: Time.current)
     get question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 222)
 
     expect(response).to redirect_to(results_theoretical_test_path(test, attempt: test_attempt.access_code))
+  end
+
+  it 'serves a question and renders the question template if test attempt is completed and another test attempt is expired' do
+    test_attempt.update(started_at: Time.current, completed_at: Time.current)
+    create(:test_attempt, user: user, test: test, started_at: 1.hour.ago)
+    get question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to have_http_status(:ok)
+    expect(response).to render_template(:question)
   end
 
   it 'serves a question and redirects to the previous question if the previous question is not answered' do

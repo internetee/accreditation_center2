@@ -146,8 +146,6 @@
                           results_theoretical_test_path(@test, attempt: @test_attempt.access_code),
                           class: 'button button--danger',
                           data: { turbo: true, turbo_method: :get, turbo_confirm: t('tests.confirm_finish') } %>
-            <% else %>
-              <span class="button button--danger disabled"><%= t('tests.finish_test') %></span>
             <% end %>
         </div>
       </div>

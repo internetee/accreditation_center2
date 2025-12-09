@@ -60,6 +60,15 @@ RSpec.describe 'PracticalTests', type: :request do
     expect(flash[:alert]).to eq(I18n.t('tests.history_blocked_while_active'))
   end
 
+  it 'serves a question and renders the question template if test attempt is completed and another test attempt is not started yet' do
+    test_attempt.update(started_at: Time.current, completed_at: Time.current)
+    create(:test_attempt, user: user, test: test, started_at: nil)
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to have_http_status(:ok)
+    expect(response).to render_template(:question)
+  end
+
   it 'serves a question and redirects to results if task not found' do
     get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 100)
 

@@ -40,7 +40,9 @@ class TestsController < ApplicationController
     other_in_progress_attempt = current_user.test_attempts.includes(:test)
                                             .in_progress.where.not(id: @test_attempt.id)
                                             .where(test: { test_type: @test.test_type })
-                                            .exists?
+                                            .reject(&:time_expired?)
+                                            .any?
+
     return if !other_in_progress_attempt || @test_attempt.in_progress?
 
     redirect_to root_path, alert: I18n.t('tests.history_blocked_while_active')

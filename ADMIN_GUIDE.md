@@ -111,6 +111,67 @@ For practical tests, tasks are managed separately:
    - **Validation Rules**: Define what constitutes a correct response
    - **Dependencies**: Set up task dependencies if needed
 
+### Allocators (Practical Data Seeding)
+
+Allocators automatically create the temporary resources (domains, nameservers, transfer codes, etc.) that practical tasks reference via `{{ }}` variables. They run every time an attempt is provisioned (`Attempts::Provisioner`) and merge their output into the attempt’s `vars`, making the generated values available to both the task body and the validator configuration.
+
+**How to set up allocators**
+1. Open the practical task in `/admin/practical_tasks/:id`.
+2. In the validator JSON (`validator -> allocators`) add an entry per allocator:
+   ```json
+   {
+     "klass": "UpdateNameserversValidator",
+     "config": { "nameservers": { "{{domain1}}": "{{ns1_1}}" } },
+     "allocators": [
+       { "name": "domain_pair", "config": { "use_faker": true } },
+       { "name": "nameservers", "config": { "count": 2, "export": { "d1_prefix": "ns1_" } } }
+     ]
+   }
+   ```
+3. Save the task; the allocators will run automatically when a candidate receives the task.
+
+**Available allocators**
+- **`domain_pair`**: Generates two related domains (`domain1`, `domain2`; plus `domain2_ascii`) using ASCII + Estonian IDN labels. Configurable options include `use_faker`, explicit `base1/base2`, `tld`, and custom export keys. Use it for tasks that need two fresh domains to manipulate.
+- **`nameservers`**: Produces randomized nameserver hostnames and exports them under configurable prefixes (defaults `ns1_` / `ns2_`). Accepts `count`, `use_faker`, and `export` overrides. Pair it with validators like `UpdateNameserversValidator`.
+- **`domain_transfer_seed`**: Creates real domains under the `accr_bot` registrar (requires `ACCR_BOT_CONTACT_CODE`) and exports domain names + transfer codes (`xfer_domain`, `xfer_code`). Options: `count`, `tld`, `use_faker`, `export` key overrides, `auto_transfer_code`. Ideal for registrar-change or transfer tasks.
+
+Tips:
+- Keep allocator configs minimal in production; rely on defaults unless a scenario requires deterministic values.
+- Allocators are idempotent—rerunning provisioning won’t duplicate data if the exported keys already exist. Use this to safely re-provision failed attempts.
+- When adding new allocator types, register them in `Allocators::Registry` so the admin UI JSON can find them.
+
+### Validators (Practical Task Checking)
+
+Validators read the live registry state and decide whether a candidate performed the required operations correctly. Each practical task references a validator class plus JSON configuration that tailor the checks and error messages. When a candidate submits evidence (or when the system polls automatically), the validator returns a structured response: `passed` flag, `score`, `evidence`, `errors`, and API audit logs.
+
+**How to configure validators**
+1. Open a practical task and edit the `validator` JSON.
+2. Set the validator class and any options it expects:
+   ```json
+   {
+     "klass": "RegisterDomainsValidator",
+     "config": {
+       "periods": { "{{domain1}}": "1y" },
+       "enforce_registrant_from_task1": true
+     },
+     "input_fields": [],
+     "allocators": []
+   }
+   ```
+3. Use allocator-exported variables (e.g., `{{domain1}}`, `{{ns1_1}}`) inside the config to keep scenarios dynamic.
+4. If the validator requires user input (upload file, EPP log, etc.), add entries under `input_fields` so the UI renders the form elements.
+
+**Common validator types**
+- **RegisterDomainsValidator**: Confirms the listed domains exist and use the expected contacts/periods.
+- **UpdateNameserversValidator**: Checks that required nameservers are present (supports additional NS records).
+- **TransferDomainsValidator / ChangeRegistrantValidator / RenewDomainValidator**: Inspect domain history, transfer codes, registrant info, and renewal periods.
+Each validator lives under `app/validators` and documents the expected config keys in comments.
+
+Tips:
+- After editing validator JSON, use the “Preview” button in the admin UI to ensure JSON is valid.
+- Validator failures often include `api_audit` entries—review them to see which REPP call failed.
+- When creating new validator classes, inherit from `BaseTaskValidator` so audit helpers, pass/fail helpers, and localization are available.
+
 ### Answer Management
 
 Answers are managed within questions:

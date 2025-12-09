@@ -50,11 +50,11 @@ class QuestionResponse < ApplicationRecord
   end
 
   def completed_and_correct?
-    correct? && test_attempt.completed?
+    correct? && (test_attempt.completed? || test_attempt.time_expired?)
   end
 
   def completed_and_incorrect?
-    !correct? && test_attempt.completed?
+    !correct? && (test_attempt.completed? || test_attempt.time_expired?)
   end
 
   def selected_answer_or_marked_for_later

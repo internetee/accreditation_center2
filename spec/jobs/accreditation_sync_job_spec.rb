@@ -14,7 +14,7 @@ RSpec.describe AccreditationSyncJob, type: :job do
     it 'delegates syncing to AccreditationResultsService' do
       expect(service).to receive(:sync_user_accreditation)
         .with(user)
-        .and_return({ success: true })
+        .and_return({ success: true, message: 'Accreditation synced successfully' })
 
       described_class.perform_now(user.id)
     end

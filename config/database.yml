@@ -60,6 +60,23 @@ test:
   <<: *default
   database: accreditation_center_test
 
+staging:
+  primary: &primary_staging
+    <<: *default
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_staging" } %>
+  cache:
+    <<: *primary_staging
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_staging" } %>_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_staging
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_staging" } %>_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_staging
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_staging" } %>_cable
+    migrations_paths: db/cable_migrate
+
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
@@ -83,16 +100,16 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: accreditation_center_production
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_production" } %>
   cache:
     <<: *primary_production
-    database: accreditation_center_production_cache
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_production" } %>_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: accreditation_center_production_queue
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_production" } %>_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: accreditation_center_production_cable
+    database: <%= ENV.fetch("APP_DBNAME") { "accreditation_center_production" } %>_cable
     migrations_paths: db/cable_migrate

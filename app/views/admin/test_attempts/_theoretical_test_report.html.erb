@@ -1,0 +1,58 @@
+ <% if @question_responses.any? %>
+  <% @question_responses.each_with_index do |response, index| %>
+    <div class="question-response">
+      <div class="question-header">
+        <h4><%= t('admin.test_attempts.show.question_number', number: index + 1) %></h4>
+        <span class="question-status">
+          <% if response.correct? %>
+            <span class="label label-success"><%= t('admin.test_attempts.show.correct') %></span>
+          <% else %>
+            <span class="label label-danger"><%= t('admin.test_attempts.show.incorrect') %></span>
+          <% end %>
+        </span>
+      </div>
+        
+      <div class="question-text">
+        <strong><%= response.question.text %></strong>
+      </div>
+        
+      <div class="answers-section">
+        <h5><%= t('admin.test_attempts.show.user_answers') %>:</h5>
+        <% if response.selected_answers.any? %>
+          <ul class="user-answers">
+            <% response.selected_answers.each do |answer| %>
+              <li class="<%= answer.correct? ? 'correct' : 'incorrect' %>">
+                <%= answer.text %>
+                <% if answer.correct? %>
+                  <span class="badge badge-success"><%= t('admin.test_attempts.show.correct') %></span>
+                <% else %>
+                  <span class="badge badge-danger"><%= t('admin.test_attempts.show.incorrect') %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="no-answer"><%= t('admin.test_attempts.show.no_answer_provided') %></p>
+        <% end %>
+      </div>
+        
+      <div class="correct-answers-section">
+        <h5><%= t('admin.test_attempts.show.correct_answers') %>:</h5>
+        <ul class="correct-answers">
+          <% response.question.correct_answers.each do |answer| %>
+            <li class="correct">
+              <%= answer.text %>
+              <span class="badge badge-success"><%= t('admin.test_attempts.show.correct') %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    
+    <% unless index == @question_responses.length - 1 %>
+      <hr class="question-divider">
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="no-responses"><%= t('admin.test_attempts.show.no_responses_recorded') %></p>
+<% end %>

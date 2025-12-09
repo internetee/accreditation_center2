@@ -67,13 +67,13 @@ class TestAttempt < ApplicationRecord
 
       correct_count = practical_task_results.count(&:correct?)
 
-      (correct_count.to_f / practical_task_results.count * 100).round(0)
+      (correct_count.to_f / test.practical_tasks.active.count * 100).round(0)
     else
       return 0 if question_responses.empty?
 
       correct_count = question_responses.count(&:correct?)
 
-      (correct_count.to_f / question_responses.count * 100).round(0)
+      (correct_count.to_f / questions.count * 100).round(0)
     end
   end
 
