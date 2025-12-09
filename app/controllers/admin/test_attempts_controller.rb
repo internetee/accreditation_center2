@@ -24,7 +24,7 @@ class Admin::TestAttemptsController < Admin::BaseController
   end
 
   def show
-    @question_responses = @test_attempt.question_responses.includes(:question)
+    @question_responses = @test_attempt.question_responses.includes(:question, :answers)
   end
 
   def reassign
