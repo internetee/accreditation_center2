@@ -23,6 +23,7 @@ class Admin::TestsController < Admin::BaseController
     if @test.save
       redirect_to admin_test_path(@test), notice: t('admin.tests.created')
     else
+      flash.now[:alert] = @test.errors.full_messages.join(', ')
       render :new, status: :unprocessable_content
     end
   end
@@ -33,6 +34,7 @@ class Admin::TestsController < Admin::BaseController
     if @test.update(test_params)
       redirect_to admin_test_path(@test), notice: t('admin.tests.updated')
     else
+      flash.now[:alert] = @test.errors.full_messages.join(', ')
       render :edit, status: :unprocessable_content
     end
   end
@@ -73,7 +75,7 @@ class Admin::TestsController < Admin::BaseController
     params.require(:test).permit(
       :title_et, :title_en, :description_et, :description_en,
       :time_limit_minutes, :questions_per_category, :passing_score_percentage,
-      :display_order, :active, :test_type, test_category_ids: []
+      :display_order, :active, :test_type, :auto_assign, test_category_ids: []
     )
   end
 

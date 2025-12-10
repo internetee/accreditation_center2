@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_04_093044) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -143,6 +143,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_04_093044) do
     t.datetime "updated_at", null: false
     t.string "slug"
     t.integer "test_type", default: 0, null: false
+    t.boolean "auto_assign", default: false, null: false
     t.index ["active"], name: "index_tests_on_active"
     t.index ["slug"], name: "index_tests_on_slug", unique: true
     t.index ["test_type"], name: "index_tests_on_test_type"

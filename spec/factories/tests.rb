@@ -6,6 +6,7 @@ FactoryBot.define do
     passing_score_percentage { 100 }
     time_limit_minutes { 60 }
     active { true }
+    auto_assign { false }
 
     trait :theoretical do
       test_type { :theoretical }
