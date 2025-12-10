@@ -396,6 +396,7 @@ RSpec.describe TestAttempt, type: :model do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       cat1 = create(:test_category, questions_per_category: 2)
       cat2 = create(:test_category, questions_per_category: 1)
+      cat3 = create(:test_category, questions_per_category: 1, active: false)
 
       create(:question, test_category: cat1, display_order: 1)
       create(:question, test_category: cat1, display_order: 2)
@@ -403,6 +404,8 @@ RSpec.describe TestAttempt, type: :model do
 
       create(:question, test_category: cat2, display_order: 1)
       create(:question, test_category: cat2, display_order: 2)
+
+      create(:question, test_category: cat3, display_order: 1)
 
       theoretical_test.test_categories << [cat1, cat2]
 
@@ -418,6 +421,28 @@ RSpec.describe TestAttempt, type: :model do
       # Selected responses count should match per-category limits (<= available questions)
       total_limit = test_category.questions_per_category + cat2.questions_per_category
       expect(attempt.question_responses.count).to be <= total_limit
+    end
+
+    it 'creates placeholder responses for mandatory questions' do
+      attempt = create(:test_attempt, user: user, test: theoretical_test)
+      cat1 = create(:test_category, questions_per_category: 3)
+
+      create(:question, test_category: cat1, display_order: 1, mandatory: '1')
+      create(:question, test_category: cat1, display_order: 2, mandatory: '1')
+      create(:question, test_category: cat1, display_order: 3)
+      create(:question, test_category: cat1, display_order: 4, mandatory: '0')
+      create(:question, test_category: cat1, display_order: 5)
+      create(:question, test_category: cat1, display_order: 6, active: false)
+
+      theoretical_test.test_categories << [cat1]
+
+      expect {
+        attempt.initialize_question_set!
+      }.to(change { attempt.question_responses.count })
+
+      expect(attempt.question_responses.count).to eq(4)
+      expect(attempt.question_responses.where(question: cat1.questions.mandatory).count).to eq(2)
+      expect(attempt.question_responses.where(question: cat1.questions.non_mandatory).count).to eq(1)
     end
   end
 

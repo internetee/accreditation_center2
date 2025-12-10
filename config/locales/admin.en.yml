@@ -79,6 +79,7 @@ en:
       destroyed: "Question destroyed"
       activated: "Question activated"
       deactivated: "Question deactivated"
+      mandatory: "Mandatory"
       index:
         question_text: "Text"
         question_description: "Description"
@@ -88,6 +89,8 @@ en:
         question_updated_at: "Updated at"
         answer_correct: "correct"
         answer_incorrect: "incorrect"
+        question_mandatory: "Mandatory"
+        question_mandatory_to: "Mandatory To"
     answers:
       add: "Add Answer"
       text_et: "Text (Estonian)"

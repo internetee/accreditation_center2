@@ -3,6 +3,7 @@
   <td class="answer-indent" colspan="2">
     └─ <%= answer.text %> <strong>[<%= answer.correct? ? t('admin.questions.index.answer_correct') : t('admin.questions.index.answer_incorrect') %>]</strong>
   </td>
+  <td></td>
   <td class="table--action">
     <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_answer_path(@test_category, question, answer),
                   class: 'simple_tooltip',

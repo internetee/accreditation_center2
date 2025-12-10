@@ -79,6 +79,7 @@ et:
       destroyed: "Küsimus kustutatud"
       activated: "Küsimus aktiveeritud"
       deactivated: "Küsimus deaktiveeritud"
+      mandatory: "Kohustuslik"
       index:
         question_text: "Tekst"
         question_description: "Kirjeldus"
@@ -88,6 +89,8 @@ et:
         question_updated_at: "Muutmise kuupäev"
         answer_correct: "õige"
         answer_incorrect: "vale"
+        question_mandatory: "Kohustuslik"
+        question_mandatory_to: "Kohustuslik kuni"
     answers:
       add: "Lisa vastus"
       text_et: "Tekst (eesti)"
