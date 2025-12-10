@@ -80,7 +80,7 @@ class ApiConnector
       # Configure logging if enabled
       if ENV['RAILS_LOG_LEVEL'] == 'debug'
         faraday.response :logger, nil, {
-          headers: false,
+          headers: true,
           bodies: true,
           errors: true,
           log_level: :debug
@@ -93,17 +93,29 @@ class ApiConnector
                    else
                      false
                    end
+      Rails.logger.debug("[ApiConnector] SSL verify: #{ssl_verify}")
       faraday.ssl.verify = ssl_verify
 
       ca_file = @ssl_opts[:ca_file].presence
+      Rails.logger.debug("[ApiConnector] CA file: #{ca_file}, exists: #{ca_file && File.exist?(ca_file)}")
       faraday.ssl.ca_file = ca_file if ca_file.present?
 
       cert_file = @ssl_opts[:client_cert_file].presence
       key_file  = @ssl_opts[:client_key_file].presence
 
+      Rails.logger.debug("[ApiConnector] Client cert file: #{cert_file}, exists: #{cert_file && File.exist?(cert_file)}")
+      Rails.logger.debug("[ApiConnector] Client key  file: #{key_file}, exists: #{key_file && File.exist?(key_file)}")
+
       if cert_file.present? && key_file.present? && File.exist?(cert_file) && File.exist?(key_file)
-        faraday.ssl.client_cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
-        faraday.ssl.client_key  = OpenSSL::PKey.read(File.read(key_file))
+        cert_pem = File.read(cert_file)
+        key_pem  = File.read(key_file)
+        faraday.ssl.client_cert = OpenSSL::X509::Certificate.new(cert_pem)
+        faraday.ssl.client_key  = OpenSSL::PKey.read(key_pem)
+
+        if ENV['RAILS_LOG_LEVEL'] == 'debug'
+          cn = faraday.ssl.client_cert.subject.to_a.find { |a| a[0] == 'CN' }&.dig(1)
+          Rails.logger.debug("[ApiConnector] Loaded client cert CN: #{cn}")
+        end
       end
     end
   end
