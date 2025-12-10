@@ -49,3 +49,6 @@ ACCR_EXPIRY_NOTIFICATION_DAYS: '14,7'
 
 # Automatically assign test attempts to users after sign in
 AUTO_ASSIGN_TEST_ATTEMPTS: false
+
+# Mandatory question validity period in years
+MANDATORY_QUESTION_VALIDITY_YEARS: 1

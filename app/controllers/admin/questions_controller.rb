@@ -68,7 +68,7 @@ class Admin::QuestionsController < Admin::BaseController
 
   def question_params
     params.require(:question).permit(
-      :text_et, :text_en, :help_text_et, :help_text_en, :active,
+      :text_et, :text_en, :help_text_et, :help_text_en, :active, :mandatory,
       answers_attributes: %i[id text_et text_en display_order correct _destroy]
     )
   end

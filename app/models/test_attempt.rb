@@ -173,19 +173,45 @@ class TestAttempt < ApplicationRecord
   end
 
   # Initializes a per-attempt randomized question set based on test categories.
-  # Selects up to questions_per_category active questions from each active category
-  # and creates placeholder QuestionResponse records to persist the selection.
+  # First includes all mandatory questions (mandatory_to date hasn't passed),
+  # then randomly selects remaining questions up to questions_per_category limit.
   def initialize_question_set!
     return if question_responses.exists?
 
     test.test_categories.active.find_each do |category|
       # Fallback to 5 if questions_per_category is not present
-      per_category_limit = category.respond_to?(:questions_per_category) && category.questions_per_category.present? ? category.questions_per_category.to_i : 5
+      per_category_limit = if category.respond_to?(:questions_per_category) && category.questions_per_category.present?
+                             category.questions_per_category.to_i
+                           else
+                             5
+                           end
 
-      available_ids = category.questions.active.pluck(:id)
-      next if available_ids.empty?
+      # Get all active questions for this category
+      all_questions = category.questions.active
+      next if all_questions.empty?
 
-      selected_ids = available_ids.sample([per_category_limit, available_ids.size].min)
+      # First, select all mandatory questions (mandatory_to date hasn't passed)
+      mandatory_questions = all_questions.mandatory
+      mandatory_ids = mandatory_questions.pluck(:id)
+
+      # Calculate how many more questions we need
+      remaining_slots = [per_category_limit - mandatory_ids.size, 0].max
+
+      # Get non-mandatory questions and randomly select to fill remaining slots
+      non_mandatory_questions = all_questions.non_mandatory
+      non_mandatory_ids = non_mandatory_questions.pluck(:id)
+
+      # Randomly select from non-mandatory questions
+      random_ids = if remaining_slots.positive? && non_mandatory_ids.any?
+                     non_mandatory_ids.sample([remaining_slots, non_mandatory_ids.size].min)
+                   else
+                     []
+                   end
+
+      # Combine mandatory and randomly selected questions
+      selected_ids = mandatory_ids + random_ids
+
+      # Create question responses for all selected questions
       selected_ids.each do |question_id|
         question_responses.create!(question_id: question_id, selected_answer_ids: [], marked_for_later: false)
       end

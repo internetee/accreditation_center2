@@ -44,6 +44,15 @@ RSpec.describe Question, type: :model do
       question = build(:question, display_order: 1, test_category: test_category)
       expect(question.valid?).to be(true)
     end
+
+    it 'validates mandatory only if active' do
+      question = build(:question, mandatory: '1', active: false, test_category: test_category)
+      expect(question.valid?).to be(false)
+      expect(question.errors[:base]).to include('Mandatory question must be active')
+
+      question = build(:question, mandatory: '1', active: true, test_category: test_category)
+      expect(question.valid?).to be(true)
+    end
   end
 
   describe 'associations' do
