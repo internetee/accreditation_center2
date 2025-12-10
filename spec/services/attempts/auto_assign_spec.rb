@@ -4,7 +4,7 @@ RSpec.describe Attempts::AutoAssign do
   describe '#call' do
     let(:user) { create(:user) }
     let!(:theoretical_test) { create_ready_theoretical_test }
-    let!(:practical_test) { create(:test, :practical) }
+    let!(:practical_test) { create(:test, :practical, auto_assign: true) }
 
     before do
       allow(Attempts::Assign).to receive(:call!).and_return(true)
@@ -74,7 +74,16 @@ RSpec.describe Attempts::AutoAssign do
     end
 
     it 'returns a failure when test is inactive' do
-      theoretical_test.update(active: false)
+      theoretical_test.update(active: false, auto_assign: false)
+
+      failures = described_class.new(user: user).call
+
+      expect(failures.size).to eq(1)
+      expect(failures.first.error_message).to include('No theoretical tests available')
+    end
+
+    it 'returns a failure when test is not auto assignable' do
+      theoretical_test.update(auto_assign: false)
 
       failures = described_class.new(user: user).call
 
@@ -84,7 +93,7 @@ RSpec.describe Attempts::AutoAssign do
   end
 
   def create_ready_theoretical_test
-    test = create(:test, :theoretical)
+    test = create(:test, :theoretical, auto_assign: true)
     category = create(:test_category)
     create(:test_categories_test, test: test, test_category: category)
     question = create(:question, test_category: category)

@@ -9,19 +9,24 @@
   <thead>
     <tr>
       <th><%= sort_link(@search, "title_#{I18n.locale}", t('admin.tests.index.test_title')  ) %></th>
-      <th><%= sort_link(@search, "description_#{I18n.locale}", t('admin.tests.index.test_description')) %></th>
       <th><%= sort_link(@search, "test_type", t('admin.tests.index.test_type')) %></th>
       <th><%= t('admin.tests.index.components') %></th>
       <th><%= sort_link(@search, "attempts", t('admin.tests.index.test_attempts')) %></th>
       <th><%= sort_link(@search, "active", t('admin.tests.index.test_active')) %></th>
+      <th style="text-align: center;"><%= sort_link(@search, "auto_assign", t('admin.tests.index.auto_assign')) %></th>
       <th class="table--action"></th>
     </tr>
   </thead>
   <tbody>
     <% @tests.each do |test| %>
       <tr>
-        <td><%= link_to test.title, admin_test_path(test) %></td>
-        <td><%= test.description %></td>
+        <td>
+          <% if test.description.present? %>
+            <%= link_to test.title, admin_test_path(test), class: 'simple_tooltip', data: { 'tippy-content': test.description } %>
+          <% else %>
+            <%= link_to test.title, admin_test_path(test) %>
+          <% end %>
+        </td>
         <td>
           <span class="label label-<%= test.test_type == 'theoretical' ? 'info' : 'warning' %>">
             <%= t("admin.tests.index.#{test.test_type}") %>
@@ -49,6 +54,13 @@
             <span class="label label-success"><%= t('admin.tests.index.test_active') %></span>
           <% else %>
             <span class="label label-default"><%= t('admin.tests.index.test_inactive') %></span>
+          <% end %>
+        </td>
+        <td style="text-align: center;">
+          <% if test.auto_assign? %>
+            <span class="label label-success"><i class="fas fa-check"></i></span>
+          <% else %>
+            <span class="label label-default"><i class="fas fa-times"></i></span>
           <% end %>
         </td>
         <td class="table--action">

@@ -43,6 +43,21 @@ RSpec.describe Test, type: :model do
       test = build(:test, :practical, passing_score_percentage: 80)
       expect(test.valid?).to be(true)
     end
+
+    it 'validates auto_assign is only allowed for active tests' do
+      test = build(:test, auto_assign: true, active: false)
+      expect(test.valid?).to be(false)
+      expect(test.errors[:base]).to be_present
+    end
+
+    it 'validates auto_assign is only allowed once for each test type' do
+      create(:test, :theoretical, auto_assign: true)
+      create(:test, :practical, auto_assign: true)
+
+      test = build(:test, auto_assign: true)
+      expect(test.valid?).to be(false)
+      expect(test.errors[:base]).to be_present
+    end
   end
 
   describe 'associations' do
