@@ -62,7 +62,21 @@
             <% route_prefix = attempt.test.theoretical? ? :theoretical : :practical %>
             <tr>
               <td><%= attempt.test.title %></td>
-              <td><%= format_time(attempt.time_remaining) %></td>
+              <td>
+                <% if attempt.in_progress? %> 
+                  <div class="time-remaining" data-controller="test-timer"
+                       data-test-timer-remaining-value="<%= attempt.time_remaining %>"
+                       data-time-template="<%= t('tests.time_remaining_short') %>"
+                  >
+                    <i class="fas fa-clock"></i>
+                    <span class="time-text" data-test-timer-target="timeText">
+                      <%= t('tests.time_remaining_short', minutes: (attempt.time_remaining / 60).floor, seconds: attempt.time_remaining % 60) %>
+                    </span>
+                  </div>
+                <% else %>
+                  <%= format_time(attempt.time_remaining) %>
+                <% end %>
+              </td>
               <td><%= attempt.progress_percentage %>%</td>
               <td>
                 <% if attempt.in_progress? %>

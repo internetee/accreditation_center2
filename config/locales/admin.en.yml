@@ -106,6 +106,9 @@ en:
         title: "New Test" 
       index:  
         title: "Tests"
+        active: "Active"
+        inactive: "Inactive"
+        auto_assign: "Auto Assign"
         time_limit: "Time Limit"
         questions_per_category: "Questions per Category"
         passing_score: "Passing Score"
@@ -201,6 +204,7 @@ en:
         passing_score_percentage: "Passing Score (percentage)"
         display_order: "Display Order"
         active: "Active"
+        auto_assign: "Auto Assign"
         inactive: "Inactive"
         category_selection: "Category Selection"
         test_type: "Test Type"

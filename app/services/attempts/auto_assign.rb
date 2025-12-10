@@ -41,9 +41,9 @@ module Attempts
 
     def next_assignable_test_for(test_type)
       assigned_ids = user.test_attempts.not_completed.pluck(:test_id)
-      scope = Test.active.where(test_type: test_type)
+      scope = Test.active.auto_assignable.where(test_type: test_type)
       scope = scope.where.not(id: assigned_ids) if assigned_ids.present?
-      scope.first || Test.active.where(test_type: test_type).first
+      scope.first || Test.active.auto_assignable.where(test_type: test_type).first
     end
   end
 end

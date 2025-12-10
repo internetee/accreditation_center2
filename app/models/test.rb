@@ -19,7 +19,18 @@ class Test < ApplicationRecord
   validates :passing_score_percentage, presence: true, numericality: { in: 0..100 }
   validate :practical_test_passing_score
 
+  validate :auto_assign_check
+  def auto_assign_check
+    return unless auto_assign?
+
+    errors.add(:base, 'Auto assign allowed only for active tests') unless active?
+    return if Test.where(test_type: test_type).where(auto_assign: true).count.zero?
+
+    errors.add(:base, 'Auto assign allowed only once for each test type')
+  end
+
   scope :active, -> { where(active: true) }
+  scope :auto_assignable, -> { where(auto_assign: true) }
   default_scope { order(created_at: :desc) }
 
   before_validation :set_practical_test_passing_score
@@ -31,7 +42,7 @@ class Test < ApplicationRecord
   end
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[title_et title_en description_et description_en created_at]
+    %w[title_et title_en description_et description_en created_at active auto_assign]
   end
 
   def active_ordered_test_categories_with_join_id
