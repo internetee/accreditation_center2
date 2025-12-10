@@ -74,7 +74,11 @@
                     </span>
                   </div>
                 <% else %>
-                  <%= format_time(attempt.time_remaining) %>
+                  <div class="time-remaining">
+                    <span class="time-text">
+                      <%= t('tests.time_remaining_short', minutes: (attempt.time_remaining / 60).floor, seconds: attempt.time_remaining % 60) %>
+                    </span>
+                  </div>
                 <% end %>
               </td>
               <td><%= attempt.progress_percentage %>%</td>
