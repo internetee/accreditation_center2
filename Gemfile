@@ -41,7 +41,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 gem 'devise'
-gem 'faraday'
+gem 'faraday', '>= 2.14.1'
 gem 'figaro'
 
 gem 'font-awesome-sass', '~> 5.15.1'
