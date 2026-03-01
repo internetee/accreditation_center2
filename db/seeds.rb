@@ -9,6 +9,7 @@
 #   end
 
 require_relative 'seeds/practical_tasks'
+require_relative 'seeds/practical_tasks_v2'
 require_relative 'seeds/theoretical_test_seeds'
 
 if User.where(role: :admin).empty?

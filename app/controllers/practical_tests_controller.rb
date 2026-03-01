@@ -1,4 +1,6 @@
 class PracticalTestsController < TestsController
+  skip_before_action :verify_authenticity_token, only: :answer
+
   # POST /practical_tests/:id/start
   def start
     super

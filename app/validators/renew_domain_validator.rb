@@ -51,15 +51,28 @@ class RenewDomainValidator < BaseTaskValidator
     return [I18n.t('validators.renew_domain_validator.domain_expire_time_missing', domain: name)] unless expire_time.present?
 
     expected_expiry = calculate_expiry(info[:created_at], years)
-    return [I18n.t('validators.renew_domain_validator.domain_not_renewed', domain: name)] unless expire_time.to_date == expected_expiry.to_date
+    return [I18n.t('validators.renew_domain_validator.domain_not_renewed', domain: name)] if expected_expiry.nil?
+
+    expire_date = date_from_value(expire_time)
+    expected_date = expected_expiry.respond_to?(:to_date) ? expected_expiry.to_date : expected_expiry
+    expire_str = expire_date&.to_s
+    expected_str = expected_date.respond_to?(:to_s) ? expected_date.to_s : expected_date.to_s
+    return [I18n.t('validators.renew_domain_validator.domain_not_renewed', domain: name)] unless expire_str == expected_str
 
     []
+  end
+
+  def date_from_value(value)
+    return value.to_date if value.respond_to?(:to_date) && !value.is_a?(String)
+    return Time.zone.parse(value.to_s).to_date if value.present?
+    nil
   end
 
   def calculate_expiry(created, years)
     return nil if created.nil? || years.nil?
 
-    (created.to_date.advance(years: years) + 1.day).beginning_of_day
+    base = created.respond_to?(:to_date) ? created.to_date : Time.zone.parse(created.to_s).to_date
+    base.advance(years: years).to_date + 1.day
   end
 
   def api_service_adapter
