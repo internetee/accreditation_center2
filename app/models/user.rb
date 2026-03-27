@@ -9,7 +9,7 @@ class User < ApplicationRecord
   has_many :tests, through: :test_attempts
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
-  validates :email, presence: true, uniqueness: { case_sensitive: false }
+  # validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
 
   enum :role, { user: 0, admin: 1 }
