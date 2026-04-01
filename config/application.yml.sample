@@ -19,14 +19,27 @@ mailer_authentication: 'plain'
 mailer_domain: ''
 mailer_openssl_verify_mode: 'none'
 
+# OIDC configuration
+# OIDC_HOST: 'test-auth.eeid.ee'
+OIDC_ISSUER: 'https://test-auth.eeid.ee/hydra-public/'
+OIDC_IDENTIFIER: ''
+OIDC_SECRET: ''
+OIDC_REDIRECT_URI: 'https://accred.test/users/auth/oidc/callback'
+OIDC_DISCOVERY: true
+OIDC_SCOPE: 'openid webauthn email phone'
+
 # Here we will use TEST environment registry base url
 # because all operation with domains and contacts should be in test registry environment
 BASE_URL: "http://registry:3000"
 
 REPP_BASE_URL: "http://registry:3000"
 REPP_CREATE_DOMAIN: "/repp/v1/domains"
+REPP_AUTH_TOKEN_URL: "/repp/v1/registrar/auth/tara_callback"
+# REPP API endpoint for accreditation results
+REPP_ACCREDITATION_RESULTS_URL: "/repp/v1/registrar/accreditation/push_results"
 
 AUTH_API_URL: "/api/v1/accreditation_center/auth"
+AUTH_EXCHANGE_URL: "/api/v1/accreditation_center/auth/exchange"
 GET_CONTACT: "/api/v1/accreditation_center/contacts"
 GET_DOMAIN_INFO: "/api/v1/accreditation_center/domains"
 GET_INVOICES: "/api/v1/accreditation_center/invoice_status"

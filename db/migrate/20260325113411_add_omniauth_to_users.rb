@@ -3,6 +3,7 @@ class AddOmniauthToUsers < ActiveRecord::Migration[8.0]
     add_column :users, :provider, :string
     add_column :users, :uid, :string
     add_column :users, :name, :string
+    remove_column :users, :username
     remove_column :users, :encrypted_password
     remove_column :users, :reset_password_token
     remove_column :users, :reset_password_sent_at
