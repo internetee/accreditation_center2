@@ -103,7 +103,7 @@ en:
       updated: "Test updated"
       created: "Test created"
       duplicated: "Test duplicated successfully"
-      duplication_failed: "Failed to duplicate test"
+      duplication_failed: "Failed to duplicate test: %{errors}"
       destroyed: "Test destroyed"
       new:
         title: "New Test" 
@@ -304,6 +304,7 @@ en:
         correct: "Correct"
         incorrect: "Incorrect"
         not_started: "Not Started"
+        time_expired: "Time Expired"
         no_answer_provided: "No answer provided"
         no_responses_recorded: "No responses recorded for this attempt"
         no_practical_results_recorded: "No practical task results recorded for this attempt"

@@ -1,7 +1,8 @@
 class Admin::TestAttemptsController < Admin::BaseController
   before_action :set_test
-  before_action :set_test_attempt, only: %i[show reassign extend_time destroy]
+  before_action :set_test_attempt, only: %i[show extend_time destroy]
   before_action :set_pagy_params, only: %i[index]
+  before_action :store_location, only: %i[index]
 
   def index
     @pagy, @test_attempts = pagy(@test.test_attempts.includes(:user).ordered, items: session[:page_size], page: @page)
@@ -28,16 +29,6 @@ class Admin::TestAttemptsController < Admin::BaseController
     @practical_task_results = @test_attempt.practical_task_results.includes(:practical_task)
   end
 
-  def reassign
-    new_attempt = @test_attempt.build_duplicate
-
-    if new_attempt.save
-      redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.reassigned')
-    else
-      redirect_to admin_test_test_attempts_path(@test), alert: t('admin.test_attempts.reassign_failed')
-    end
-  end
-
   def extend_time
     # Extend the time limit by 30 minutes
     if @test_attempt.in_progress?
@@ -50,7 +41,7 @@ class Admin::TestAttemptsController < Admin::BaseController
 
   def destroy
     @test_attempt.destroy
-    redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.removed')
+    redirect_to session[:return_to] || admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.removed')
   end
 
   private

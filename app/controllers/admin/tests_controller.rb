@@ -32,7 +32,7 @@ class Admin::TestsController < Admin::BaseController
 
   def update
     if @test.update(test_params)
-      redirect_to admin_test_path(@test), notice: t('admin.tests.updated')
+      redirect_to session[:return_to] || admin_test_path(@test), notice: t('admin.tests.updated')
     else
       flash.now[:alert] = @test.errors.full_messages.join(', ')
       render :edit, status: :unprocessable_content
@@ -41,7 +41,7 @@ class Admin::TestsController < Admin::BaseController
 
   def destroy
     @test.destroy
-    redirect_to admin_tests_path, notice: t('admin.tests.destroyed')
+    redirect_to session[:return_to] || admin_tests_path, notice: t('admin.tests.destroyed')
   end
 
   def activate
@@ -61,7 +61,7 @@ class Admin::TestsController < Admin::BaseController
       duplicate_associations(new_test)
       redirect_to edit_admin_test_path(new_test), notice: t('admin.tests.duplicated')
     else
-      redirect_to admin_test_path(@test), alert: t('admin.tests.duplication_failed')
+      redirect_to admin_test_path(@test), alert: t('admin.tests.duplication_failed', errors: new_test.errors.full_messages.join(', '))
     end
   end
 

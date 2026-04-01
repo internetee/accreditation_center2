@@ -103,7 +103,7 @@ et:
       updated: "Test muudetud"
       created: "Test loodud"
       duplicated: "Test dubleeritud edukalt"
-      duplication_failed: "Testi dubleerimine ebaõnnestus"
+      duplication_failed: "Testi dubleerimine ebaõnnestus: %{errors}"
       destroyed: "Test kustutatud"
       new:  
         title: "Uus Test"
@@ -304,6 +304,7 @@ et:
         correct: "Õige"
         incorrect: "Vale"
         not_started: "Pole alustatud"
+        time_expired: "Aegunud"
         no_answer_provided: "Vastust ei antud"
         no_responses_recorded: "Selle proovi jaoks vastuseid ei salvestatud"
         no_practical_results_recorded: "Selle proovi jaoks praktiliste ülesannete tulemusi ei salvestatud"

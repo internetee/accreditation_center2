@@ -1,6 +1,6 @@
 class TestsController < ApplicationController
   before_action :ensure_regular_user!
-  before_action :set_resources
+  before_action :find_resources
   before_action :ensure_test_not_expired, except: %i[start]
   before_action :block_history_during_active_attempt!, only: :question
 
@@ -16,12 +16,18 @@ class TestsController < ApplicationController
 
   private
 
-  def set_resources
-    @test = Test.active.friendly.find(params[:id])
-    @test_attempt = current_user.test_attempts.find_by!(
-      test: @test,
+  def find_resources
+    @test_attempt = current_user.test_attempts.includes(:test).find_by!(
       access_code: params[:attempt]
     )
+    @test = @test_attempt.test
+    requested_test_id = params[:id].to_s
+    matches_requested_test = (@test.to_param == requested_test_id) || (@test.id.to_s == requested_test_id)
+    raise ActiveRecord::RecordNotFound unless matches_requested_test
+    # If admin deactivates a test mid-session, allow already-started/completed attempts to continue/view.
+    return if @test.active? || @test_attempt.started_at.present? || @test_attempt.completed_at.present?
+
+    raise ActiveRecord::RecordNotFound
   rescue ActiveRecord::RecordNotFound
     redirect_to root_path, alert: t('tests.test_not_found')
   end

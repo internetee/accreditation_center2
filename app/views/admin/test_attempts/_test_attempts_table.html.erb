@@ -41,16 +41,14 @@
             <span class="label label-danger"><%= t('admin.test_attempts.show.failed') %></span>
           <% elsif attempt.not_started? %>
             <span class="label label-warning"><%= t('admin.test_attempts.show.not_started') %></span>
+          <% elsif attempt.time_expired? && !attempt.completed? %>
+            <span class="label label-danger"><%= t('admin.test_attempts.show.time_expired') %></span>
           <% else %>
             <span class="label label-warning"><%= t('admin.test_attempts.show.in_progress') %></span>
           <% end %>
         </td>
         <td class="table--action">
           <% if attempt.failed? || attempt.time_expired? %>
-            <%= icon_link_to 'fas fa-redo', reassign_admin_test_test_attempt_path(@test, attempt), 
-                class: 'simple_tooltip', 
-                data: { 'tippy-content': t('.reassign_test'), turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_reassign') } %>
-            
             <%= icon_link_to 'fas fa-trash-alt', admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
                 data: { 'tippy-content': t('.remove_assignment'), turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_remove_assignment') } %>

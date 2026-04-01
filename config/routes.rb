@@ -46,7 +46,6 @@ Rails.application.routes.draw do
 
         resources :test_attempts, only: %i[index show new create destroy] do
           member do
-            post :reassign
             patch :extend_time
           end
         end

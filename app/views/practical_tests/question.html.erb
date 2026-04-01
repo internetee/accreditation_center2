@@ -90,7 +90,7 @@
                     
                     <% if @current_task_index < @tasks.count - 1 %>
                       <% can_go_next = defined?(@max_allowed_index) && (@current_task_index + 1) <= @max_allowed_index %>
-                      <% if can_go_next %>
+                      <% if can_go_next || @test_attempt.completed? %>
                         <%= link_to '<i class="fas fa-arrow-right"></i>'.html_safe,
                                     question_practical_test_path(@test, attempt: @test_attempt.access_code, question_index: @current_task_index + 1),
                                     class: 'button button--default' %>

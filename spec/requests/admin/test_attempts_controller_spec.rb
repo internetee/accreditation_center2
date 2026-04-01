@@ -69,27 +69,6 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
     end
   end
 
-  describe 'POST /admin/tests/:test_id/test_attempts/:id/reassign' do
-    it 'duplicates the attempt for the same user' do
-      expect do
-        post reassign_admin_test_test_attempt_path(test_record, test_attempt)
-      end.to change(TestAttempt, :count).by(1)
-
-      expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
-      expect(flash[:notice]).to eq(I18n.t('admin.test_attempts.reassigned'))
-    end
-
-    it 'renders the new page with error when reassign fails' do
-      invalid_attempt = build(:test_attempt, test: test_record, user: user, access_code: nil)
-      allow_any_instance_of(TestAttempt).to receive(:build_duplicate).and_return(invalid_attempt)
-
-      post reassign_admin_test_test_attempt_path(test_record, test_attempt)
-
-      expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
-      expect(flash[:alert]).to eq(I18n.t('admin.test_attempts.reassign_failed'))
-    end
-  end
-
   describe 'PATCH /admin/tests/:test_id/test_attempts/:id/extend_time' do
     context 'when attempt is in progress' do
       let!(:test_attempt) { create(:test_attempt, test: test_record, user: user, started_at: Time.current, completed_at: nil) }

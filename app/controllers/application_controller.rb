@@ -69,6 +69,10 @@ class ApplicationController < ActionController::Base
     session[:page_size] ||= Pagy::DEFAULT[:items]
   end
 
+  def store_location
+    session[:return_to] = request.fullpath
+  end
+
   protected
 
   def configure_permitted_parameters

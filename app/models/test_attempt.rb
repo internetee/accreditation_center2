@@ -153,7 +153,9 @@ class TestAttempt < ApplicationRecord
 
   # Returns true when every question in this attempt has a selected answer
   def all_questions_answered?
-    question_responses.all?(&:answered?)
+    return false if question_responses.empty?
+
+    question_responses.answered.count == question_responses.count
   end
 
   def all_tasks_completed?

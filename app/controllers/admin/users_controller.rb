@@ -1,5 +1,6 @@
 class Admin::UsersController < Admin::BaseController
   before_action :set_pagy_params
+  before_action :store_location, only: %i[show]
 
   def index
     @search = User.ransack(params[:q])
