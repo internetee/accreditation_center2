@@ -46,7 +46,7 @@ Devise.setup do |config|
   # session. If you need permissions, you should implement that in a before filter.
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
-  config.authentication_keys = [:username]
+  # config.authentication_keys = [:username]
 
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the
@@ -157,7 +157,7 @@ Devise.setup do |config|
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
   # db field (see migrations). Until confirmed, new email is stored in
   # unconfirmed_email column, and copied to email column on successful confirmation.
-  config.reconfirmable = true
+  # config.reconfirmable = true
 
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [:email]
@@ -167,7 +167,7 @@ Devise.setup do |config|
   # config.remember_for = 2.weeks
 
   # Invalidates all the remember me tokens when the user signs out.
-  config.expire_all_remember_me_on_sign_out = true
+  # config.expire_all_remember_me_on_sign_out = true
 
   # If true, extends the user's remember period when remembered via cookie.
   # config.extend_remember_period = false
@@ -272,6 +272,27 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+
+  config.omniauth :openid_connect,
+    name: :oidc,
+    scope: ENV.fetch('OIDC_SCOPE', 'openid').split(' '),
+    state: SecureRandom.hex(10),
+    client_signing_alg: :RS256,
+    send_scope_to_token_endpoint: false,
+    send_nonce: true,
+    issuer: ENV.fetch('OIDC_ISSUER', nil),
+    discovery: ENV.fetch('OIDC_DISCOVERY', false),
+    client_options: {
+      scheme: ENV.fetch('OIDC_SCHEME', 'https'),
+      host: ENV.fetch('OIDC_HOST', nil),
+      authorization_endpoint: ENV.fetch('OIDC_AUTHORIZATION_ENDPOINT', nil),
+      token_endpoint: ENV.fetch('OIDC_TOKEN_ENDPOINT', nil),
+      userinfo_endpoint: nil, # Not implemented
+      jwks_uri: ENV.fetch('OIDC_JWKS_URI', nil),
+      identifier: ENV.fetch('OIDC_IDENTIFIER', nil),
+      secret: ENV.fetch('OIDC_SECRET', nil),
+      redirect_uri: ENV.fetch('OIDC_REDIRECT_URI', nil)
+    }
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

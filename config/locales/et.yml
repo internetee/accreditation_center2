@@ -80,9 +80,9 @@ et:
         title: "Eesti Interneti SA Akrediteerimiskeskus"
         login: "Logi sisse"
         login_with_password_title: "Logi sisse"
-        login_with_id_title: "Logi sisse ID-ga"
+        login_with_id_title: "Logi sisse"
         login_with_id: "Logi sisse EEID-ga"
-        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, pangalinki või muud EIDAS-toega EL-i elektroonilist ID-d."
+        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, Smart-ID-d või muud EL-i elektroonilist ID-d."
         username: "Kasutajanimi"
         password: "Parool"
         remember_me: "Jäta mind meelde"
@@ -224,3 +224,19 @@ et:
       nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
       domain_not_found: "Domeen ei leitud: %{domain}"
       nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"
+
+  # ActiveRecord validation translations (used by presence: true, etc.)
+  activerecord:
+    errors:
+      messages:
+        blank: "Väli ei tohi olla tühi"
+      models:
+        user:
+          attributes:
+            registrar_name:
+              blank: "Registreerija nimi ei tohi olla tühi"
+
+  # Fallback location (some Rails setups look here first/also)
+  errors:
+    messages:
+      blank: "Väli ei tohi olla tühi"

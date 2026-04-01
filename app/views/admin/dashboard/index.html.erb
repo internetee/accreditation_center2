@@ -61,7 +61,7 @@
       <tbody>
         <% @recent_activity.each do |attempt| %>
           <tr>
-            <td><strong><%= link_to attempt.user.username, admin_user_path(attempt.user) %></strong> <%= t('admin.dashboard.attempted') %> <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong></td>
+            <td><strong><%= link_to attempt.user.name, admin_user_path(attempt.user) %></strong> <%= t('admin.dashboard.attempted') %> <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong></td>
             <td><%= attempt.score_percentage %>%</td>
             <td><%= l(attempt.created_at, format: :long) %></td>
             <td>

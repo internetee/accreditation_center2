@@ -1,15 +1,18 @@
 # spec/factories/users.rb
 FactoryBot.define do
   factory :user do
-    sequence(:username) { |n| "user#{n}" }
-    sequence(:email)    { |n| "user#{n}@example.test" }
+    sequence(:email) { |n| "user#{n}@example.test" }
     registrar_name { 'Example Registrar' }
-    password { 'Password1!' }
-    password_confirmation { 'Password1!' }
+    provider { 'oidc' }
+    sequence(:uid) { |n| "EE#{format('%011d', n)}" }
+    sequence(:name) { |n| "Example User #{n}" }
+    sequence(:username) { |n| "user#{n}" }
 
     trait :admin do
-      username { 'admin' }
       email { 'admin@example.test' }
+      provider { 'oidc' }
+      sequence(:uid) { |n| "EEA#{format('%010d', n)}" }
+      name { 'Admin User' }
       registrar_name { nil }
       role { :admin }
     end

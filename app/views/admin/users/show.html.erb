@@ -3,7 +3,7 @@
   <div class="layout--hero">
     <h1><%= t('.title') %></h1>
     <div class="monospace">
-      <%= @user.username %> - <%= @user.email %>
+      <%= @user.name %> - <%= @user.email %>
     </div>
     <%= back_link(text: t('.back_to_users'), path: admin_users_path) %>
   </div>
@@ -27,8 +27,8 @@
           <div class="paper--content">
             <div class="summary-stats">
               <div class="stat-item">
-                <span class="stat-label"><%= t('.username') %></span>
-                <span class="stat-value"><%= @user.username %></span>
+                <span class="stat-label"><%= t('.name') %></span>
+                <span class="stat-value"><%= @user.name %></span>
               </div>
               <div class="stat-item">
                 <span class="stat-label"><%= t('.email') %></span>

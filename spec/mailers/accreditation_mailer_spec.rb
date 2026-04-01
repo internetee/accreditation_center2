@@ -15,7 +15,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
 
     it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user.username)
+      expect(mail.body.encoded).to include(user.name)
     end
 
     it 'includes expiry date information' do
@@ -44,7 +44,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
 
     it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user.username)
+      expect(mail.body.encoded).to include(user.name)
     end
 
     it 'includes expiry date in the body' do
@@ -80,7 +80,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
 
     it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user.username)
+      expect(mail.body.encoded).to include(user.name)
     end
 
     it 'includes test information' do
@@ -125,8 +125,8 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
 
     it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user1.username)
-      expect(mail.body.encoded).to include(user2.username)
+      expect(mail.body.encoded).to include(user1.name)
+      expect(mail.body.encoded).to include(user2.name)
     end
 
     it 'includes user emails in the body' do

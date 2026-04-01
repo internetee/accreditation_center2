@@ -12,36 +12,12 @@
         <div class="col-md-6 col-xs-12">
           <article class="paper">
             <header class="paper--header">
-              <h3><%= t('.login_with_password_title') %></h3>
+              <h3><%= t('.login_with_id_title') %></h3>
             </header>
             <div class="paper--content">
-              <%= form_with scope: resource_name, url: session_path(resource_name), class: 'form',  data: { turbo: false } do |f| %>
-                <div class="form--row">
-                  <%= f.label :username, t('.username'), class: 'form--label' %>
-                  <div class="form--field">
-                    <div class="form--input">
-                        <%= f.text_field :username, class: 'input', autofocus: true, autocomplete: 'username' %>
-                    </div>
-                  </div>
-                </div>
-                <div class="form--row">
-                  <%= f.label :password, t('.password'), class: 'form--label' %>
-                  <div class="form--field">
-                    <div class="form--input">
-                        <%= f.password_field :password, class: 'input', autocomplete: 'current-password' %>
-                    </div>
-                  </div>
-                </div>
-                <% if devise_mapping.rememberable? %>
-                  <div class="field">
-                    <%= f.check_box :remember_me %>
-                    <%= f.label :remember_me, t('.remember_me') %>
-                  </div>
-                <% end %>
-                <div class="form--actions">
-                  <%= f.button t('.login'), type: 'submit', name: '', class: 'button button--primary' %>
-                </div>
-              <% end %>
+              <p><%= t('.login_with_id_text')%></p>
+              <br/>
+              <%= button_to t('.login_with_id'), omniauth_authorize_path(resource_name, :oidc), data: { turbo: false }, class: 'button button--primary' %>
             </div>
           </article>
         </div>

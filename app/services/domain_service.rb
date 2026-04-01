@@ -16,7 +16,6 @@ class DomainService < ApiConnector
     return result unless result[:success]
 
     data = result[:data]
-    data = parse_json(data)
 
     if data.is_a?(Hash) && data.key?('domain')
       symbolize_keys_deep(data['domain'])

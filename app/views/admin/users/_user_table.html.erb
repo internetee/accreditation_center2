@@ -8,7 +8,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th><%= sort_link(@search, "username", t('admin.users.index.username')  ) %></th>
+      <th><%= sort_link(@search, "name", t('admin.users.index.name')  ) %></th>
       <th><%= sort_link(@search, "email", t('admin.users.index.email')) %></th>
       <th><%= sort_link(@search, "test_attempts_count", t('admin.users.index.test_attempts')) %></th>
       <th><%= sort_link(@search, "last_sign_in_at", t('admin.users.index.last_sign_in_at')) %></th>
@@ -17,7 +17,7 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= link_to user.username, admin_user_path(user) %></td>
+        <td><%= link_to user.name, admin_user_path(user) %></td>
         <td><%= user.email %></td>
         <td><%= user.test_attempts.count %></td>
         <td><%= l(user.last_sign_in_at, format: :short) if user.last_sign_in_at %></td>

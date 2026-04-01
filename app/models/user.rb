@@ -1,16 +1,15 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :trackable
+  devise :trackable, :omniauthable, omniauth_providers: [:oidc]
 
   # Associations
   has_many :test_attempts, dependent: :destroy
   has_many :tests, through: :test_attempts
 
-  validates :username, presence: true, uniqueness: { case_sensitive: false }
-  validates :email, presence: true, uniqueness: { case_sensitive: false }
-  validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
+  validates :provider, :uid, :name, presence: true
+  # validates :email, presence: true, uniqueness: { case_sensitive: false }
+  # validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
 
   enum :role, { user: 0, admin: 1 }
 
@@ -19,7 +18,7 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[username email registrar_name]
+    %w[name uid registrar_name username]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -123,5 +122,13 @@ class User < ApplicationRecord
 
   def user?
     role == 'user'
+  end
+
+  def self.from_omniauth(auth)
+    find_or_create_by(provider: auth.provider, uid: auth.uid) do |user|
+      user.email = auth.info.email
+      full_name = [auth.info.given_name, auth.info.family_name].compact.join(' ').strip
+      user.name = full_name.presence || auth.info.name
+    end
   end
 end

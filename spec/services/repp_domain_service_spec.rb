@@ -81,11 +81,7 @@ RSpec.describe ReppDomainService do
           body: { code: 2202, message: 'Invalid authorization information' }.to_json
         )
 
-      expect(service.create_domain(params)).to include(
-        success: false,
-        data: nil,
-        message: I18n.t('errors.invalid_credentials')
-      )
+      expect { service.create_domain(params) }.to raise_error(ApiConnector::UnauthorizedError, I18n.t('errors.invalid_credentials'))
     end
 
     it 'returns invalid data format error on invalid data format' do
@@ -99,7 +95,7 @@ RSpec.describe ReppDomainService do
       expect(service.create_domain(params)).to include(
         success: false,
         data: nil,
-        message: I18n.t('errors.unexpected_response')
+        message: I18n.t('errors.invalid_data_format')
       )
     end
   end

@@ -14,11 +14,9 @@ RSpec.describe AuthenticationService do
       .and_return(
         status: 200,
         body: {
-          code: 1000,
           message: 'Command completed successfully',
           data: {
             id: 1,
-            username: 'u',
             registrar_email: 'e',
             registrar_name: 'n',
             accreditation_date: Date.current,
@@ -40,7 +38,7 @@ RSpec.describe AuthenticationService do
       }.to_json
     )
 
-    expect(service.authenticate_user).to include(success: false, data: nil, message: I18n.t('errors.invalid_credentials'))
+    expect { service.authenticate_user }.to raise_error(ApiConnector::UnauthorizedError, I18n.t('errors.invalid_credentials'))
   end
 
   it 'returns invalid data format error on invalid data format' do
@@ -50,6 +48,10 @@ RSpec.describe AuthenticationService do
       body: 'invalid data format'
     )
 
-    expect(service.authenticate_user).to include(success: false, data: nil, message: I18n.t('errors.unexpected_response'))
+    expect(service.authenticate_user).to include(
+      success: false,
+      data: nil,
+      message: I18n.t('errors.invalid_data_format')
+    )
   end
 end

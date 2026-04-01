@@ -1,8 +1,12 @@
 <nav class="menu--user">
     <% if current_user %>
-        <strong><%= link_to "<i class='fas fa-user'></i>#{current_user.username}".html_safe, '#' %></strong>
-        <%= link_to t('devise.sessions.sign_out'), logout_url, method: :delete, data: { turbo: false } %>
+        <strong><%= link_to "<i class='fas fa-user'></i>#{current_user.name}".html_safe, '#' %></strong>
+        <%= button_to t('devise.sessions.sign_out'),
+            destroy_user_session_path,
+            method: :delete,
+            form: { data: { turbo: false }, class: 'menu-link-form' },
+            class: 'menu-link' %>
     <% else %>
-        <%= link_to t('devise.sessions.sign_in'), login_url %>
+        <%= link_to t('devise.sessions.sign_in'), new_user_session_path %>
     <% end %>
 </nav>

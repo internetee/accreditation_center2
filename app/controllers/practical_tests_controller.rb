@@ -1,4 +1,6 @@
 class PracticalTestsController < TestsController
+  before_action :ensure_registry_token!, only: %i[answer]
+
   # POST /practical_tests/:id/start
   def start
     super

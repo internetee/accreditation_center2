@@ -14,7 +14,7 @@
   <div class="user-list">
     <% @expiring_users.each do |user| %>
       <div class="user-item">
-        <strong><%= user.username %></strong> (<%= user.email %>)
+        <strong><%= user.name %></strong> (<%= user.email %>)
         <br>Registrar: <%= user.registrar_name %>
         <br>Expiry Date: <%= user.accreditation_expire_date&.strftime('%B %d, %Y') %>
         <br>Days Until Expiry: <%= user.days_until_accreditation_expiry %>

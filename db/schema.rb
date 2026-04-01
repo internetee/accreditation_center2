@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_10_120001) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_31_115555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -152,14 +152,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_120001) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.string "email", default: ""
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "username"
     t.integer "role"
     t.integer "sign_in_count"
     t.datetime "current_sign_in_at"
@@ -169,10 +164,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_120001) do
     t.string "registrar_name"
     t.datetime "accreditation_date"
     t.datetime "accreditation_expire_date"
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.string "provider"
+    t.string "uid"
+    t.string "name"
+    t.string "username"
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["registrar_name"], name: "index_users_on_registrar_name"
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["username"], name: "index_users_on_username", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true, where: "(username IS NOT NULL)"
   end
 
   add_foreign_key "practical_task_results", "practical_tasks"

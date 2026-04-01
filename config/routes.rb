@@ -8,18 +8,17 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  devise_for :users, skip: %i[sessions registrations], skip_helpers: true, controllers: {
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
 
   # Internationalization scope
   scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
     root 'home#index'
 
-    devise_for :users, controllers: {
-      sessions: 'users/sessions'
-    }
-
     devise_scope :user do
-      get 'login', to: 'users/sessions#new'
-      get 'logout', to: 'users/sessions#destroy'
+      get 'login', to: 'users/sessions#new', as: :new_user_session
+      delete 'logout', to: 'users/sessions#destroy', as: :destroy_user_session
     end
 
     concern :test_actions do

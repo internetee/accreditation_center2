@@ -20,9 +20,9 @@ class ReppDomainService < BotAuthService
     return result unless result[:success]
 
     data = result[:data]
-    data = parse_json(data)
-    if data.is_a?(Hash) && data.key?('data')
-      symbolize_keys_deep(data['data'])
+
+    if data.is_a?(Hash) && data.key?('domain')
+      symbolize_keys_deep(data)
     else
       error_response(nil, I18n.t('errors.unexpected_response'))
     end

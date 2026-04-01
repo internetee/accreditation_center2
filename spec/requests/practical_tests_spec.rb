@@ -9,7 +9,9 @@ RSpec.describe 'PracticalTests', type: :request do
   let!(:practical_task_result2) { create(:practical_task_result, test_attempt: test_attempt, practical_task: task2, status: :pending) }
   let!(:test_attempt) { create(:test_attempt, user: user, test: test, started_at: nil) }
 
-  before { sign_in user, scope: :user }
+  before do
+    sign_in user, scope: :user
+  end
 
   it 'does not start a test and redirects to root if not logged in' do
     sign_out :user

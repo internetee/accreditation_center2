@@ -32,7 +32,7 @@ RSpec.describe AccreditationResultsService do
   end
 
   describe '#sync_user_accreditation' do
-    let(:user) { create(:user, username: 'testuser') }
+    let(:user) { create(:user, username: 'testuser', name: 'Test User') }
     let(:result) { true }
     let(:expected_body) { { accreditation_result: { username: user.username, result: result } }.to_json }
     let(:accreditation_date) { DateTime.current }
@@ -101,10 +101,10 @@ RSpec.describe AccreditationResultsService do
   end
 
   describe '#sync_all_accredited_users' do
-    let!(:accredited_user1) { create(:user, role: 'user', username: 'user1') }
-    let!(:accredited_user2) { create(:user, role: 'user', username: 'user2') }
-    let!(:non_accredited_user) { create(:user, role: 'user', username: 'user3') }
-    let!(:admin_user) { create(:user, role: 'admin', username: 'admin') }
+    let!(:accredited_user1) { create(:user, role: 'user', username: 'username1', name: 'User 1') }
+    let!(:accredited_user2) { create(:user, role: 'user', username: 'username2', name: 'User 2') }
+    let!(:non_accredited_user) { create(:user, role: 'user', username: 'username3', name: 'User 3') }
+    let!(:admin_user) { create(:user, role: 'admin', name: 'Admin') }
 
     before do
       allow(service).to receive(:user_accredited?).with(accredited_user1).and_return(true)
