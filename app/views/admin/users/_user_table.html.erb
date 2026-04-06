@@ -10,6 +10,7 @@
     <tr>
       <th><%= sort_link(@search, "name", t('admin.users.index.name')  ) %></th>
       <th><%= sort_link(@search, "email", t('admin.users.index.email')) %></th>
+      <th><%= sort_link(@search, "role", t('admin.users.index.role')) %></th>
       <th><%= sort_link(@search, "test_attempts_count", t('admin.users.index.test_attempts')) %></th>
       <th><%= sort_link(@search, "last_sign_in_at", t('admin.users.index.last_sign_in_at')) %></th>
     </tr>
@@ -19,6 +20,7 @@
       <tr>
         <td><%= link_to user.name, admin_user_path(user) %></td>
         <td><%= user.email %></td>
+        <td><%= user.role %></td>
         <td><%= user.test_attempts.count %></td>
         <td><%= l(user.last_sign_in_at, format: :short) if user.last_sign_in_at %></td>
       </tr>

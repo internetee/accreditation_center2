@@ -323,6 +323,7 @@ en:
         no_results: "No users found"
         username: "Username"
         email: "Email"
+        role: "Role"
         test_attempts: "Test Attempts"
         last_sign_in_at: "Last Sign In At"
       user_table:

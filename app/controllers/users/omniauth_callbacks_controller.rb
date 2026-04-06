@@ -6,16 +6,13 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     auth = request.env['omniauth.auth']
     return redirect_auth_error(t('devise.omniauth_callbacks.failure')) if auth.blank?
     return redirect_to_existing_session if same_user_callback?(auth)
+    return redirect_admin_to_password_login if admin_identity?(auth)
 
     sign_out(current_user) if user_signed_in?
 
     user = User.from_omniauth(auth)
     return redirect_auth_error(user.errors.full_messages.join(', ')) unless user&.persisted?
-
-    if local_admin?(user, auth.provider)
-      sign_in_and_redirect(user)
-      return
-    end
+    return redirect_admin_to_password_login if user.admin?
 
     api_authenticate_user(auth)
   end
@@ -31,6 +28,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   private
 
+  def admin_identity?(auth)
+    provider = auth.provider.to_s
+    uid = auth.uid.to_s
+    email = auth.dig('info', 'email').to_s.downcase
+
+    User.admin.where(provider: provider, uid: uid).exists? ||
+      (email.present? && User.admin.where('LOWER(email) = ?', email).exists?)
+  end
+
   def same_user_callback?(auth)
     user_signed_in? &&
       current_user.provider == auth.provider.to_s &&
@@ -39,10 +45,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def redirect_to_existing_session
     redirect_to after_sign_in_path_for(current_user), notice: t('devise.sessions.signed_in')
-  end
-
-  def local_admin?(user, provider)
-    user.provider == provider.to_s && user.admin?
   end
 
   def api_authenticate_user(auth)
@@ -89,6 +91,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def redirect_auth_error(message)
     flash[:alert] = message
     redirect_to new_user_session_path
+  end
+
+  def redirect_admin_to_password_login
+    flash[:alert] = t('errors.invalid_credentials')
+    redirect_to new_admin_session_path
   end
 
   def assign_test_attempts(user)

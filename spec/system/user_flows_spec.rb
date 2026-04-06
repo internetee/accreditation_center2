@@ -13,13 +13,13 @@ RSpec.describe 'User flows', type: :system do
 
   let(:login_button_text) { I18n.t('users.sessions.new.login_with_id') }
 
-  it 'logs in as admin via oidc' do
+  it 'redirects admin oidc login to admin password login' do
     admin = create(:user, :admin, provider: 'oidc', uid: 'EE39901012239')
     mock_oidc_auth(uid: admin.uid, email: admin.email, name: admin.name)
 
     login_with_oidc
 
-    expect(page).to have_current_path(admin_dashboard_path(locale: I18n.default_locale))
+    expect(page).to have_current_path(new_admin_session_path(locale: I18n.default_locale))
   end
 
   it 'logs in non-admin via oidc + api auth' do

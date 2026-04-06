@@ -19,18 +19,23 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
       expect(flash[:alert]).to be_present
     end
 
-    it 'signs in and redirects admin user' do
-      admin = create(:user, :admin, provider: 'oidc', uid: 'EE39901012239')
+    it 'redirects admin identity to admin login and skips omniauth user creation' do
+      admin = create(:user, :admin,
+                     provider: 'oidc',
+                     uid: 'EE39901012239',
+                     password: 'AdminPass123!',
+                     password_confirmation: 'AdminPass123!')
       auth = OmniAuth::AuthHash.new(provider: :oidc, uid: admin.uid, info: { name: admin.name, email: admin.email })
       request.env['omniauth.auth'] = auth
 
-      allow(controller).to receive(:sign_in_and_redirect) do
-        controller.redirect_to(admin_dashboard_path(locale: I18n.default_locale))
-      end
+      allow(User).to receive(:from_omniauth).and_call_original
+      allow(controller).to receive(:api_authenticate_user)
 
       get :oidc
 
-      expect(controller).to have_received(:sign_in_and_redirect).with(admin)
+      expect(User).not_to have_received(:from_omniauth)
+      expect(controller).not_to have_received(:api_authenticate_user)
+      expect(response).to redirect_to(new_admin_session_path(locale: I18n.default_locale))
     end
 
     it 'authenticates non-admin via oidc service and stores auth token' do

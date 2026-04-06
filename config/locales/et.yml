@@ -83,9 +83,28 @@ et:
         login_with_id_title: "Logi sisse"
         login_with_id: "Logi sisse EEID-ga"
         login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, Smart-ID-d või muud EL-i elektroonilist ID-d."
-        username: "Kasutajanimi"
-        password: "Parool"
-        remember_me: "Jäta mind meelde"
+    admin:
+      sessions:
+        new:
+          login: "Sisene"
+          title: "Administraatori sisselogimine"
+          email: "E-posti aadress"
+          password: "Parool"
+          forgot_your_password: "Unustasid parooli?"
+      passwords:
+        new:
+          title: "Administraatori parooli lähtestamine"
+          subtitle: "Saada lähtestamise juhised"
+          email: "E-posti aadress"
+          submit: "Saada lähtestamise juhised"
+          back_to_login: "Tagasi administraatori sisselogimisse"
+        edit:
+          title: "Määra uus administraatori parool"
+          subtitle: "Vali uus parool"
+          password: "Uus parool"
+          password_confirmation: "Kinnita uus parool"
+          submit: "Uuenda parooli"
+          back_to_login: "Tagasi administraatori sisselogimisse"
   home:
     index:
       title: "Koduleht"
@@ -227,6 +246,10 @@ et:
 
   # ActiveRecord validation translations (used by presence: true, etc.)
   activerecord:
+    attributes:
+      user:
+        password: "Parool"
+        password_confirmation: "Parooli kinnitus"
     errors:
       messages:
         blank: "Väli ei tohi olla tühi"
@@ -240,3 +263,4 @@ et:
   errors:
     messages:
       blank: "Väli ei tohi olla tühi"
+      confirmation: "ei ühti väljaga %{attribute}"

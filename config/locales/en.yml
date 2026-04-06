@@ -49,9 +49,28 @@ en:
         login_with_id_title: "Sign in"
         login_with_id: "Sign in with EEID"
         login_with_id_text: "Sign in using Estonian (incl. e-residents) ID-card, Mobile-ID, Smart-ID or other EU citizen's electronic ID."
-        username: "Username"
-        password: "Password"
-        remember_me: "Remember me"
+    admin:
+      sessions:
+        new:
+          login: "Sing in"
+          title: "Admin Login"
+          email: "Email"
+          password: "Password"
+          forgot_your_password: "Forgot your password?"
+      passwords:
+        new:
+          title: "Reset admin password"
+          subtitle: "Send reset instructions"
+          email: "Email"
+          submit: "Send reset instructions"
+          back_to_login: "Back to admin login"
+        edit:
+          title: "Set new admin password"
+          subtitle: "Choose a new password"
+          password: "New password"
+          password_confirmation: "Confirm new password"
+          submit: "Update password"
+          back_to_login: "Back to admin login"
   home:
     index:
       title: "Dashboard"

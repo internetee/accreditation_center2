@@ -9,7 +9,10 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   devise_for :users, skip: %i[sessions registrations], skip_helpers: true, controllers: {
-    omniauth_callbacks: 'users/omniauth_callbacks'
+    omniauth_callbacks: 'users/omniauth_callbacks',
+    passwords: 'users/admin/passwords'
+  }, path_names: {
+    password: 'admin/password'
   }
 
   # Internationalization scope
@@ -19,6 +22,13 @@ Rails.application.routes.draw do
     devise_scope :user do
       get 'login', to: 'users/sessions#new', as: :new_user_session
       delete 'logout', to: 'users/sessions#destroy', as: :destroy_user_session
+      get 'admin/login', to: 'users/admin/sessions#new', as: :new_admin_session
+      post 'admin/login', to: 'users/admin/sessions#create', as: :admin_session
+      get 'admin/password/new', to: 'users/admin/passwords#new', as: :new_admin_password
+      post 'admin/password', to: 'users/admin/passwords#create', as: :admin_password
+      get 'admin/password/edit', to: 'users/admin/passwords#edit', as: :edit_admin_password
+      patch 'admin/password',      to: 'users/admin/passwords#update'
+      put   'admin/password',      to: 'users/admin/passwords#update'
     end
 
     concern :test_actions do

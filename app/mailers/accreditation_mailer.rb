@@ -35,7 +35,7 @@ class AccreditationMailer < ApplicationMailer
     @expiring_users = expiring_users
 
     mail(
-      to: ENV.fetch('COORDINATOR_EMAIL', 'info@internet.ee'),
+      to: User.admin.pluck(:email),
       subject: t('mailers.accreditation.coordinator_notification.subject', count: expiring_users.count)
     )
   end
@@ -45,7 +45,7 @@ class AccreditationMailer < ApplicationMailer
     @failures = failures
 
     mail(
-      to: ENV.fetch('COORDINATOR_EMAIL', 'info@internet.ee'),
+      to: User.admin.pluck(:email),
       subject: t('mailers.accreditation.assignment_failed.subject', username: user.username)
     )
   end

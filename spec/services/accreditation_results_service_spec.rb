@@ -104,7 +104,7 @@ RSpec.describe AccreditationResultsService do
     let!(:accredited_user1) { create(:user, role: 'user', username: 'username1', name: 'User 1') }
     let!(:accredited_user2) { create(:user, role: 'user', username: 'username2', name: 'User 2') }
     let!(:non_accredited_user) { create(:user, role: 'user', username: 'username3', name: 'User 3') }
-    let!(:admin_user) { create(:user, role: 'admin', name: 'Admin') }
+    let!(:admin_user) { create(:user, :admin, role: 'admin', name: 'Admin') }
 
     before do
       allow(service).to receive(:user_accredited?).with(accredited_user1).and_return(true)

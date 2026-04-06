@@ -100,9 +100,11 @@ RSpec.describe AccreditationExpiryNotificationJob, type: :job do
   end
 
   describe '#send_coordinator_notifications' do
+    let!(:admin1) { create(:user, :admin, email: 'admin1@example.com') }
+    let!(:admin2) { create(:user, :admin, email: 'admin2@example.com') }
+
     before do
       ENV['COORDINATOR_ACCR_EXPIRY_NOTIFICATION_DAYS'] = '14'
-      ENV['COORDINATOR_EMAIL'] = 'coordinator@example.com, coordinator2@example.com'
     end
 
     it 'sends notification for users expiring in configured days' do
@@ -115,7 +117,7 @@ RSpec.describe AccreditationExpiryNotificationJob, type: :job do
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         email = ActionMailer::Base.deliveries.first
-        expect(email.to).to eq(['coordinator@example.com', 'coordinator2@example.com'])
+        expect(email.to).to match_array([admin1.email, admin2.email])
       end
     end
 
@@ -128,7 +130,7 @@ RSpec.describe AccreditationExpiryNotificationJob, type: :job do
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         email = ActionMailer::Base.deliveries.first
-        expect(email.to).to eq(['coordinator@example.com', 'coordinator2@example.com'])
+        expect(email.to).to match_array([admin1.email, admin2.email])
       end
     end
 
@@ -143,8 +145,8 @@ RSpec.describe AccreditationExpiryNotificationJob, type: :job do
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         email = ActionMailer::Base.deliveries.first
-        expect(email.to).to eq(['coordinator@example.com', 'coordinator2@example.com'])
-        expect(email.to_s).to include(expiring_user.username).or include(expired_user.username)
+        expect(email.to).to match_array([admin1.email, admin2.email])
+        expect(email.to_s).to include(expiring_user.name).or include(expired_user.name)
       end
     end
 

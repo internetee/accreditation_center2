@@ -110,14 +110,12 @@ RSpec.describe AccreditationMailer, type: :mailer do
     let(:user1) { create(:user, email: 'user1@example.com', accreditation_expire_date: 5.days.from_now) }
     let(:user2) { create(:user, email: 'user2@example.com', accreditation_expire_date: 10.days.from_now) }
     let(:expiring_users) { [user1, user2] }
+    let!(:admin1) { create(:user, :admin, email: 'admin1@example.com') }
+    let!(:admin2) { create(:user, :admin, email: 'admin2@example.com') }
     let(:mail) { described_class.coordinator_notification(expiring_users) }
 
-    before do
-      ENV['COORDINATOR_EMAIL'] = 'coordinator@example.com'
-    end
-
-    it 'sends to the coordinator email' do
-      expect(mail.to).to eq(['coordinator@example.com'])
+    it 'sends to all admin emails' do
+      expect(mail.to).to match_array([admin1.email, admin2.email])
     end
 
     it 'has the correct subject with count' do
@@ -139,31 +137,23 @@ RSpec.describe AccreditationMailer, type: :mailer do
       expect(mail.body.encoded).to include(user2.accreditation_expire_date.strftime('%B %d, %Y'))
     end
 
-    context 'when COORDINATOR_EMAIL is set' do
+    context 'when there are no admin users' do
       before do
-        ENV['COORDINATOR_EMAIL'] = 'custom@example.com'
+        admin1.destroy!
+        admin2.destroy!
       end
 
-      it 'uses the custom coordinator email' do
+      it 'has no recipients' do
         mail = described_class.coordinator_notification(expiring_users)
-        expect(mail.to).to eq(['custom@example.com'])
-      end
-    end
-
-    context 'when COORDINATOR_EMAIL is not set' do
-      before do
-        ENV['COORDINATOR_EMAIL'] = 'info@internet.ee'
-      end
-
-      it 'uses the default coordinator email' do
-        mail = described_class.coordinator_notification(expiring_users)
-        expect(mail.to).to eq(['info@internet.ee'])
+        expect(mail.to).to be_blank
       end
     end
   end
 
   describe '#assignment_failed' do
     let(:user) { create(:user, email: 'registrar@example.com') }
+    let!(:admin1) { create(:user, :admin, email: 'admin1@example.com') }
+    let!(:admin2) { create(:user, :admin, email: 'admin2@example.com') }
     let(:failures) do
       [
         Attempts::AutoAssign::Failure.new(test_type: 'theoretical', error_message: 'No tests available'),
@@ -172,12 +162,8 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
     let(:mail) { described_class.assignment_failed(user, failures) }
 
-    before do
-      ENV['COORDINATOR_EMAIL'] = 'coord@example.com'
-    end
-
-    it 'sends to the coordinator email' do
-      expect(mail.to).to eq(['coord@example.com'])
+    it 'sends to all admin emails' do
+      expect(mail.to).to match_array([admin1.email, admin2.email])
     end
 
     it 'uses the assignment failed subject' do

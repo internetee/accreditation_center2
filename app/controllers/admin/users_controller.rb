@@ -3,7 +3,7 @@ class Admin::UsersController < Admin::BaseController
   before_action :store_location, only: %i[show]
 
   def index
-    @search = User.ransack(params[:q])
+    @search = User.not_admin.ransack(params[:q])
     @pagy, @users = pagy(@search.result, limit: session[:page_size], page: @page)
   end
 

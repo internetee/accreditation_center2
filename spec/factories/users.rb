@@ -9,12 +9,12 @@ FactoryBot.define do
     sequence(:username) { |n| "user#{n}" }
 
     trait :admin do
-      email { 'admin@example.test' }
-      provider { 'oidc' }
-      sequence(:uid) { |n| "EEA#{format('%010d', n)}" }
+      sequence(:email) { |n| "admin#{n}@example.test" }
       name { 'Admin User' }
       registrar_name { nil }
       role { :admin }
+      password { 'AdminPass123!' }
+      password_confirmation { 'AdminPass123!' }
     end
   end
 end

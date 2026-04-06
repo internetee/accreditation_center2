@@ -1,0 +1,50 @@
+<% content_for(:title) { "EIS | #{t('users.admin.sessions.new.login')}" } %>
+<% content_for :hero do %>
+    <div class="layout--hero">
+        <h1><%= t('users.admin.sessions.new.title') %></h1>
+    </div>
+<% end %>
+
+<div class="page">
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="row" style="justify-content: center;">
+        <div class="col-md-6 col-xs-12">
+          <article class="paper">
+            <header class="paper--header">
+              <h3><%= t('users.sessions.new.login_with_password_title') %></h3>
+            </header>
+            <div class="paper--content">
+              <%= form_with scope: resource_name, url: admin_session_path, class: 'form',  data: { turbo: false } do |f| %>
+                <div class="form--row">
+                  <%= f.label :email, t('.email'), class: 'form--label' %>
+                  <div class="form--field">
+                    <div class="form--input">
+                        <%= f.email_field :email, class: 'input', autofocus: true, autocomplete: 'email' %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form--row">
+                  <%= f.label :password, t('.password'), class: 'form--label' %>
+                  <div class="form--field">
+                    <div class="form--input">
+                        <%= f.password_field :password, class: 'input', autocomplete: 'current-password' %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form--actions">
+                  <%= f.button t('users.sessions.new.login'), type: 'submit', name: '', class: 'button button--primary' %>
+                </div>
+                <div class="form--actions" style="margin-top: 12px;">
+                  <%= link_to t('users.admin.sessions.new.forgot_your_password', default: 'Forgot your password?'),
+                              new_admin_password_path,
+                              class: 'link' %>
+                </div>
+              <% end %>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

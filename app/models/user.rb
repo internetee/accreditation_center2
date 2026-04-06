@@ -1,24 +1,31 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :trackable, :omniauthable, omniauth_providers: [:oidc]
+  devise :database_authenticatable, :recoverable, :trackable, :omniauthable, omniauth_providers: [:oidc]
 
   # Associations
   has_many :test_attempts, dependent: :destroy
   has_many :tests, through: :test_attempts
 
-  validates :provider, :uid, :name, presence: true
-  # validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :provider, :uid, :name, presence: true, unless: :admin?
+  validates :email, presence: true, uniqueness: { case_sensitive: false }, if: :admin?
+  validates :password, presence: true, if: :admin_password_required?
+  validates :password, confirmation: true, if: :admin_password_required?
   # validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
+
+  def admin_password_required?
+    admin? && (new_record? || password.present?)
+  end
 
   enum :role, { user: 0, admin: 1 }
 
   after_initialize :set_default_role, if: :new_record?
 
   scope :not_admin, -> { where.not(role: :admin) }
+  scope :admin, -> { where(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[name uid registrar_name username]
+    %w[name uid registrar_name username role]
   end
 
   def self.ransackable_associations(auth_object = nil)

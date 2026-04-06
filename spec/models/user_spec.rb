@@ -10,6 +10,20 @@ RSpec.describe User, type: :model do
       expect(user.errors[:uid]).to be_present
       expect(user.errors[:name]).to be_present
     end
+
+    it 'requires password for admin users' do
+      admin = build(:user, :admin, password: nil, password_confirmation: nil)
+
+      expect(admin.valid?).to be(false)
+      expect(admin.errors[:password]).to be_present
+    end
+
+    it 'requires password confirmation to match for admin users' do
+      admin = build(:user, :admin, password: 'AdminPass123!', password_confirmation: 'DifferentPass123!')
+
+      expect(admin.valid?).to be(false)
+      expect(admin.errors[:password_confirmation]).to be_present
+    end
   end
 
   describe 'associations' do
@@ -35,7 +49,7 @@ RSpec.describe User, type: :model do
 
     it 'returns not_admin scope' do
       u1 = create(:user, registrar_name: 'R')
-      u2 = create(:user, :admin, role: :admin)
+      u2 = create(:user, :admin, role: :admin, password: 'AdminPass123!', password_confirmation: 'AdminPass123!')
 
       expect(described_class.not_admin).to include(u1)
       expect(described_class.not_admin).not_to include(u2)

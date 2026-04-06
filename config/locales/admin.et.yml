@@ -340,6 +340,7 @@ et:
         no_results: "Kasutajaid ei leitud"
         username: "Kasutajanimi"
         email: "E-post"
+        role: "Roll"
         test_attempts: "Proovid"
         last_sign_in_at: "Viimane sisselogimine"
       user_table:
