@@ -45,13 +45,13 @@
               <div class="stat-item">
                 <span class="stat-label"><%= t('.accreditation_status') %></span>
                 <span class="stat-value">
-                  <% if @user.accreditation_expire_date.present? %>
-                    <% if @user.accreditation_expired? %>
-                      <span class="badge badge-danger"><%= t('admin.dashboard.accreditation_expires') %>: <%= l(@user.accreditation_expire_date.to_date) %> (<%= t('admin.test_attempts.show.failed') %>)</span>
-                    <% elsif @user.accreditation_expires_soon?(30) %>
-                      <span class="badge badge-warning"><%= t('admin.dashboard.accreditation_expires') %>: <%= l(@user.accreditation_expire_date.to_date) %></span>
+                  <% if @user.registrar_accreditation_expire_date.present? %>
+                    <% if @user.registrar_accreditation_expired? %>
+                      <span class="badge badge-danger"><%= t('admin.dashboard.accreditation_expires') %>: <%= l(@user.registrar_accreditation_expire_date.to_date) %> (<%= t('admin.test_attempts.show.failed') %>)</span>
+                    <% elsif @user.registrar_accreditation_expires_soon?(30) %>
+                      <span class="badge badge-warning"><%= t('admin.dashboard.accreditation_expires') %>: <%= l(@user.registrar_accreditation_expire_date.to_date) %></span>
                     <% else %>
-                      <span class="badge badge-success"><%= l(@user.accreditation_expire_date.to_date) %></span>
+                      <span class="badge badge-success"><%= l(@user.registrar_accreditation_expire_date.to_date) %></span>
                     <% end %>
                   <% else %>
                     <span class="badge badge-default">-</span>

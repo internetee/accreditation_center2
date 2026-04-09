@@ -97,7 +97,7 @@
         <% @expiring_accreditations.each do |user| %>
           <tr>
             <td><strong><%= link_to user.username, admin_user_path(user) %></strong> <%= t('admin.dashboard.accreditation_expires') %></td>
-            <td><%= user.days_until_accreditation_expiry %> <%= t('days') %></td>
+            <td><%= user.days_until_registrar_accreditation_expiry %> <%= t('days') %></td>
           </tr>
         <% end %>
       </tbody>

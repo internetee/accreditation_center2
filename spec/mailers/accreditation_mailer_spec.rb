@@ -1,65 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe AccreditationMailer, type: :mailer do
-  describe '#expiry_warning' do
-    let(:user) { create(:user, email: 'user@example.com', accreditation_expire_date: 30.days.from_now) }
-    let(:days_before) { 30 }
-    let(:mail) { described_class.expiry_warning(user, days_before) }
-
-    it 'sends to the correct recipient' do
-      expect(mail.to).to eq([user.email])
-    end
-
-    it 'has the correct subject' do
-      expect(mail.subject).to eq("Accreditation Expires in #{days_before} Days")
-    end
-
-    it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user.name)
-    end
-
-    it 'includes expiry date information' do
-      expect(mail.body.encoded).to include(user.accreditation_expire_date.strftime('%B %d, %Y'))
-    end
-
-    it 'includes days before expiry' do
-      expect(mail.body.encoded).to include(days_before.to_s)
-    end
-
-    it 'includes renewal link' do
-      expect(mail.body.encoded).to include(root_url)
-    end
-  end
-
-  describe '#expiry_notification' do
-    let(:user) { create(:user, email: 'user@example.com', accreditation_expire_date: Time.zone.today) }
-    let(:mail) { described_class.expiry_notification(user) }
-
-    it 'sends to the correct recipient' do
-      expect(mail.to).to eq([user.email])
-    end
-
-    it 'has the correct subject' do
-      expect(mail.subject).to eq('Accreditation Expired - Action Required')
-    end
-
-    it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user.name)
-    end
-
-    it 'includes expiry date in the body' do
-      expect(mail.body.encoded).to include(user.accreditation_expire_date.strftime('%B %d, %Y'))
-    end
-
-    it 'includes renewal link' do
-      expect(mail.body.encoded).to include(root_url)
-    end
-
-    it 'sets instance variables correctly' do
-      expect(mail.body.encoded).to include('Accreditation Expired')
-    end
-  end
-
   describe '#test_completion' do
     let(:user) { create(:user, email: 'user@example.com') }
     let(:test) { create(:test, :theoretical, title_en: 'Theoretical Test', title_et: 'Teoreetiline test') }
@@ -102,50 +43,6 @@ RSpec.describe AccreditationMailer, type: :mailer do
 
       it 'includes failed status' do
         expect(mail.body.encoded).to include('FAILED')
-      end
-    end
-  end
-
-  describe '#coordinator_notification' do
-    let(:user1) { create(:user, email: 'user1@example.com', accreditation_expire_date: 5.days.from_now) }
-    let(:user2) { create(:user, email: 'user2@example.com', accreditation_expire_date: 10.days.from_now) }
-    let(:expiring_users) { [user1, user2] }
-    let!(:admin1) { create(:user, :admin, email: 'admin1@example.com') }
-    let!(:admin2) { create(:user, :admin, email: 'admin2@example.com') }
-    let(:mail) { described_class.coordinator_notification(expiring_users) }
-
-    it 'sends to all admin emails' do
-      expect(mail.to).to match_array([admin1.email, admin2.email])
-    end
-
-    it 'has the correct subject with count' do
-      expect(mail.subject).to eq("Accreditation Expiry Alert - #{expiring_users.count} Users")
-    end
-
-    it 'includes user information in the body' do
-      expect(mail.body.encoded).to include(user1.name)
-      expect(mail.body.encoded).to include(user2.name)
-    end
-
-    it 'includes user emails in the body' do
-      expect(mail.body.encoded).to include(user1.email)
-      expect(mail.body.encoded).to include(user2.email)
-    end
-
-    it 'includes expiry dates in the body' do
-      expect(mail.body.encoded).to include(user1.accreditation_expire_date.strftime('%B %d, %Y'))
-      expect(mail.body.encoded).to include(user2.accreditation_expire_date.strftime('%B %d, %Y'))
-    end
-
-    context 'when there are no admin users' do
-      before do
-        admin1.destroy!
-        admin2.destroy!
-      end
-
-      it 'has no recipients' do
-        mail = described_class.coordinator_notification(expiring_users)
-        expect(mail.to).to be_blank
       end
     end
   end

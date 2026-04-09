@@ -69,7 +69,6 @@ class User < ApplicationRecord
   end
 
   def registrar_accreditation_expires_soon?
-    return true
     registrar_accreditation_expire_date.present? && registrar_accreditation_expire_date - 30.days < Time.current
   end
 

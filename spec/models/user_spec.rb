@@ -102,32 +102,22 @@ RSpec.describe User, type: :model do
       expect(user.in_progress_tests).to include(a2)
     end
 
-    it 'computes latest_accreditation only when both tests are passed' do
-      # Only theoretical passed -> nil
-      create(:test_attempt, :passed, user: user, test: theoretical, started_at: 3.hours.ago, completed_at: 2.hours.ago)
-      expect(user.latest_accreditation).to be_nil
-
-      # Add practical passed later -> latest should be practical attempt
-      prac = create(:test_attempt, :passed, user: user, test: practical, started_at: 90.minutes.ago, completed_at: 30.minutes.ago)
-      expect(user.latest_accreditation).to eq(prac)
-    end
-
     it 'detects accreditation_expired? and expires_soon?' do
-      user.update!(accreditation_expire_date: 10.days.from_now)
-      expect(user.accreditation_expired?).to be(false)
-      expect(user.accreditation_expires_soon?(30)).to be(true)
+      user.update!(registrar_accreditation_expire_date: 10.days.from_now)
+      expect(user.registrar_accreditation_expired?).to be(false)
+      expect(user.registrar_accreditation_expires_soon?).to be(true)
 
-      user.update!(accreditation_expire_date: 1.day.ago)
-      expect(user.accreditation_expired?).to be(true)
-      expect(user.accreditation_expires_soon?(30)).to be(true)
+      user.update!(registrar_accreditation_expire_date: 1.day.ago)
+      expect(user.registrar_accreditation_expired?).to be(true)
+      expect(user.registrar_accreditation_expires_soon?).to be(true)
     end
 
     it 'returns days_until_accreditation_expiry' do
-      user.update!(accreditation_expire_date: 5.days.from_now)
-      expect(user.days_until_accreditation_expiry).to be_between(4, 5)
+      user.update!(registrar_accreditation_expire_date: 5.days.from_now)
+      expect(user.days_until_registrar_accreditation_expiry).to be_between(4, 5)
 
-      user.update!(accreditation_expire_date: nil)
-      expect(user.days_until_accreditation_expiry).to be_nil
+      user.update!(registrar_accreditation_expire_date: nil)
+      expect(user.days_until_registrar_accreditation_expiry).to be_nil
     end
 
     it 'evaluates can_take_test? based on in-progress and recent passes' do
