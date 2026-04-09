@@ -109,14 +109,14 @@ et:
     index:
       title: "Koduleht"
       welcome_back: "Tere tulemast tagasi, %{username}!"
-      accreditation_expires_soon: "Teie akrediteering aegub %{days} päeva pärast"
+      accreditation_expires_soon: "Teie registripidaja akrediteerimine aegub %{days} päeva pärast"
       statistics: "Statistika"
       assigned_tests: "Määratud testid"
       total_attempts: "Kokku proove"
       passed_tests: "Läbitud testid"
       failed_tests: "Ebaõnnestunud testid"
       success_rate: "Edukuse protsent"
-      accreditation_status: "Akrediteeringu olek"
+      accreditation_status: "Registripidaja akrediteerimise olek"
       expiry_date: "Aegumise kuupäev"
       days_remaining:
         one: "%{count} päev jäänud"

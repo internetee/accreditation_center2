@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_06_111546) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_06_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -162,8 +162,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_06_111546) do
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.string "registrar_name"
-    t.datetime "accreditation_date"
-    t.datetime "accreditation_expire_date"
+    t.datetime "registrar_accreditation_date"
+    t.datetime "registrar_accreditation_expire_date"
     t.string "provider"
     t.string "uid"
     t.string "name"

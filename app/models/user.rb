@@ -11,7 +11,6 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: { case_sensitive: false }, if: :admin?
   validates :password, presence: true, if: :admin_password_required?
   validates :password, confirmation: true, if: :admin_password_required?
-  # validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
 
   def admin_password_required?
     admin? && (new_record? || password.present?)
@@ -65,33 +64,19 @@ class User < ApplicationRecord
     test_attempts.in_progress
   end
 
-  def latest_accreditation
-    # Get the last passed theoretical and practical tests
-    passed_test_attempts = passed_tests.includes(:test).order(:created_at)
-    last_theoretical = passed_test_attempts.where(test: { test_type: :theoretical }).last
-    last_practical = passed_test_attempts.where(test: { test_type: :practical }).last
-
-    # Only return accreditation if both tests are passed
-    return nil if last_theoretical.nil? || last_practical.nil?
-
-    # Return the later of the two (last one completed)
-    last_theoretical.created_at > last_practical.created_at ? last_theoretical : last_practical
+  def registrar_accreditation_expired?
+    registrar_accreditation_expire_date.present? && registrar_accreditation_expire_date < Time.current
   end
 
-  def accreditation_expired?
-    accreditation_expire_date.present? && accreditation_expire_date < Time.current
+  def registrar_accreditation_expires_soon?
+    return true
+    registrar_accreditation_expire_date.present? && registrar_accreditation_expire_date - 30.days < Time.current
   end
 
-  def accreditation_expires_soon?(days = 30)
-    return false if accreditation_expire_date.nil?
+  def days_until_registrar_accreditation_expiry
+    return nil unless registrar_accreditation_expire_date.present?
 
-    accreditation_expire_date < days.days.from_now
-  end
-
-  def days_until_accreditation_expiry
-    return nil if accreditation_expire_date.nil?
-
-    (accreditation_expire_date - Time.current).to_i / 1.day
+    (registrar_accreditation_expire_date.to_date - Time.zone.today).to_i.clamp(0, Float::INFINITY)
   end
 
   def can_take_test?(test)

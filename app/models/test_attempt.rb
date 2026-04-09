@@ -55,9 +55,9 @@ class TestAttempt < ApplicationRecord
     save!
 
     # Send completion email notification
-    AccreditationMailer.test_completion(user, self).deliver_now
+    # AccreditationMailer.test_completion(user, self).deliver_now
 
-    # Sync accreditation to REPP if user is fully accredited
+    # Sync accreditation to REPP if registrar is fully accredited
     sync_accreditation_if_complete
   end
 
@@ -255,18 +255,9 @@ class TestAttempt < ApplicationRecord
   def sync_accreditation_if_complete
     return unless passed?
 
-    passed_tests = user.passed_tests.includes(:test)
-    # Check if user has both theoretical and practical tests passed
-    theoretical_passed = passed_tests.where(test: { test_type: :theoretical }).exists?
-    practical_passed = passed_tests.where(test: { test_type: :practical }).exists?
+    registrar_name = user.registrar_name
+    return unless RegistrarAccreditationEligibility.accredited?(registrar_name)
 
-    # Only sync if both tests are passed and this was the last one
-    return unless theoretical_passed && practical_passed
-
-    # Check if this is the most recent passed test
-    latest_passed = passed_tests.last
-
-    # This is the most recent test completion, sync to registry
-    AccreditationSyncJob.perform_later(user.id) if latest_passed == self
+    AccreditationSyncJob.perform_later(registrar_name)
   end
 end

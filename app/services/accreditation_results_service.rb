@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Service for posting accreditation results to REPP API
-# Used by accr_bot to update user accreditation dates in the registry
+# Used by accr_bot to update registrar accreditation dates in the registry
 #
 # SECURITY:
 # This service authenticates using accr_bot credentials (ACCR_BOT_USERNAME, ACCR_BOT_PASSWORD)
@@ -24,33 +24,33 @@ class AccreditationResultsService < BotAuthService
   # Sync accreditation for a user if they're newly accredited
   # @param user [User] User to sync
   # @return [Hash] Response from API
-  def sync_user_accreditation(user)
-    return { success: false, message: 'User not accredited' } unless user_accredited?(user)
+  def sync_user_accreditation(registrar_name)
+    eligibility = RegistrarAccreditationEligibility.new(registrar_name)
+    return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
 
-    result = update_accreditation(user.username, true)
+    result = update_accreditation(
+      registrar_name,
+      last_theory_test_passed_at: eligibility.last_theory_passed_at
+    )
 
     return { success: false, message: 'Failed to update accreditation' } if result.nil? || result[:success] == false
 
-    user.update!(
-      accreditation_date: result[:accreditation_date],
-      accreditation_expire_date: result[:accreditation_expire_date]
-    )
-
     { success: true, message: 'Accreditation synced successfully' }
   rescue StandardError => e
-    { success: false, message: "Failed to sync accreditation for user #{user.username}: #{e.message}" }
+    { success: false, message: "Failed to sync accreditation for registrar '#{registrar_name}' : #{e.message}" }
   end
 
-  # Sync all newly accredited users
-  # @return [Integer] Number of users synced
-  def sync_all_accredited_users
+  # Sync all accredited registrars
+  # @return [Integer] Number of registrars synced
+  def sync_all_accredited_registrars
     synced_count = 0
 
-    User.where(role: 'user').find_each do |user|
-      if user_accredited?(user) && should_sync_user?(user)
-        result = sync_user_accreditation(user)
-        synced_count += 1 unless result[:success] == false
-      end
+    registrar_names.each do |registrar_name|
+      next unless RegistrarAccreditationEligibility.accredited?(registrar_name)
+      next unless should_sync_registrar?(registrar_name)
+
+      result = sync_user_accreditation(registrar_name)
+      synced_count += 1 if result[:success]
     end
 
     synced_count
@@ -58,22 +58,22 @@ class AccreditationResultsService < BotAuthService
 
   private
 
-  # Check if user is accredited (both tests passed and not expired)
-  # @param user [User] User to check
-  # @return [Boolean] True if user is accredited
-  def user_accredited?(user)
-    !user.latest_accreditation.nil?
+  def registrar_names
+    User.not_admin
+        .pluck(:registrar_name)
+        .filter_map { |name| name.to_s.strip.presence }
+        .uniq
   end
 
-  # Update accreditation date for a user
-  # @param username [String] Username to update
+  # Update accreditation date for a registrar
+  # @param registrar_name [String] Registrar name to update
   # @param result [Boolean] Accreditation result
   # @return [Hash] Response with success status and data
-  def update_accreditation(username, result)
+  def update_accreditation(registrar_name, last_theory_test_passed_at: nil)
     body = {
       accreditation_result: {
-        username: username,
-        result: result
+        registrar_name: registrar_name,
+        last_theory_test_passed_at: last_theory_test_passed_at
       }
     }.to_json
 
@@ -82,18 +82,15 @@ class AccreditationResultsService < BotAuthService
 
     data = result[:data]
 
-    if data.is_a?(Hash) && data.key?('username')
+    if data.is_a?(Hash) && data.key?('registrar_name')
       symbolize_keys_deep(data)
     else
       error_response(nil, I18n.t('errors.unexpected_response'))
     end
   end
 
-  # Check if user needs to be synced
-  # Skip if already synced recently (within last hour)
-  def should_sync_user?(_user)
-    # Add your logic here - maybe check a flag or timestamp
-    # For now, always return true
+  def should_sync_registrar?(_registrar_name)
+    # Placeholder for deduping/rate-limit logic if needed later.
     true
   end
 end

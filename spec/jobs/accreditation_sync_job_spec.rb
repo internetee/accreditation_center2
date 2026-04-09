@@ -13,24 +13,24 @@ RSpec.describe AccreditationSyncJob, type: :job do
 
     it 'delegates syncing to AccreditationResultsService' do
       expect(service).to receive(:sync_user_accreditation)
-        .with(user)
+        .with(user.registrar_name)
         .and_return({ success: true, message: 'Accreditation synced successfully' })
 
-      described_class.perform_now(user.id)
+      described_class.perform_now(user.registrar_name)
     end
 
     it 'logs error when service reports failure' do
       allow(service).to receive(:sync_user_accreditation).and_return({ success: false, message: 'boom' })
-      expect(Rails.logger).to receive(:error).with(/Failed to sync accreditation for user #{user.username}: boom/)
+      expect(Rails.logger).to receive(:error).with(/Failed to sync accreditation for registrar #{user.registrar_name}: boom/)
 
-      described_class.perform_now(user.id)
+      described_class.perform_now(user.registrar_name)
     end
 
     it 'logs error when service raises exception' do
       allow(service).to receive(:sync_user_accreditation).and_raise(StandardError, 'kaboom')
-      expect(Rails.logger).to receive(:error).with(/Accreditation sync failed for user ID #{user.id}: kaboom/)
+      expect(Rails.logger).to receive(:error).with(/Accreditation sync failed for registrar #{user.registrar_name}: kaboom/)
 
-      described_class.perform_now(user.id)
+      described_class.perform_now(user.registrar_name)
     end
   end
 end

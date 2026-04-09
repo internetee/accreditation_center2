@@ -82,8 +82,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       user.name = user.name || response[:username]
       user.email = response[:registrar_email].presence || user.email
       user.registrar_name = response[:registrar_name].presence || user.registrar_name
-      user.accreditation_date = response[:accreditation_date].presence || user.accreditation_date
-      user.accreditation_expire_date = response[:accreditation_expire_date].presence || user.accreditation_expire_date
+      user.registrar_accreditation_date = response[:accreditation_date].presence || user.registrar_accreditation_date
+      user.registrar_accreditation_expire_date = response[:accreditation_expire_date].presence || user.registrar_accreditation_expire_date
       user.save!
     end
   end

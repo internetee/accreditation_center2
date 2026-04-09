@@ -75,14 +75,14 @@ en:
     index:
       title: "Dashboard"
       welcome_back: "Welcome back, %{username}!"
-      accreditation_expires_soon: "Your accreditation expires in %{days} days"
+      accreditation_expires_soon: "Your registrar accreditation expires in %{days} days"
       statistics: "Statistics"
       assigned_tests: "Assigned Tests"
       total_attempts: "Total Attempts"
       passed_tests: "Passed Tests"
       failed_tests: "Failed Tests"
       success_rate: "Success Rate"
-      accreditation_status: "Accreditation Status"
+      accreditation_status: "Registrar Accreditation Status"
       expiry_date: "Expiry Date"
       days_remaining:
         one: "%{count} day remaining"

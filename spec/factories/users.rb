@@ -2,7 +2,7 @@
 FactoryBot.define do
   factory :user do
     sequence(:email) { |n| "user#{n}@example.test" }
-    registrar_name { 'Example Registrar' }
+    sequence(:registrar_name) { |n| "Example Registrar #{n}" }
     provider { 'oidc' }
     sequence(:uid) { |n| "EE#{format('%011d', n)}" }
     sequence(:name) { |n| "Example User #{n}" }

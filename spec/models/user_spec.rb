@@ -24,6 +24,20 @@ RSpec.describe User, type: :model do
       expect(admin.valid?).to be(false)
       expect(admin.errors[:password_confirmation]).to be_present
     end
+
+    it 'allows duplicate registrar_name for users' do
+      create(:user, role: :user, registrar_name: 'Registrar A')
+      user = build(:user, role: :user, registrar_name: 'Registrar A')
+
+      expect(user.valid?).to be(true)
+    end
+
+    it 'allows duplicate registrar_name for admins' do
+      create(:user, :admin, registrar_name: 'Registrar A')
+      admin = build(:user, :admin, registrar_name: 'Registrar A')
+
+      expect(admin.valid?).to be(true)
+    end
   end
 
   describe 'associations' do
