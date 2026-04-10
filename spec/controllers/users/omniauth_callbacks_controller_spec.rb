@@ -67,7 +67,7 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
 
     it 'redirects immediately when callback belongs to current user' do
       user = create(:user, provider: 'oidc', uid: 'EE77701012239')
-      sign_in(:user, user)
+      sign_in(user, scope: :user)
       auth = OmniAuth::AuthHash.new(provider: :oidc, uid: user.uid, info: { name: user.name, email: user.email })
       request.env['omniauth.auth'] = auth
 
@@ -81,7 +81,7 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
 
     it 'signs out current user when callback belongs to different user' do
       current_user = create(:user, provider: 'oidc', uid: 'EE11101012239')
-      sign_in(:user, current_user)
+      sign_in(current_user, scope: :user)
 
       auth = OmniAuth::AuthHash.new(provider: :oidc, uid: 'EE22201012239', info: { name: 'Other User', email: 'other@test' })
       request.env['omniauth.auth'] = auth
