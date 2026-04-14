@@ -29,7 +29,6 @@ practical_tasks_data = [
         { name: "org_contact_id", label_en: "Organization contact ID", label_et: "Organisatsiooni kontakt ID", required: true },
         { name: "priv_contact_id", label_en: "Private person contact ID", label_et: "Eraisiku kontakt ID", required: true }
       ],
-      depends_on_task_ids: []
     },
     display_order: 1,
     active: true

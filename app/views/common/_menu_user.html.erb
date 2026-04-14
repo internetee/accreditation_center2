@@ -1,6 +1,6 @@
 <nav class="menu--user">
     <% if current_user %>
-        <strong><%= link_to "<i class='fas fa-user'></i>#{current_user.name}".html_safe, '#' %></strong>
+        <strong><%= link_to "<i class='fas fa-user'></i>#{current_user.display_name}".html_safe, '#' %></strong>
         <%= button_to t('devise.sessions.sign_out'),
             destroy_user_session_path,
             method: :delete,

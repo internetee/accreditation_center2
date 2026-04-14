@@ -1,7 +1,7 @@
 <% content_for(:title) { "EIS | #{t('.title')}" } %>
 <% content_for :hero do %>
 <div class="layout--hero <%= 'hero--warning' if @accreditation_expires_soon %>">
-  <h1><%= t('.welcome_back', username: current_user.name || current_user.username) %></h1>
+  <h1><%= t('.welcome_back', username: current_user.display_name) %></h1>
   <% if @accreditation_expires_soon %>
     <div class="hero--warning-message">
       <i class="fas fa-exclamation-triangle"></i>

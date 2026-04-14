@@ -42,7 +42,7 @@
               <div class="question-context">
                 <%= t('tests.question.task_number', number: @current_task_index + 1) %>
               </div>
-              <h2 class="question-text"><%= simple_format Mustache.render(@current_task.body, @test_attempt.vars) %></h2>
+              <div class="question-text"><%= render_practical_task_body(@current_task.body, @test_attempt.vars) %></div>
             </div>
 
             <!-- Inputs form -->

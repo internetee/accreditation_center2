@@ -107,6 +107,10 @@ class User < ApplicationRecord
     }
   end
 
+  def display_name
+    name.presence || username
+  end
+
   def admin?
     role == 'admin'
   end

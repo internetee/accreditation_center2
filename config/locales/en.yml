@@ -48,7 +48,8 @@ en:
         login_with_password_title: "Sign in"
         login_with_id_title: "Sign in"
         login_with_id: "Sign in with EEID"
-        login_with_id_text: "Sign in using Estonian (incl. e-residents) ID-card, Mobile-ID, Smart-ID or other EU citizen's electronic ID."
+        login_with_id_text: "Sign in using Estonian (incl. e-residents) ID-card, Mobile-ID, Smart-ID, other EU citizen's electronic ID, or passkey."
+   
     admin:
       sessions:
         new:
@@ -212,3 +213,7 @@ en:
       nameservers_config_missing_or_empty: "Nameservers config missing or empty"
       domain_not_found: "Domain not found: %{domain}"
       nameservers_mismatch: "Nameservers mismatch for domain: %{domain}"
+    verify_contact_validator:
+      contact_not_found: "Contact not found"
+      contact_not_verified: "Contact is not verified"
+      contact_not_recent: "Contact verification is not recent enough"

@@ -1,0 +1,22 @@
+<div class="page--header">
+  <div class="wrapper">
+    <div class="row center-xs">
+      <div class="col-xs-auto">
+        <%= link_to t(:edit), edit_admin_test_path(test), class: 'button button--primary' %>
+      </div>
+      <div class="col-xs-auto">
+        <%= link_to t(:duplicate), duplicate_admin_test_path(test),
+                    class: 'button button--primary',
+                    data: { turbo: true, turbo_method: :post, turbo_confirm: t('admin.tests.show.confirm_duplicate') } %>
+      </div>
+      <div class="col-xs-auto">
+        <%= link_to t(:assign), new_admin_test_test_attempt_path(test), class: 'button button--primary' %>
+      </div>
+      <div class="col-xs-auto">
+        <%= link_to t(:delete), admin_test_path(test),
+                    class: 'button button--danger',
+                    data: { turbo: true, turbo_method: :delete, turbo_confirm: t('admin.tests.show.confirm_delete') } %>
+      </div>
+    </div>
+  </div>
+</div>

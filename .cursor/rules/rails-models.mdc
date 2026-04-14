@@ -1,0 +1,30 @@
+---
+globs:
+  - "app/models/**/*.rb"
+alwaysApply: false
+---
+
+# Models (10)
+
+Check here first for scopes, constants, associations. Read model files for business logic/methods.
+
+- Answer (1 associations, table: answers)
+  scopes: correct, incorrect, ordered
+- PracticalTask (2 associations, table: practical_tasks)
+  scopes: ordered, active
+- PracticalTaskResult (2 associations, table: practical_task_results)
+- Question (3 associations, table: questions)
+  scopes: ordered, active, mandatory, non_mandatory
+- QuestionResponse (2 associations, table: question_responses)
+  scopes: answered
+- Test (5 associations, table: tests)
+  scopes: active, auto_assignable
+- TestAttempt (6 associations, table: test_attempts)
+  scopes: ordered, not_completed, completed, in_progress, recent, passed, failed
+- TestCategoriesTest (2 associations, table: test_categories_tests)
+- TestCategory (3 associations, table: test_categories)
+  scopes: active
+- User (2 associations, table: users)
+  scopes: not_admin, admin
+
+Use `rails_get_model_details` MCP tool with model:"Name" for full detail.

@@ -1,0 +1,5 @@
+---
+ai_tools:
+- claude
+- cursor
+tool_mode: mcp

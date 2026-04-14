@@ -46,3 +46,6 @@ TODO
 /config/application.yml
 
 /coverage/*
+
+# rails-ai-context (JSON cache — markdown files should be committed)
+.ai-context.json

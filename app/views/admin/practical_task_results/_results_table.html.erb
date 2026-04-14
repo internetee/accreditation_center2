@@ -1,0 +1,28 @@
+<table class="table">
+  <thead>
+    <tr>
+    <th><%= sort_link(@search, "test_attempt_user_name", t('.user')) %></th>
+    <th><%= sort_link(@search, "test_attempt_access_code", t('.test_attempt')) %></th>
+    <th><%= sort_link(@search, "status", t('.status')) %></th>
+    <th><%= sort_link(@search, "validated_at", t('.validated_at')) %></th>
+    <th class="table--action"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @practical_task_results.each do |result| %>
+    <tr>
+      <td><%= link_to result.test_attempt.user.display_name, admin_user_path(result.test_attempt.user) %></td>
+      <td><%= link_to result.test_attempt.access_code, admin_test_test_attempt_path(@test, result.test_attempt) %></td>
+      <td>
+      <%= practical_task_result_status_badge(result.status, t(".#{result.status}")) %>
+      </td>
+      <td><%= (result.validated_at || result.created_at).strftime('%Y-%m-%d %H:%M') %></td>
+      <td class="table--action">
+        <%= icon_link_to 'fas fa-eye', admin_test_practical_task_practical_task_result_path(@test, @practical_task, result), 
+                  class: 'simple_tooltip', 
+                  data: { 'tippy-content': t('.view_result'), turbo: false } %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

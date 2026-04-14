@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "rails-ai-context": {
+      "command": "rails-ai-context",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+---
+description: "Rails project context for AccreditationCenter"
+alwaysApply: true
+---
+
+# AccreditationCenter
+
+Rails 8.0.2.1 | Ruby 3.4.4
+
+- Database: PostgreSQL — 10 tables
+- Models: 10
+- Routes: 114
+- auth: devise, omniauth
+- jobs: solid_queue
+- frontend: turbo-rails, stimulus-rails, importmap-rails, propshaft
+- api: jbuilder
+- database: pg, solid_cache, solid_cable
+- files: activestorage
+- testing: rspec-rails, minitest, factory_bot_rails, faker, capybara
+- deploy: kamal, thruster
+- pagination: pagy
+- search: ransack
+- server: puma
+- utilities: nokogiri, faraday
+- Hotwire (Turbo + Stimulus)
+- Service objects pattern (app/services/)
+- Stimulus controllers (app/javascript/controllers/)
+- Import maps (no JS bundler)
+- concerns_models
+- Auth: Devise + Pundit
+- I18n: 2 locales (en, et)
+- Assets: propshaft, importmap
+- Performance: 17 issues detected
+- Services: AccreditationResultsService, ApiConnector, ApiTokenService, AuthenticationService, BotAuthService, ContactService, DomainService, InvoiceService, OidcAuthenticationService, RegistrarAccreditationEligibility, ReppDomainService
+- Jobs: AccreditationExpiryNotificationJob, AccreditationSyncJob
+
+Global before_actions: authenticate_user!, configure_permitted_parameters
+
+MCP tools available — see rails-mcp-tools.mdc for full reference.
+Always call with detail:"summary" first, then drill into specifics.

@@ -12,7 +12,7 @@
               <div class="form--input">
                 <% if @users.any? %>
                   <%= simple_select_tag "test_attempt[user_id]", 
-                      options_for_select(@users.map { |user| ["#{user.username} (#{user.email})", user.id] }, @test_attempt&.user_id),  
+                      options_for_select(@users.map { |user| ["#{user.display_name} (#{user.registrar_name})", user.id] }, @test_attempt&.user_id),  
                       { required: true } %>
                 <% else %>
                   <div class="message message--notice">

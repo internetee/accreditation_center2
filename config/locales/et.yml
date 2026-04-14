@@ -82,7 +82,7 @@ et:
         login_with_password_title: "Logi sisse"
         login_with_id_title: "Logi sisse"
         login_with_id: "Logi sisse EEID-ga"
-        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, Smart-ID-d või muud EL-i elektroonilist ID-d."
+        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, Smart-ID-d, muud EL-i elektroonilist ID-d või passkey-i."
     admin:
       sessions:
         new:
@@ -243,6 +243,10 @@ et:
       nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
       domain_not_found: "Domeen ei leitud: %{domain}"
       nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"
+    verify_contact_validator:
+      contact_not_found: "Kontakti ei leitud"
+      contact_not_verified: "Kontakt ei ole kinnitatud"
+      contact_not_recent: "Kontakti kinnitamine ei ole piisavalt hiljutine"
 
   # ActiveRecord validation translations (used by presence: true, etc.)
   activerecord:

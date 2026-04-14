@@ -8,23 +8,20 @@
 <table class="table">
   <thead>
     <tr>
-      <th><%= t('.user') %></th>
-      <th><%= t('.started_at') %></th>
-      <th><%= t('.completed_at') %></th>
-      <th><%= t('.duration') %></th>
-      <th><%= t('.score') %></th>
-      <th><%= t('.status') %></th>
-      <th class="table--action"><%= t('.actions') %></th>
+      <th><%= sort_link(@search, 'user_name', t('.user')) %></th>
+      <th><%= sort_link(@search, 'started_at', t('.started_at')) %></th>
+      <th><%= sort_link(@search, 'completed_at', t('.completed_at')) %></th>
+      <th><%= sort_link(@search, 'duration', t('.duration')) %></th>
+      <th><%= sort_link(@search, 'score_percentage', t('.score')) %></th>
+      <th><%= sort_link(@search, 'status', t('.status')) %></th>
+      <th class="table--action"></th>
     </tr>
   </thead>
   <tbody>
     <% @test_attempts.each do |attempt| %>
       <tr>
         <td>
-          <div class="user-info">
-            <span class="user-name"><%= attempt.user.username %></span>
-            [<span class="user-email"><%= attempt.user.email %></span>]
-          </div>
+          <%= link_to attempt.user.display_name, admin_user_path(attempt.user) %>
         </td>
         <td><%= l(attempt.started_at, format: :short) if attempt.started_at %></td>
         <td><%= l(attempt.completed_at, format: :short) if attempt.completed_at %></td>

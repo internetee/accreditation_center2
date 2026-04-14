@@ -33,11 +33,34 @@ class TestAttempt < ApplicationRecord
   DETAILS_EXPIRATION_DAYS = 30
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
+    %w[access_code completed_at created_at duration id passed score_percentage started_at status test_id updated_at user_id]
   end
 
   def self.ransackable_associations(_auth_object = nil)
     %w[test user]
+  end
+
+  ransacker :duration do
+    Arel.sql('COALESCE(EXTRACT(EPOCH FROM (COALESCE(completed_at, NOW()) - started_at)), 0)')
+  end
+
+  # Sort status by the same business buckets used in the admin table:
+  # not_started -> in_progress -> time_expired -> failed -> passed
+  ransacker :status do
+    Arel.sql(<<~SQL.squish)
+      CASE
+        WHEN passed = TRUE THEN 5
+        WHEN completed_at IS NOT NULL AND passed = FALSE THEN 4
+        WHEN started_at IS NULL THEN 1
+        WHEN started_at + (
+          COALESCE(
+            (SELECT time_limit_minutes FROM tests WHERE tests.id = test_attempts.test_id),
+            0
+          ) * INTERVAL '1 minute'
+        ) <= NOW() THEN 3
+        ELSE 2
+      END
+    SQL
   end
 
   def merge_vars!(hash)

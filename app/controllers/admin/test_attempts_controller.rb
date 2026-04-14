@@ -5,7 +5,8 @@ class Admin::TestAttemptsController < Admin::BaseController
   before_action :store_location, only: %i[index]
 
   def index
-    @pagy, @test_attempts = pagy(@test.test_attempts.includes(:user).ordered, items: session[:page_size], page: @page)
+    @search = @test.test_attempts.includes(:user).ransack(params[:q])
+    @pagy, @test_attempts = pagy(@search.result, limit: session[:page_size], page: @page)
   end
 
   def new

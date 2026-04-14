@@ -169,6 +169,9 @@ body {
 
 .layout {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     left: 0;
     transition: left .5s ease-in-out;
     &:after {
@@ -195,6 +198,14 @@ body {
             visibility: visible;
         }
     }
+}
+
+.layout--main {
+    flex: 1 0 auto;
+}
+
+.layout--footer {
+    margin-top: auto;
 }
 
 a {

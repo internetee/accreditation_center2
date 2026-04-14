@@ -1,0 +1,35 @@
+<% if test.theoretical? %>
+  <div class="row test-categories-section">
+    <div class="col-md-12 col-xs-12">
+      <div class="paper">
+        <div class="paper--header">
+          <h3><%= t('admin.tests.show.categories') %></h3>
+        </div>
+        <div class="paper--content">
+          <div class="categories-grid" data-controller="drag" data-drag-url-value="<%= update_positions_admin_test_test_categories_tests_path(test) %>">
+            <% test_categories.each do |category| %>
+              <div class="category-card item" data-id="<%= category.test_categories_test_id %>">
+                <div class="category-header">
+                  <h4>
+                    <i class="fas fa-grip-vertical drag-handle"></i>
+                    <%= link_to category.name, admin_test_category_path(category) %>
+                  </h4>
+                  <div class="category-actions">
+                    <%= link_to t('admin.tests.show.edit'), edit_admin_test_category_path(category), class: 'button button--link' %>
+                  </div>
+                </div>
+                <div class="category-details">
+                  <p><%= category.description %></p>
+                  <div class="category-meta">
+                    <span><%= t('admin.tests.show.questions') %>: <%= category.questions.count %></span>
+                    <span><%= t('admin.tests.show.domain_rule') %>: <%= link_to_if category.domain_rule_url, category.domain_rule_reference, category.domain_rule_url, target: '_blank' %></span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

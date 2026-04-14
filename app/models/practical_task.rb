@@ -31,10 +31,6 @@ class PracticalTask < ApplicationRecord
     Array(vconf[:input_fields])
   end
 
-  def deps
-    Array(vconf[:depends_on_task_ids])
-  end
-
   before_validation :auto_deactivate_if_no_validator
 
   private
