@@ -61,6 +61,7 @@ et:
         display_order: "Kuupäev"
         configuration: "Seadistus"
         test_type: "Testi tüüp"
+        active: "Aktiivne"
       show:
         back_to_test_categories: "Tagasi Kategooriatele"
         confirm_delete: "Kas oled kindel, et soovid selle kategooria kustutada?"
@@ -170,6 +171,8 @@ et:
         confirm_delete: "Kas oled kindel, et soovid selle testi kustutada?"
         test_information: "Testi teave"
         test_configuration: "Testi seadistus"
+        domain_rule: "Domeenireegli viide"
+        edit: "Muuda"
         statistics: "Statistika"
         categories: "Kategooriad"
         descriptions: "Kirjeldused"
@@ -344,6 +347,7 @@ et:
         role: "Roll"
         test_attempts: "Proovid"
         last_sign_in_at: "Viimane sisselogimine"
+        name: "Nimi"
       user_table:
         items:
           one: "kasutaja"
@@ -354,6 +358,7 @@ et:
         user_information: "Kasutaja teave"
         statistics: "Testi statistika"
         username: "Kasutajanimi"
+        name: "Nimi"
         email: "E-post"
         registrar_name: "Registripidaja"
         role: "Roll"
@@ -365,6 +370,12 @@ et:
         success_rate: "Läbimise protsent"
         no_attempts: "Sellel kasutajal puuduvad testiproovid"
         attempts: "Testi proovid"
+        test: "Test"
+        started_at: "Alustatud"
+        completed_at: "Lõpetatud"
+        score: "Tulemus"
+        status: "Olek"
+      test_attempts_table:
         test: "Test"
         started_at: "Alustatud"
         completed_at: "Lõpetatud"
