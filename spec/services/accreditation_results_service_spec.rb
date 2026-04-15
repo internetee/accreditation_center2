@@ -85,20 +85,66 @@ RSpec.describe AccreditationResultsService do
         expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: true, message: 'Accreditation synced successfully' })
       end
 
+      it 'updates accreditation dates for all users of registrar after successful sync' do
+        user1 = create(:user, registrar_name: registrar_name, registrar_accreditation_date: nil, registrar_accreditation_expire_date: nil)
+        user2 = create(:user, registrar_name: registrar_name, registrar_accreditation_date: nil, registrar_accreditation_expire_date: nil)
+        other_user = create(:user, registrar_name: 'Other Registrar')
+
+        accreditation_date = Time.zone.parse('2026-01-15 10:00:00')
+        accreditation_expire_date = Time.zone.parse('2028-01-15 10:00:00')
+
+        stub_request(:post, api_url)
+          .with(body: expected_body, headers: headers)
+          .to_return(
+            status: 200,
+            body: {
+              code: 1000,
+              message: 'Accreditation info successfully added',
+              data: {
+                registrar_name: registrar_name,
+                accreditation_date: accreditation_date.iso8601,
+                accreditation_expire_date: accreditation_expire_date.iso8601
+              }
+            }.to_json
+          )
+
+        result = service.sync_registrar_accreditation(registrar_name)
+
+        expect(result).to eq({ success: true, message: 'Accreditation synced successfully' })
+        expect(user1.reload.registrar_accreditation_date.to_i).to eq(accreditation_date.to_i)
+        expect(user1.registrar_accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
+        expect(user2.reload.registrar_accreditation_date.to_i).to eq(accreditation_date.to_i)
+        expect(user2.registrar_accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
+        expect(other_user.reload.registrar_accreditation_date).to be_nil
+        expect(other_user.registrar_accreditation_expire_date).to be_nil
+      end
+
       it 'returns error response if API call fails' do
+        user = create(:user, registrar_name: registrar_name,
+                             registrar_accreditation_date: 1.day.ago,
+                             registrar_accreditation_expire_date: 1.year.from_now)
+
         stub_request(:post, api_url)
           .with(body: expected_body, headers: headers)
           .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
 
         expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
+        expect(user.reload.registrar_accreditation_date).to be_present
+        expect(user.registrar_accreditation_expire_date).to be_present
       end
 
       it 'returns error response if API call returns unexpected response' do
+        user = create(:user, registrar_name: registrar_name,
+                             registrar_accreditation_date: 1.day.ago,
+                             registrar_accreditation_expire_date: 1.year.from_now)
+
         stub_request(:post, api_url)
           .with(body: expected_body, headers: headers)
           .to_return(status: 400, body: { message: 'Registrar name is missing', data: {} }.to_json)
 
         expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
+        expect(user.reload.registrar_accreditation_date).to be_present
+        expect(user.registrar_accreditation_expire_date).to be_present
       end
 
       it 'returns error reponse if StandardError is raised' do

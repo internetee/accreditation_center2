@@ -35,6 +35,12 @@ class AccreditationResultsService < BotAuthService
 
     return { success: false, message: 'Failed to update accreditation' } if result.nil? || result[:success] == false
 
+    update_registrar_users_accreditation!(
+      registrar_name: registrar_name,
+      accreditation_date: result[:accreditation_date],
+      accreditation_expire_date: result[:accreditation_expire_date]
+    )
+
     { success: true, message: 'Accreditation synced successfully' }
   rescue StandardError => e
     { success: false, message: "Failed to sync accreditation for registrar '#{registrar_name}' : #{e.message}" }
@@ -92,5 +98,26 @@ class AccreditationResultsService < BotAuthService
   def should_sync_registrar?(_registrar_name)
     # Placeholder for deduping/rate-limit logic if needed later.
     true
+  end
+
+  def update_registrar_users_accreditation!(registrar_name:, accreditation_date:, accreditation_expire_date:)
+    attrs = {
+      registrar_accreditation_date: cast_to_time(accreditation_date),
+      registrar_accreditation_expire_date: cast_to_time(accreditation_expire_date),
+      updated_at: Time.current
+    }
+
+    User.where(registrar_name: registrar_name).update_all(attrs)
+  end
+
+  def cast_to_time(value)
+    case value
+    when Time
+      value
+    when Date, DateTime
+      value.to_time.in_time_zone
+    when String
+      Time.zone.parse(value)
+    end
   end
 end
