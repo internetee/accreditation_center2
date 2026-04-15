@@ -32,9 +32,9 @@ module Localization
   end
 
   def log_invalid_locale(locale)
-    notice = "#{locale} #{I18n.t(:no_translation)}"
+    message = "#{locale} #{I18n.t(:no_translation)}"
     # flash.now[:notice] = notice
-    logger.error notice
+    logger.error message
   end
 
   def default_url_options

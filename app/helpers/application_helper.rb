@@ -60,20 +60,6 @@ module ApplicationHelper
     content_tag(:span, label || status.to_s.humanize, class: "label label-#{css_variant}")
   end
 
-  def format_time(seconds)
-    return '0:00' if seconds.nil? || seconds <= 0
-
-    hours = seconds / 3600
-    minutes = (seconds % 3600) / 60
-    remaining_seconds = seconds % 60
-
-    if hours.positive?
-      format('%d:%02d:%02d', hours, minutes, remaining_seconds)
-    else
-      format('%d:%02d', minutes, remaining_seconds)
-    end
-  end
-
   private
 
   def practical_task_result_status_variant(status)

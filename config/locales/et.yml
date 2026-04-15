@@ -56,18 +56,6 @@ et:
   ago: "tagasi"
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
   no_translation: "Tõlge pole saadaval"
-  errors:
-    invalid_credentials: "Vale kasutajanimi või parool"
-    access_denied: "Pole juurdepääsu"
-    object_not_found: "Objekt ei leitud"
-    invalid_data_format: "Vale andmete formaat"
-    service_error: "Teenuse tõrge"
-    unexpected_response: "Ootamatu vastus teenusest"
-    service_timeout: "Teenuse aegumine"
-    cannot_connect_to_service: "Ei saa ühendust teenusega"
-    network_error: "Võrgutõrge"
-    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
-    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -82,7 +70,7 @@ et:
         login_with_password_title: "Logi sisse"
         login_with_id_title: "Logi sisse"
         login_with_id: "Logi sisse EEID-ga"
-        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, Smart-ID-d, muud EL-i elektroonilist ID-d või passkey-i."
+        login_with_id_text: "Tuvasta ennast elektrooniliselt, kasutades toetatud identifitseerimisvahendeid nagu riiklikud ID-kaardid, Mobiil-ID, Smart-ID, pääsuvõtmed jne."
     admin:
       sessions:
         new:
@@ -220,6 +208,7 @@ et:
       priv_type_mismatch: "Privaatse kontakti tüüp ei vasta õigele kontakti tüüpile"
       org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
       priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"
+      priv_contact_not_verified: "Privaatne kontakt ei ole kinnitatud"
       org_contact_not_recent: "Organisatsiooni kontakt ei ole hiljuti loodud"
       priv_contact_not_recent: "Privaatse kontakt ei ole hiljuti loodud"
     delete_domain_verified_validator:
@@ -243,10 +232,6 @@ et:
       nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
       domain_not_found: "Domeen ei leitud: %{domain}"
       nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"
-    verify_contact_validator:
-      contact_not_found: "Kontakti ei leitud"
-      contact_not_verified: "Kontakt ei ole kinnitatud"
-      contact_not_recent: "Kontakti kinnitamine ei ole piisavalt hiljutine"
 
   # ActiveRecord validation translations (used by presence: true, etc.)
   activerecord:
@@ -263,8 +248,18 @@ et:
             registrar_name:
               blank: "Registreerija nimi ei tohi olla tühi"
 
-  # Fallback location (some Rails setups look here first/also)
   errors:
+    invalid_credentials: "Vale kasutajanimi või parool"
+    access_denied: "Pole juurdepääsu"
+    object_not_found: "Objekt ei leitud"
+    invalid_data_format: "Vale andmete formaat"
+    service_error: "Teenuse tõrge"
+    unexpected_response: "Ootamatu vastus teenusest"
+    service_timeout: "Teenuse aegumine"
+    cannot_connect_to_service: "Ei saa ühendust teenusega"
+    network_error: "Võrgutõrge"
+    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
+    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
     messages:
       blank: "Väli ei tohi olla tühi"
       confirmation: "ei ühti väljaga %{attribute}"

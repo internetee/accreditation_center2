@@ -37,6 +37,30 @@ RSpec.describe 'Admin::PracticalTasksController', type: :request do
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to eq("Body et (ET) can't be blank")
     end
+
+    it 'rejects invalid validator json' do
+      params = attributes_for(:practical_task).merge(validator: '{invalid_json')
+
+      expect do
+        post admin_test_practical_tasks_path(test_record), params: { practical_task: params }
+      end.not_to change(PracticalTask, :count)
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(I18n.t('admin.practical_tasks.invalid_validator_json'))
+    end
+
+    it 'normalizes valid validator json string to json object' do
+      params = attributes_for(:practical_task).merge(
+        validator: { klass: 'CreateContactsValidator', config: { timeout_seconds: 10 } }.to_json
+      )
+
+      post admin_test_practical_tasks_path(test_record), params: { practical_task: params }
+
+      created = PracticalTask.order(:created_at).last
+      expect(response).to redirect_to(admin_test_path(test_record))
+      expect(created.validator).to include('klass' => 'CreateContactsValidator')
+      expect(created.validator.dig('config', 'timeout_seconds')).to eq(10)
+    end
   end
 
   describe 'PATCH /admin/tests/:test_id/practical_tasks/:id' do
@@ -53,6 +77,13 @@ RSpec.describe 'Admin::PracticalTasksController', type: :request do
 
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to eq("Body et (ET) can't be blank")
+    end
+
+    it 'rejects invalid validator json on update' do
+      patch admin_test_practical_task_path(test_record, practical_task), params: { practical_task: { validator: '{bad_json' } }
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq(I18n.t('admin.practical_tasks.invalid_validator_json'))
     end
   end
 

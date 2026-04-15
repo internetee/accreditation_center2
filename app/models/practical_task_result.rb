@@ -23,7 +23,7 @@ class PracticalTaskResult < ApplicationRecord
     self.result = result
     self.result = self.result.to_h.merge(previous_feedback_data) if previous_feedback_data.present?
 
-    passed = self.result.to_h['passed']
+    passed = self.result.to_h.with_indifferent_access[:passed]
     self.status = passed ? :passed : :failed
     save!
   end

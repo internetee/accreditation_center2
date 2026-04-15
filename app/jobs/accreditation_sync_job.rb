@@ -7,12 +7,18 @@ class AccreditationSyncJob < ApplicationJob
   # Sync accreditation for a specific registrar
   # @param registrar_name [String] Name of the registrar to sync
   def perform(registrar_name)
+    if registrar_name.blank?
+      Rails.logger.error 'Accreditation sync skipped: registrar_name is blank'
+      return
+    end
+
     service = AccreditationResultsService.new
 
     result = service.sync_registrar_accreditation(registrar_name)
+    message = result&.dig(:message).presence || 'Unknown error'
 
-    if result.nil? || result[:success] == false
-      Rails.logger.error "Failed to sync accreditation for registrar #{registrar_name}: #{result[:message]}"
+    unless result&.dig(:success)
+      Rails.logger.error "Failed to sync accreditation for registrar #{registrar_name}: #{message}"
       return
     end
 
