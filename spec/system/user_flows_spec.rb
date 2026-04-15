@@ -2,14 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'User flows', type: :system do
   before { driven_by(:rack_test) }
-
-  around do |example|
-    OmniAuth.config.test_mode = true
-    example.run
-  ensure
-    OmniAuth.config.mock_auth[:oidc] = nil
-    OmniAuth.config.test_mode = false
-  end
+  include_context 'with omniauth test mode'
 
   let(:login_button_text) { I18n.t('users.sessions.new.login_with_id') }
 
@@ -55,36 +48,5 @@ RSpec.describe 'User flows', type: :system do
     visit admin_dashboard_path(locale: I18n.default_locale)
     expect(page).to have_current_path(root_path(locale: I18n.default_locale))
     expect(page).to have_content('Access denied. Admin privileges required.')
-  end
-
-  def login_with_oidc
-    visit new_user_session_path
-    click_button login_button_text
-  end
-
-  def mock_oidc_auth(uid:, email:, name: nil, given_name: nil, family_name: nil)
-    info = { email: email }
-    info[:name] = name if name
-    info[:given_name] = given_name if given_name
-    info[:family_name] = family_name if family_name
-
-    OmniAuth.config.mock_auth[:oidc] = OmniAuth::AuthHash.new(
-      provider: :oidc,
-      uid: uid,
-      info: info
-    )
-  end
-
-  def stub_oidc_api_auth(email:)
-    service = instance_double(OidcAuthenticationService)
-    allow(OidcAuthenticationService).to receive(:new).and_return(service)
-    allow(service).to receive(:authenticate_user).and_return(
-      success: true,
-      auth_token: 'registry-token',
-      registrar_email: email,
-      registrar_name: 'Registrar Ltd',
-      accreditation_date: Date.current,
-      accreditation_expire_date: 1.year.from_now.to_date
-    )
   end
 end

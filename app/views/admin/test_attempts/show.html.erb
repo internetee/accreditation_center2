@@ -33,7 +33,7 @@
             <div class="summary-stats">
               <div class="stat-item">
                 <span class="stat-label"><%= t('.user') %></span>
-                <span class="stat-value"><%= link_to @test_attempt.user.username, admin_user_path(@test_attempt.user) %></span>
+                <span class="stat-value"><%= link_to @test_attempt.user.display_name, admin_user_path(@test_attempt.user) %></span>
               </div>
               <div class="stat-item">
                 <span class="stat-label"><%= t('.test') %></span>
