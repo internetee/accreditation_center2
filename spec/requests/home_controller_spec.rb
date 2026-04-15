@@ -6,7 +6,7 @@ RSpec.describe 'HomeController', type: :request do
       let(:user) { create(:user, registrar_accreditation_expire_date: 10.days.from_now) }
       let(:test_record) { create(:test, :practical, time_limit_minutes: 60) }
 
-      before { sign_in(user) }
+      before { sign_in(user, scope: :user) }
 
       it 'renders dashboard and assigns expected instance variables' do
         in_progress = create(:test_attempt, user: user, test: test_record, started_at: 10.minutes.ago, completed_at: nil, created_at: 3.days.ago)
@@ -52,6 +52,48 @@ RSpec.describe 'HomeController', type: :request do
         expect(response).to redirect_to(admin_dashboard_path)
         expect(flash[:alert]).to eq(I18n.t(:access_denied_admin))
       end
+    end
+  end
+
+  describe 'localization behavior' do
+    let(:user) { create(:user) }
+
+    before { sign_in(user, scope: :user) }
+
+    around do |example|
+      previous_locale = I18n.locale
+      previous_default_locale = Rails.application.routes.default_url_options[:locale]
+
+      Rails.application.routes.default_url_options[:locale] = nil
+      example.run
+      I18n.locale = previous_locale
+      Rails.application.routes.default_url_options[:locale] = previous_default_locale
+    end
+
+    it 'sets locale from params and stores it in cookies' do
+      get root_path(locale: 'et')
+
+      expect(response).to have_http_status(:ok)
+      expect(I18n.locale).to eq(:et)
+      expect(cookies[:locale]).to eq('et')
+    end
+
+    it 'reuses locale from cookie when locale param is not provided' do
+      cookies[:locale] = 'en'
+
+      get root_path
+
+      expect(response).to have_http_status(:ok)
+      expect(I18n.locale).to eq(:en)
+    end
+
+    it 'falls back to default locale when cookie locale is invalid' do
+      cookies[:locale] = 'xx'
+      get '/'
+
+      expect(response).to have_http_status(:ok)
+      expect(cookies[:locale]).to eq('xx')
+      expect(I18n.locale).to eq(I18n.default_locale)
     end
   end
 end

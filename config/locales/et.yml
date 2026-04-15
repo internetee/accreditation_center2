@@ -260,6 +260,7 @@ et:
     network_error: "Võrgutõrge"
     service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
     api_endpoint_not_configured: "API endpoint pole konfigureeritud"
+    registry_session_expired: "Teie API sessioon on aegunud. Palun logi uuesti sisse."
     messages:
       blank: "Väli ei tohi olla tühi"
       confirmation: "ei ühti väljaga %{attribute}"

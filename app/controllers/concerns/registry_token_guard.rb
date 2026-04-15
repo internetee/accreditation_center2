@@ -8,7 +8,7 @@ module RegistryTokenGuard
     token = session[:auth_token]
     expires_at = session[:auth_token_expires_at]
 
-    return if Rails.env.test?
+    return if skip_registry_token_guard?
     return redirect_registry_reauth if token.blank?
 
     return if expires_at.blank? # allow if expiry not tracked yet
@@ -20,6 +20,10 @@ module RegistryTokenGuard
       end
 
     redirect_registry_reauth if expiry_time.nil? || expiry_time <= Time.current
+  end
+
+  def skip_registry_token_guard?
+    Rails.env.test?
   end
 
   def redirect_registry_reauth

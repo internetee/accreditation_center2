@@ -121,6 +121,16 @@ RSpec.describe 'PracticalTests', type: :request do
     expect(response).to have_http_status(:not_found)
   end
 
+  it 'redirects to login when registry token is missing for answer' do
+    allow_any_instance_of(PracticalTestsController).to receive(:skip_registry_token_guard?).and_return(false)
+
+    post answer_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0),
+         params: { inputs: { any: 'value' } }
+
+    expect(response).to redirect_to(new_user_session_path)
+    expect(flash[:alert]).to eq(I18n.t('errors.registry_session_expired'))
+  end
+
   it 'accepts an answer and advances to the next task' do
     # Stub validator to short‑circuit external calls
     fake_validator = instance_double(

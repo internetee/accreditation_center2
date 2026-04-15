@@ -34,6 +34,7 @@ en:
     network_error: "Network error"
     service_temporarily_unavailable: "Service temporarily unavailable"
     api_endpoint_not_configured: "API endpoint not configured"
+    registry_session_expired: "Your API session expired. Please sign in again."
   nav:
     dashboard: "Dashboard"
     tests: "Tests"
