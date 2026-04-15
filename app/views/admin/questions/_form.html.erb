@@ -5,7 +5,7 @@
         <%= form.label :text_et, "#{t('admin.questions.text_et')} *", class: 'form--label' %>
         <div class="form--field">
           <div class="form--input">
-            <%= form.text_field :text_et, required: true, autofocus: true, class: 'input' %>
+            <%= form.text_area :text_et, required: true, autofocus: true, class: 'textarea', rows: 4 %>
           </div>
         </div>
       </div>
@@ -13,7 +13,7 @@
         <%= form.label :text_en, "#{t('admin.questions.text_en')} *", class: 'form--label' %>
         <div class="form--field">
           <div class="form--input">
-            <%= form.text_field :text_en, required: true, class: 'input' %>
+            <%= form.text_area :text_en, required: true, class: 'textarea', rows: 4 %>
           </div>
         </div>
       </div>
@@ -21,7 +21,7 @@
         <%= form.label :help_text_et, "#{t('admin.questions.help_text_et')}", class: 'form--label' %>
         <div class="form--field">
           <div class="form--input">
-            <%= form.text_field :help_text_et, required: false, class: 'input' %>
+            <%= form.text_area :help_text_et, required: false, class: 'textarea', rows: 4 %>
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <%= form.label :help_text_en, "#{t('admin.questions.help_text_en')}", class: 'form--label' %>
         <div class="form--field">
           <div class="form--input">
-            <%= form.text_field :help_text_en, required: false, class: 'input' %>
+            <%= form.text_area :help_text_en, required: false, class: 'textarea', rows: 4 %>
           </div>
         </div>
       </div>
