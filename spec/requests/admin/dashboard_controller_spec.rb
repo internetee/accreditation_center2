@@ -9,7 +9,7 @@ RSpec.describe 'Admin::DashboardController', type: :request do
   let!(:answer) { create(:answer, question: question, correct: true) }
 
   before do
-    sign_in admin, scope: :user
+    sign_in(admin, scope: :user)
     ENV['ACCR_EXPIRY_NOTIFICATION_DAYS'] = '14'
   end
 
@@ -43,7 +43,7 @@ RSpec.describe 'Admin::DashboardController', type: :request do
 
     it 'redirects to root path when user is not admin' do
       sign_out :user
-      sign_in create(:user), scope: :user
+      sign_in(create(:user), scope: :user)
       get admin_dashboard_path
 
       expect(response).to redirect_to(root_path)

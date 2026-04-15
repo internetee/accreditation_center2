@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_regular_user!
-    redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user.admin?
+    redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user&.admin?
   end
 
   def update_records!

@@ -4,7 +4,7 @@ RSpec.describe 'Admin::UsersController', type: :request do
   let(:admin) { create(:user, :admin) }
   let!(:user) { create(:user) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/users' do
     it 'renders index with users' do

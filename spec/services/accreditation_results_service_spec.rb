@@ -31,7 +31,7 @@ RSpec.describe AccreditationResultsService do
     end
   end
 
-  describe '#sync_user_accreditation' do
+  describe '#sync_registrar_accreditation' do
     let(:registrar_name) { 'Registrar A' }
     let(:eligibility) { instance_double(RegistrarAccreditationEligibility) }
     let(:last_theory_test_passed_at) { Time.zone.parse('2026-01-15 10:00:00') }
@@ -53,7 +53,7 @@ RSpec.describe AccreditationResultsService do
       it 'returns error response without making API call' do
         expect(service).not_to receive(:update_accreditation)
 
-        result = service.sync_user_accreditation(registrar_name)
+        result = service.sync_registrar_accreditation(registrar_name)
 
         expect(result).to eq({ success: false, message: 'Registrar not accredited' })
       end
@@ -82,7 +82,7 @@ RSpec.describe AccreditationResultsService do
             }.to_json
           )
 
-        expect(service.sync_user_accreditation(registrar_name)).to eq({ success: true, message: 'Accreditation synced successfully' })
+        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: true, message: 'Accreditation synced successfully' })
       end
 
       it 'returns error response if API call fails' do
@@ -90,7 +90,7 @@ RSpec.describe AccreditationResultsService do
           .with(body: expected_body, headers: headers)
           .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
 
-        expect(service.sync_user_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
+        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
       end
 
       it 'returns error response if API call returns unexpected response' do
@@ -98,12 +98,12 @@ RSpec.describe AccreditationResultsService do
           .with(body: expected_body, headers: headers)
           .to_return(status: 400, body: { message: 'Registrar name is missing', data: {} }.to_json)
 
-        expect(service.sync_user_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
+        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
       end
 
       it 'returns error reponse if StandardError is raised' do
         allow(service).to receive(:update_accreditation).and_raise(StandardError, 'Unexpected error')
-        expect(service.sync_user_accreditation(registrar_name))
+        expect(service.sync_registrar_accreditation(registrar_name))
           .to eq({ success: false, message: "Failed to sync accreditation for registrar 'Registrar A' : Unexpected error" })
       end
     end
@@ -124,18 +124,18 @@ RSpec.describe AccreditationResultsService do
       allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name2).and_return(false)
       allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name3).and_return(true)
 
-      expect(service).to receive(:sync_user_accreditation).with(registrar_name1).and_return({ success: true })
-      expect(service).to receive(:sync_user_accreditation).with(registrar_name3).and_return({ success: true })
-      expect(service).not_to receive(:sync_user_accreditation).with(registrar_name2)
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name1).and_return({ success: true })
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: true })
+      expect(service).not_to receive(:sync_registrar_accreditation).with(registrar_name2)
 
       service.sync_all_accredited_registrars
     end
 
     it 'returns the count of successfully synced registrars' do
       allow(RegistrarAccreditationEligibility).to receive(:accredited?).and_return(true)
-      allow(service).to receive(:sync_user_accreditation).with(registrar_name1).and_return({ success: true })
-      allow(service).to receive(:sync_user_accreditation).with(registrar_name2).and_return({ success: true })
-      allow(service).to receive(:sync_user_accreditation).with(registrar_name3).and_return({ success: false })
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name1).and_return({ success: true })
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name2).and_return({ success: true })
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: false })
 
       count = service.sync_all_accredited_registrars
       expect(count).to eq(2)
@@ -149,9 +149,9 @@ RSpec.describe AccreditationResultsService do
       allow(service).to receive(:should_sync_registrar?).with(registrar_name2).and_return(true)
       allow(service).to receive(:should_sync_registrar?).with(registrar_name3).and_return(true)
 
-      expect(service).not_to receive(:sync_user_accreditation).with(registrar_name1)
-      expect(service).to receive(:sync_user_accreditation).with(registrar_name2).and_return({ success: true })
-      expect(service).to receive(:sync_user_accreditation).with(registrar_name3).and_return({ success: true })
+      expect(service).not_to receive(:sync_registrar_accreditation).with(registrar_name1)
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name2).and_return({ success: true })
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: true })
 
       count = service.sync_all_accredited_registrars
       expect(count).to eq(2)

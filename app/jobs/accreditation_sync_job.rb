@@ -9,7 +9,7 @@ class AccreditationSyncJob < ApplicationJob
   def perform(registrar_name)
     service = AccreditationResultsService.new
 
-    result = service.sync_user_accreditation(registrar_name)
+    result = service.sync_registrar_accreditation(registrar_name)
 
     if result.nil? || result[:success] == false
       Rails.logger.error "Failed to sync accreditation for registrar #{registrar_name}: #{result[:message]}"

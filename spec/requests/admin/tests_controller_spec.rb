@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Admin::TestsController', type: :request do
   let(:admin) { create(:user, :admin) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/tests' do
     it 'renders the index successfully' do

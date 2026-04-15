@@ -5,7 +5,7 @@ RSpec.describe 'Admin::PracticalTasksController', type: :request do
   let(:test_record) { create(:test, test_type: :practical) }
   let!(:practical_task) { create(:practical_task, test: test_record) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/tests/:test_id/practical_tasks/new' do
     it 'renders the new page' do

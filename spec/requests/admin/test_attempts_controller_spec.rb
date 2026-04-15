@@ -10,7 +10,7 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
   let!(:test_categories_test) { create(:test_categories_test, test: test_record, test_category: test_category) }
   let!(:test_attempt) { create(:test_attempt, test: test_record, user: user) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/tests/:test_id/test_attempts' do
     it 'renders the index successfully' do

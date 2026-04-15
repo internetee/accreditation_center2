@@ -21,10 +21,10 @@ class AccreditationResultsService < BotAuthService
     super()
   end
 
-  # Sync accreditation for a user if they're newly accredited
-  # @param user [User] User to sync
+  # Sync accreditation for a registrar if they're newly accredited
+  # @param registrar_name [String] Registrar name to sync
   # @return [Hash] Response from API
-  def sync_user_accreditation(registrar_name)
+  def sync_registrar_accreditation(registrar_name)
     eligibility = RegistrarAccreditationEligibility.new(registrar_name)
     return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
 
@@ -49,7 +49,7 @@ class AccreditationResultsService < BotAuthService
       next unless RegistrarAccreditationEligibility.accredited?(registrar_name)
       next unless should_sync_registrar?(registrar_name)
 
-      result = sync_user_accreditation(registrar_name)
+      result = sync_registrar_accreditation(registrar_name)
       synced_count += 1 if result[:success]
     end
 

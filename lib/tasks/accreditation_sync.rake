@@ -8,39 +8,34 @@ namespace :accreditation do
     puts 'Syncing accreditation results to REPP API...'
 
     service = AccreditationResultsService.new
-    synced_count = service.sync_all_accredited_users
+    synced_count = service.sync_all_accredited_registrars
 
-    puts "Synced #{synced_count} users to REPP API"
+    puts "Synced #{synced_count} registrars to REPP API"
+  rescue StandardError => e
+    warn "Accreditation sync failed: #{e.message}"
+    raise
   end
 
-  desc 'Sync specific user accreditation'
-  task :sync_user, [:username] => :environment do |_t, args|
-    username = args[:username]
-
-    if username.blank?
-      puts 'Error: Please provide a username'
-      exit 1
-    end
-
-    user = User.find_by(username: username)
-
-    if user.nil?
-      puts "Error: User '#{username}' not found"
+  desc 'Sync accreditation for one registrar_name'
+  task :sync_registrar, [:registrar_name] => :environment do |_t, args|
+    registrar_name = args[:registrar_name].to_s.strip
+    if registrar_name.blank?
+      warn 'Error: Please provide registrar_name'
+      warn 'Usage: bin/rails "accreditation:sync_registrar[Registrar Name]"'
       exit 1
     end
 
     service = AccreditationResultsService.new
+    result = service.sync_registrar_accreditation(registrar_name)
 
-    if service.user_accredited?(user)
-      result = service.sync_user_accreditation(user)
-
-      if result[:success]
-        puts "Successfully synced accreditation for #{username}"
-      else
-        puts "Failed to sync accreditation: #{result[:message]}"
-      end
+    if result[:success]
+      puts "Successfully synced accreditation for registrar '#{registrar_name}'"
     else
-      puts "User '#{username}' is not accredited"
+      warn "Failed to sync accreditation for registrar '#{registrar_name}': #{result[:message]}"
+      exit 1
     end
+  rescue StandardError => e
+    warn "Accreditation sync failed for registrar '#{registrar_name}': #{e.message}"
+    raise
   end
 end

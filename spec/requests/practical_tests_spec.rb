@@ -10,7 +10,7 @@ RSpec.describe 'PracticalTests', type: :request do
   let!(:test_attempt) { create(:test_attempt, user: user, test: test, started_at: nil) }
 
   before do
-    sign_in user, scope: :user
+    sign_in(user, scope: :user)
   end
 
   it 'does not start a test and redirects to root if not logged in' do
