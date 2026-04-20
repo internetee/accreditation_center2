@@ -109,3 +109,53 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait until PR is merged
+        if: steps.check_auto_merge.outputs.auto_merge == 'true' && steps.auto_merge_pr.outputs.merge_succeeded == 'true'
+        id: wait_until_merged
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          for i in $(seq 1 90); do
+            pr_json=$(gh pr view "$PR_NUMBER" --json merged,mergedAt,state,baseRefName,url,title,author)
+            merged=$(echo "$pr_json" | jq -r '.merged')
+            state=$(echo "$pr_json" | jq -r '.state')
+            if [ "$merged" = "true" ] && [ "$state" = "MERGED" ]; then
+              echo "merged=true" >> $GITHUB_OUTPUT
+              echo "merged_at=$(echo "$pr_json" | jq -r '.mergedAt')" >> $GITHUB_OUTPUT
+              echo "pr_url=$(echo "$pr_json" | jq -r '.url')" >> $GITHUB_OUTPUT
+              echo "pr_title=$(echo "$pr_json" | jq -r '.title')" >> $GITHUB_OUTPUT
+              echo "pr_author=$(echo "$pr_json" | jq -r '.author.login')" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "merged=false" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: Notify Mattermost about merge
+        if: steps.wait_until_merged.outputs.merged == 'true'
+        env:
+          MATTERMOST_BOT_TOKEN: ${{ secrets.MATTERMOST_BOT_TOKEN }}
+          MATTERMOST_CHANNEL_ID: ${{ secrets.MATTERMOST_CHANNEL_ID }}
+          MATTERMOST_BASE_URL: ${{ secrets.MATTERMOST_BASE_URL }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ steps.wait_until_merged.outputs.pr_title }}
+          PR_URL: ${{ steps.wait_until_merged.outputs.pr_url }}
+          PR_AUTHOR: ${{ steps.wait_until_merged.outputs.pr_author }}
+          MERGED_AT: ${{ steps.wait_until_merged.outputs.merged_at }}
+        run: |
+          if [ -z "$MATTERMOST_BOT_TOKEN" ] || [ -z "$MATTERMOST_CHANNEL_ID" ] || [ -z "$MATTERMOST_BASE_URL" ]; then
+            exit 0
+          fi
+          payload=$(jq -n \
+            --arg channel_id "$MATTERMOST_CHANNEL_ID" \
+            --arg message "[$REPO] PR #$PR_NUMBER: \"$PR_TITLE\" ($PR_AUTHOR) merged to main at $MERGED_AT\n$PR_URL" \
+            '{channel_id: $channel_id, message: $message}')
+          curl -fS -X POST \
+            -H "Authorization: Bearer $MATTERMOST_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$MATTERMOST_BASE_URL/api/v4/posts"
