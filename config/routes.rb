@@ -54,7 +54,7 @@ Rails.application.routes.draw do
         resources :test_categories_tests, only: [] do
           post :update_positions, on: :collection
         end
-        resources :practical_tasks, except: %i[index] do
+        resources :practical_tasks, except: %i[index show] do
           collection do
             post :update_positions
           end
@@ -64,7 +64,6 @@ Rails.application.routes.draw do
 
       resources :test_categories do
         resources :questions, except: %i[show index] do
-          post :duplicate, on: :member
           resources :answers, except: %i[show index]
           post :update_positions, on: :collection
         end

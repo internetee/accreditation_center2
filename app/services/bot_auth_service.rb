@@ -19,12 +19,12 @@ class BotAuthService < ApiConnector
   end
 
   # Get bot contact code for domain operations
-  def bot_contact_code
-    ENV['ACCR_BOT_CONTACT_CODE']
-  end
+  # def bot_contact_code
+  #   ENV['ACCR_BOT_CONTACT_CODE']
+  # end
 
   # Get bot registrar name
-  def bot_registrar_name
-    ENV['ACCR_BOT_REGISTRAR_NAME']
-  end
+  # def bot_registrar_name
+  #   ENV['ACCR_BOT_REGISTRAR_NAME']
+  # end
 end

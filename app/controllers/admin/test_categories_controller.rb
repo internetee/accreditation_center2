@@ -1,5 +1,5 @@
 class Admin::TestCategoriesController < Admin::BaseController
-  before_action :set_test_category, only: %w[show edit update destroy activate deactivate]
+  before_action :set_test_category, only: %w[show edit update destroy]
   before_action :set_pagy_params, only: %i[index]
 
   def index
@@ -18,12 +18,11 @@ class Admin::TestCategoriesController < Admin::BaseController
       redirect_to admin_test_category_path(@test_category), notice: t('admin.test_categories.created')
     else
       flash.now[:alert] = @test_category.errors.full_messages.join(', ')
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def show
     @questions = @test_category.questions.order(display_order: :asc)
@@ -35,23 +34,13 @@ class Admin::TestCategoriesController < Admin::BaseController
       redirect_to admin_test_category_path(@test_category), notice: t('admin.test_categories.updated')
     else
       flash.now[:alert] = @test_category.errors.full_messages.join(', ')
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
   def destroy
     @test_category.destroy
     redirect_to admin_test_categories_path, notice: t('admin.test_categories.destroyed')
-  end
-
-  def activate
-    @test_category.update!(active: true)
-    redirect_to admin_test_categories_path, notice: t('admin.test_categories.activated')
-  end
-
-  def deactivate
-    @test_category.update!(active: false)
-    redirect_to admin_test_categories_path, notice: t('admin.test_categories.deactivated')
   end
 
   private

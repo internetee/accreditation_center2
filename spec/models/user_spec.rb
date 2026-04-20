@@ -31,6 +31,10 @@ RSpec.describe User, type: :model do
     it 'has many test_attempts and tests through attempts' do
       user = create(:user)
       test = create(:test, :theoretical)
+      test_category = create(:test_category)
+      question = create(:question, test_category: test_category)
+      create(:answer, question: question, correct: true)
+      create(:test_categories_test, test: test, test_category: test_category)
       attempt = create(:test_attempt, user: user, test: test, passed: false)
 
       expect(user.test_attempts).to match_array([attempt])
@@ -68,6 +72,10 @@ RSpec.describe User, type: :model do
 
   describe 'accreditation-related helpers' do
     let!(:user) { create(:user) }
+    let!(:test_category) { create(:test_category) }
+    let!(:question) { create(:question, test_category: test_category) }
+    let!(:answer) { create(:answer, question: question, correct: true) }
+    let!(:test_categories_test) { create(:test_categories_test, test: theoretical, test_category: test_category) }
     let!(:theoretical) { create(:test, :theoretical, title: 'Theo') }
     let!(:practical)   { create(:test, :practical,   title: 'Prac') }
 

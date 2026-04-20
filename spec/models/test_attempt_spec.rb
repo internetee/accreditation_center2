@@ -4,8 +4,40 @@ RSpec.describe TestAttempt, type: :model do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:user) { create(:user) }
-  let(:theoretical_test) { create(:test, :theoretical, time_limit_minutes: 60, passing_score_percentage: 60) }
-  let(:practical_test)   { create(:test, :practical,   time_limit_minutes: 30, passing_score_percentage: 100) }
+  let!(:theoretical_test) { create(:test, :theoretical, time_limit_minutes: 60, passing_score_percentage: 60) }
+  let!(:test_category) { create(:test_category) }
+  let!(:question) { create(:question, test_category: test_category) }
+  let!(:answer) { create(:answer, question: question, correct: true) }
+  let!(:test_categories_test) { create(:test_categories_test, test: theoretical_test, test_category: test_category) }
+  let!(:practical_test) { create(:test, :practical, time_limit_minutes: 30, passing_score_percentage: 100) }
+
+  describe 'validations' do
+    it 'validates questions_have_answers if test is theoretical' do
+      attempt = build(:test_attempt, user: user, test: theoretical_test)
+      expect(attempt.valid?).to be(true)
+
+      test_category.questions.destroy_all
+      expect(attempt.valid?).to be(false)
+    end
+
+    it 'validates access_code presence' do
+      attempt = build(:test_attempt, user: user, test: theoretical_test, access_code: nil)
+      expect(attempt.valid?).to be(false)
+      expect(attempt.errors[:access_code]).to be_present
+
+      attempt = build(:test_attempt, user: user, test: theoretical_test, access_code: '123456')
+      expect(attempt.valid?).to be(true)
+    end
+
+    it 'validates access_code uniqueness' do
+      attempt = create(:test_attempt, user: user, test: theoretical_test, access_code: '123456')
+      expect(attempt.valid?).to be(true)
+
+      attempt = build(:test_attempt, user: user, test: theoretical_test, access_code: '123456')
+      expect(attempt.valid?).to be(false)
+      expect(attempt.errors[:access_code]).to be_present
+    end
+  end
 
   describe 'scopes' do
     it 'filters by status scopes' do
@@ -63,16 +95,7 @@ RSpec.describe TestAttempt, type: :model do
     it 'does not sync when only one test type is passed' do
       # Complete only theoretical test - setup to pass
       theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
-      # Create question responses that will result in passing score
-      category = create(:test_category)
-      q1 = create(:question, test_category: category)
-      q2 = create(:question, test_category: category)
-      a1 = create(:answer, question: q1, correct: true)
-      a2 = create(:answer, question: q2, correct: true)
-
-      theoretical_test.test_categories << category
-      create(:question_response, test_attempt: theoretical_attempt, question: q1, selected_answer_ids: [a1.id])
-      create(:question_response, test_attempt: theoretical_attempt, question: q2, selected_answer_ids: [a2.id])
+      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
 
       expect {
         theoretical_attempt.complete!
@@ -182,11 +205,9 @@ RSpec.describe TestAttempt, type: :model do
   describe 'question collection helpers' do
     it 'answered_questions, unanswered_questions, marked_for_later return correct sets' do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
-      category = create(:test_category)
-      q1 = create(:question, test_category: category)
-      q2 = create(:question, test_category: category)
-      q3 = create(:question, test_category: category)
-      theoretical_test.test_categories << category
+      q1 = create(:question, test_category: test_category)
+      q2 = create(:question, test_category: test_category)
+      q3 = create(:question, test_category: test_category)
 
       a1 = create(:answer, question: q1, correct: true)
       create(:question_response, test_attempt: attempt, question: q1, selected_answer_ids: [a1.id])
@@ -202,16 +223,11 @@ RSpec.describe TestAttempt, type: :model do
   describe 'progress_percentage' do
     it 'computes percentage based on answered theoretical questions' do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
-      category = create(:test_category)
-      theoretical_test.test_categories << category
-      q1 = create(:question, test_category: category)
-      q2 = create(:question, test_category: category)
-      a1 = create(:answer, question: q1)
+      q2 = create(:question, test_category: test_category)
+      a2 = create(:answer, question: q2, correct: true)
+      create(:question_response, test_attempt: attempt, question: q2, selected_answer_ids: [a2.id])
 
-      create(:question_response, test_attempt: attempt, question: q1, selected_answer_ids: [a1.id])
-      create(:question_response, test_attempt: attempt, question: q2, selected_answer_ids: [])
-
-      expect(theoretical_test.questions.active.count).to eq(2)
+      expect(attempt.answered_questions).to match_array([q2])
       expect(attempt.progress_percentage).to eq(50.0)
     end
 
@@ -319,10 +335,8 @@ RSpec.describe TestAttempt, type: :model do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       expect(attempt.score_percentage).to eq(0)
 
-      category = create(:test_category)
-      q1 = create(:question, test_category: category)
-      q2 = create(:question, test_category: category)
-      theoretical_test.test_categories << category
+      q1 = create(:question, test_category: test_category)
+      q2 = create(:question, test_category: test_category)
       a1 = create(:answer, question: q1, correct: true)
       a2 = create(:answer, question: q2, correct: false)
 
@@ -336,9 +350,8 @@ RSpec.describe TestAttempt, type: :model do
   describe 'question progress helpers' do
     it 'answers tracking and all_questions_answered?' do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
-      category = create(:test_category)
-      q1 = create(:question, test_category: category, display_order: 1)
-      q2 = create(:question, test_category: category, display_order: 2)
+      q1 = create(:question, test_category: test_category, display_order: 1)
+      q2 = create(:question, test_category: test_category, display_order: 2)
 
       # Pre-create responses placeholders
       create(:question_response, test_attempt: attempt, question: q1, selected_answer_ids: [1])
@@ -383,6 +396,7 @@ RSpec.describe TestAttempt, type: :model do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       cat1 = create(:test_category, questions_per_category: 2)
       cat2 = create(:test_category, questions_per_category: 1)
+      cat3 = create(:test_category, questions_per_category: 1, active: false)
 
       create(:question, test_category: cat1, display_order: 1)
       create(:question, test_category: cat1, display_order: 2)
@@ -390,6 +404,8 @@ RSpec.describe TestAttempt, type: :model do
 
       create(:question, test_category: cat2, display_order: 1)
       create(:question, test_category: cat2, display_order: 2)
+
+      create(:question, test_category: cat3, display_order: 1)
 
       theoretical_test.test_categories << [cat1, cat2]
 
@@ -403,8 +419,30 @@ RSpec.describe TestAttempt, type: :model do
       }.not_to(change { attempt.question_responses.count })
 
       # Selected responses count should match per-category limits (<= available questions)
-      total_limit = cat1.questions_per_category + cat2.questions_per_category
+      total_limit = test_category.questions_per_category + cat2.questions_per_category
       expect(attempt.question_responses.count).to be <= total_limit
+    end
+
+    it 'creates placeholder responses for mandatory questions' do
+      attempt = create(:test_attempt, user: user, test: theoretical_test)
+      cat1 = create(:test_category, questions_per_category: 3)
+
+      create(:question, test_category: cat1, display_order: 1, mandatory: '1')
+      create(:question, test_category: cat1, display_order: 2, mandatory: '1')
+      create(:question, test_category: cat1, display_order: 3)
+      create(:question, test_category: cat1, display_order: 4, mandatory: '0')
+      create(:question, test_category: cat1, display_order: 5)
+      create(:question, test_category: cat1, display_order: 6, active: false)
+
+      theoretical_test.test_categories << [cat1]
+
+      expect {
+        attempt.initialize_question_set!
+      }.to(change { attempt.question_responses.count })
+
+      expect(attempt.question_responses.count).to eq(4)
+      expect(attempt.question_responses.where(question: cat1.questions.mandatory).count).to eq(2)
+      expect(attempt.question_responses.where(question: cat1.questions.non_mandatory).count).to eq(1)
     end
   end
 

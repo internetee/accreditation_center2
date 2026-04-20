@@ -1,0 +1,65 @@
+<% if @practical_task_results.any? %>
+  <% @practical_task_results.includes(:practical_task).each_with_index do |result, index| %>
+    <div class="question-response">
+      <div class="question-header">
+        <h4>
+          <%= t('admin.test_attempts.show.task_number', number: index + 1) %>
+          &mdash;
+          <%= result.practical_task.title %>
+        </h4>
+        <span class="question-status">
+          <% if result.passed? %>
+            <span class="label label-success"><%= t('admin.test_attempts.show.passed') %></span>
+          <% elsif result.failed? %>
+            <span class="label label-danger"><%= t('admin.test_attempts.show.failed') %></span>
+          <% elsif result.running? %>
+            <span class="label label-warning"><%= t('admin.test_attempts.show.in_progress') %></span>
+          <% else %>
+            <span class="label label-default"><%= t('admin.test_attempts.show.not_started') %></span>
+          <% end %>
+        </span>
+      </div>
+
+      <div class="task-body">
+        <p><%= simple_format Mustache.render(result.practical_task.body, @test_attempt.vars) if result.practical_task.body.present? %></p>
+      </div>
+
+      <% inputs = result.inputs || {} %>
+      <% if inputs.present? %>
+        <div class="task-inputs">
+          <h5><%= t('admin.test_attempts.show.task_inputs') %>:</h5>
+          <%= CodeRay.scan(JSON.pretty_generate(inputs), :json).div().html_safe %>
+        </div>
+      <% end %>
+
+      <% res = result.result || {} %>
+      <% errors = Array(res['errors']).compact %>
+      <% evidence = res['evidence'].presence if res.is_a?(Hash) %>
+
+      <% if errors.any? %>
+        <div class="task-errors">
+          <h5><%= t('admin.test_attempts.show.task_errors') %>:</h5>
+          <ul>
+            <% errors.each do |err| %>
+              <li><%= err %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if evidence.present? %>
+        <div class="task-evidence">
+          <h5><%= t('admin.test_attempts.show.task_evidence') %>:</h5>
+          <%= CodeRay.scan(JSON.pretty_generate(evidence), :json).div().html_safe %>
+        </div>
+      <% end %>
+    </div>
+
+    <% unless index == @practical_task_results.size - 1 %>
+      <hr class="task-divider">
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="no-responses"><%= t('admin.test_attempts.show.no_practical_results_recorded') %></p>
+<% end %>
+

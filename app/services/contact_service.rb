@@ -22,7 +22,12 @@ class ContactService < ApiConnector
   private
 
   def handle_auth_success(data)
-    data = JSON.parse(data) if data.is_a?(String)
-    symbolize_keys_deep(data['contact'])
+    data = parse_json(data)
+
+    if data.is_a?(Hash) && data.key?('contact')
+      symbolize_keys_deep(data['contact'])
+    else
+      error_response(nil, I18n.t('errors.unexpected_response'))
+    end
   end
 end

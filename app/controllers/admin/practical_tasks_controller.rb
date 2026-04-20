@@ -1,9 +1,6 @@
 class Admin::PracticalTasksController < Admin::BaseController
   before_action :set_test
-  before_action :set_practical_task, only: %i[show edit update destroy activate deactivate]
-
-  def show
-  end
+  before_action :set_practical_task, only: %i[edit update destroy]
 
   def new
     @practical_task = @test.practical_tasks.build
@@ -26,8 +23,7 @@ class Admin::PracticalTasksController < Admin::BaseController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     respond_to do |format|
@@ -46,16 +42,6 @@ class Admin::PracticalTasksController < Admin::BaseController
   def destroy
     @practical_task.destroy
     redirect_to admin_test_path(@test), notice: t('admin.practical_tasks.destroyed')
-  end
-
-  def activate
-    @practical_task.update!(active: true)
-    redirect_to admin_test_practical_task_path(@test, @practical_task), notice: t('admin.practical_tasks.activated')
-  end
-
-  def deactivate
-    @practical_task.update!(active: false)
-    redirect_to admin_test_practical_task_path(@test, @practical_task), notice: t('admin.practical_tasks.deactivated')
   end
 
   private

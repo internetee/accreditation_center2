@@ -1,0 +1,67 @@
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+et:
+  devise:
+    confirmations:
+      confirmed: "Sinu e-posti aadress on kinnitatud."
+      send_instructions: "Mõne minuti jooksul saadetakse sulle e-kiri juhistega, kuidas kinnitada oma e-posti aadress. "
+      send_paranoid_instructions: "Kui sinu e-posti aadress on meie andmebaasis, saadetakse sulle mõne minuti jooksul e-kiri juhistega, kuidas kinnitada oma e-posti aadress."
+    failure:
+      already_authenticated: "Oled juba sisse logitud."
+      inactive: "Sinu konto ei ole veel aktiveeritud."
+      invalid: "Vale %{authentication_keys} või salasõna."
+      locked: "Sinu konto on blokeeritud."
+      last_attempt: "Veel üks katse enne konto blokeerimist"
+      not_found_in_database: "Vale %{authentication_keys} või salasõna."
+      timeout: "Teie seanss on aegunud. Jätkamiseks autentige end palun uuesti!"
+      unauthenticated: "Enne jätkamist logi sisse või registreeru."
+      unconfirmed: "Konto aktiveerimiseks saatsime teie eposti aadressile kirja aktiveerimise lingiga. Palun klõpsake sellel!"
+    mailer:
+      confirmation_instructions:
+        subject: "Kinnitamise juhised"
+      reset_password_instructions:
+        subject: "Parooli lähtestamise juhised"
+      unlock_instructions:
+        subject: "Konto avamise juhised"
+      email_changed:
+        subject: "E-posti aadress muudetud"
+      password_change:
+        subject: "Parool muudetud"
+    omniauth_callbacks:
+      failure: "Ei saanud autentida %{kind} , kuna \"%{reason}\"."
+      success: "Autentimine %{kind} kontolt."
+    passwords:
+      no_token: "Juurdepääs ainlast salasõna lähtestamise e-kirjaga. Kui kasutasid salasõna lähtestamise e-kirja, kontrolli, et kasutasid tervet URL-i."
+      send_instructions: "Mõne minuti jooksul saadetakse sulle e-kiri juhistega, kuidas ennistada salasõna. "
+      send_paranoid_instructions: "Kui sinu e-posti aadress on meie andmebaasis, saadetakse  mõne minuti jooksul sinu e-posti aadressile link salasõna taastamiseks."
+      updated: "Salasõna on muudetud. Oled sisse logitud."
+      updated_not_active: "Salasõna on muudetud."
+    registrations:
+      destroyed: "Nägemist! Sinu konto on tühistatud. Loodame, et kohtume varsti jälle."
+      signed_up: "Tere tulemast! Oled sisse logitud."
+      signed_up_but_inactive: "Oled registreerunud. Me ei saa sind sisse logida, sest sinu konto ei ole veel aktiveeritud."
+      signed_up_but_locked: "Oled registreerunud. Me ei saa sind sisse logida, sest sinu konto on blokeeritud."
+      signed_up_but_unconfirmed: "Kiri kinnitamise lingiga on saadetud sinu e-posti aadressile. Konto aktiveerimiseks klõpsa lingil."
+      update_needs_confirmation: "Sinu konto on uuendatud, kuid me peame kontrollima sinu uut e-posti aadressi. Vaata oma postkasti ja klõpsa kinnitamise lingile, et kinnitada oma uus e-posti aadress."
+      updated: "Sinu konto on uuendatud."
+      updated_but_not_signed_in: "Sinu konto on uuendatud, kuid salasõna muutmise tõttu pead uuesti sisse logima."
+    sessions:
+      signed_in: "Oled sisse logitud."
+      signed_out: "Oled välja logitud."
+      already_signed_out: "Oled juba välja logitud."
+      sign_out: "Logi välja"
+      sign_in: "Logi sisse"
+    unlocks:
+      send_instructions: "Mõne minuti jooksul saadetakse sulle e-kiri konto avamise juhistega."
+      send_paranoid_instructions: "Kui sinu konto on olemas, saad mõne minuti jooksul e-kirjaga juhised konto avamiseks."
+      unlocked: "Sinu konto on avatud. Jätkamiseks logi sisse."
+  errors:
+    messages:
+      already_confirmed: "on juba kinnitatud, palun proovi sisse logida"
+      confirmation_period_expired: "tuleb kinnitada 3 päeva jooksul kinnitus teate väljastamisest, palun esita uus taotlus e-posti aadressi kinnitamiseks."
+      expired: "on aegunud, palun küsi uus"
+      not_found: "ei leitud"
+      not_locked: "ei ole lukustatud"
+      not_saved:
+        one: "1 viga takistab kasutaja konto salvestamist:"
+        other: "%{count} viga takistab %{resource} salvestamist:"

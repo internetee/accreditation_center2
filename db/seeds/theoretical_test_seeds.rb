@@ -49,7 +49,7 @@ questions_data = [
   {
     test_category_id: @category_1.id,
     text_et: "Kui registreerija ei ole .ee domeeninime pikendanud, pärast kui mitut päeva on Eesti Interneti SA-l (edaspidi: EIS) õigus .ee domeeninimi kustutada?",
-    text_en: "Kui registreerija ei ole .ee domeeninime pikendanud, pärast kui mitut päeva on Eesti Interneti SA-l (edaspidi: EIS) õigus .ee domeeninimi kustutada?",
+    text_en: "If the registrant has not renewed a .ee domain name, after how many days does EIS (Estonian Internet Foundation) have the right to delete the .ee domain name?",
     help_text_et: "",
     help_text_en: "",
     question_type: "multiple_choice",
@@ -59,7 +59,7 @@ questions_data = [
   {
     test_category_id: @category_1.id,
     text_et: "Kas juriidiline isik saab olla .ee domeeninime Halduskontakt ja/või Tehniline kontakt?",
-    text_en: "Kas juriidiline isik saab olla .ee domeeninime Halduskontakt ja/või Tehniline kontakt?",
+    text_en: "Can a legal entity be the administrative contact and/or technical contact of a .ee domain name?",
     help_text_et: "",
     help_text_en: "",
     question_type: "multiple_choice",

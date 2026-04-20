@@ -20,7 +20,44 @@
 
 .stat-value {
   display: block;
-  font-size: 1.8em;
+  font-size: 1.2em;
   font-weight: bold;
   color: #333;
+}
+
+.answers-section {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.user-answers {
+  margin-bottom: 10px;
+}
+
+.task-body {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.task-inputs {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.task-errors {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  ul {
+    list-style-type: none;
+    margin-top: 5px;
+  }
+  li {
+    font-size: 0.9em;
+    color: #c62727;
+  }
+}
+
+.task-evidence {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

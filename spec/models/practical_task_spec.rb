@@ -9,6 +9,16 @@ RSpec.describe PracticalTask, type: :model do
       expect(task.test).to eq(test_record)
       expect(test_record.practical_tasks).to include(task)
     end
+
+    it 'has many practical_task_results' do
+      task = create(:practical_task, test: test_record)
+      attempt1 = create(:test_attempt, test: test_record)
+      attempt2 = create(:test_attempt, test: test_record)
+      result1 = create(:practical_task_result, practical_task: task, test_attempt: attempt1)
+      result2 = create(:practical_task_result, practical_task: task, test_attempt: attempt2)
+
+      expect(task.practical_task_results).to include(result1, result2)
+    end
   end
 
   describe 'validations' do

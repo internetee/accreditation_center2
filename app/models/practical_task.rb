@@ -1,11 +1,15 @@
 class PracticalTask < ApplicationRecord
   belongs_to :test
+  has_many :practical_task_results, dependent: :destroy
+
   positioned on: :test, column: :display_order
 
   scope :ordered, -> { order(:display_order) }
   scope :active, -> { where(active: true) }
 
   validates :display_order, presence: true, numericality: { greater_than: 0 }
+  validates :body_et, presence: true
+  validates :body_en, presence: true
 
   translates :title, :body
 
