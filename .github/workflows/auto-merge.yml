@@ -12,7 +12,11 @@ permissions:
 jobs:
   auto-approve-merge:
     runs-on: ubuntu-latest
-    if: (github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]')
+    if: >
+      github.event.pull_request.user.login == 'dependabot[bot]' ||
+      github.event.pull_request.user.login == 'dependabot' ||
+      github.event.pull_request.user.login == 'renovate[bot]' ||
+      github.event.pull_request.user.login == 'renovate'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -30,7 +34,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch Dependabot metadata
-        if: github.actor == 'dependabot[bot]'
+        if: github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'dependabot'
         id: metadata
         uses: dependabot/fetch-metadata@v1
         with:
@@ -40,40 +44,50 @@ jobs:
         id: check_auto_merge
         env:
           UPDATE_TYPE: ${{ steps.metadata.outputs['update-type'] }}
-          ACTOR: ${{ github.actor }}
+          ACTOR: ${{ github.event.pull_request.user.login }}
           LABELS: ${{ toJson(github.event.pull_request.labels) }}
         run: |
           UPDATE_TYPE="${UPDATE_TYPE:-unknown}"
 
-          if [ "$ACTOR" == "dependabot[bot]" ]; then
-            if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
+          if [ "$ACTOR" == "dependabot[bot]" ] || [ "$ACTOR" == "dependabot" ]; then
+            if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]] || [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Dependabot patch update detected"
+              if [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
+                echo "level_label=minor" >> $GITHUB_OUTPUT
+              else
+                echo "level_label=patch" >> $GITHUB_OUTPUT
+              fi
             else
               echo "auto_merge=false" >> $GITHUB_OUTPUT
               echo "update_type=${UPDATE_TYPE}" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Dependabot non-patch update, skipping"
             fi
-          elif [ "$ACTOR" == "renovate[bot]" ]; then
-            # Extract label names from the labels array
+          elif [ "$ACTOR" == "renovate[bot]" ] || [ "$ACTOR" == "renovate" ]; then
             LABEL_NAMES=$(echo "$LABELS" | jq -r '.[].name' | tr '\n' ' ')
-            if [[ "$LABEL_NAMES" == *"patch"* ]] || [[ "$LABEL_NAMES" == *"bundler"* ]] || [[ "$LABEL_NAMES" == *"ruby-version"* ]] || [[ "$LABEL_NAMES" == *"github-actions"* ]]; then
+            if [[ "$LABEL_NAMES" == *"patch"* ]] || [[ "$LABEL_NAMES" == *"minor"* ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Renovate patch update detected (label-based): $LABEL_NAMES"
             else
               echo "auto_merge=false" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Renovate non-patch update, skipping. Labels: $LABEL_NAMES"
             fi
           else
             echo "auto_merge=false" >> $GITHUB_OUTPUT
             echo "update_type=${UPDATE_TYPE}" >> $GITHUB_OUTPUT
-            echo "Auto-merge: Unknown actor, skipping"
           fi
         shell: bash
 
+      - name: Ensure patch/minor label exists (Dependabot only)
+        if: steps.check_auto_merge.outputs.auto_merge == 'true' && (github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'dependabot')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LEVEL_LABEL: ${{ steps.check_auto_merge.outputs.level_label }}
+        run: |
+          if [ -n "$LEVEL_LABEL" ]; then
+            gh pr edit "$PR_NUMBER" --add-label "$LEVEL_LABEL" || true
+          fi
+
       - name: Wait for CI checks
         if: steps.check_auto_merge.outputs.auto_merge == 'true'
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.7.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -96,34 +110,52 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Notify Mattermost about auto-merge
+      - name: Wait until PR is merged
         if: steps.check_auto_merge.outputs.auto_merge == 'true' && steps.auto_merge_pr.outputs.merge_succeeded == 'true'
+        id: wait_until_merged
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          for i in $(seq 1 90); do
+            pr_json=$(gh pr view "$PR_NUMBER" --json merged,mergedAt,state,baseRefName,url,title,author)
+            merged=$(echo "$pr_json" | jq -r '.merged')
+            state=$(echo "$pr_json" | jq -r '.state')
+            if [ "$merged" = "true" ] && [ "$state" = "MERGED" ]; then
+              echo "merged=true" >> $GITHUB_OUTPUT
+              echo "merged_at=$(echo "$pr_json" | jq -r '.mergedAt')" >> $GITHUB_OUTPUT
+              echo "pr_url=$(echo "$pr_json" | jq -r '.url')" >> $GITHUB_OUTPUT
+              echo "pr_title=$(echo "$pr_json" | jq -r '.title')" >> $GITHUB_OUTPUT
+              echo "pr_author=$(echo "$pr_json" | jq -r '.author.login')" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "merged=false" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: Notify Mattermost about merge
+        if: steps.wait_until_merged.outputs.merged == 'true'
         env:
           MATTERMOST_BOT_TOKEN: ${{ secrets.MATTERMOST_BOT_TOKEN }}
           MATTERMOST_CHANNEL_ID: ${{ secrets.MATTERMOST_CHANNEL_ID }}
           MATTERMOST_BASE_URL: ${{ secrets.MATTERMOST_BASE_URL }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          ACTOR: ${{ github.actor }}
+          PR_TITLE: ${{ steps.wait_until_merged.outputs.pr_title }}
+          PR_URL: ${{ steps.wait_until_merged.outputs.pr_url }}
+          PR_AUTHOR: ${{ steps.wait_until_merged.outputs.pr_author }}
+          MERGED_AT: ${{ steps.wait_until_merged.outputs.merged_at }}
         run: |
           if [ -z "$MATTERMOST_BOT_TOKEN" ] || [ -z "$MATTERMOST_CHANNEL_ID" ] || [ -z "$MATTERMOST_BASE_URL" ]; then
-            echo "Missing Mattermost secrets - skipping notification" >&2
             exit 0
           fi
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
           payload=$(jq -n \
             --arg channel_id "$MATTERMOST_CHANNEL_ID" \
-            --arg message "🤖 [$REPO] PR #$PR_NUMBER: \"$PR_TITLE\" was auto-merged by $ACTOR.\nMerged at: $TIMESTAMP\nLink: $PR_URL" \
+            --arg message "[$REPO] PR #$PR_NUMBER: \"$PR_TITLE\" ($PR_AUTHOR) merged to main at $MERGED_AT\n$PR_URL" \
             '{channel_id: $channel_id, message: $message}')
-          # -f to fail on http errors, -S to show errors
           curl -fS -X POST \
             -H "Authorization: Bearer $MATTERMOST_BOT_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$payload" \
-            "$MATTERMOST_BASE_URL/api/v4/posts" || {
-              echo "Failed to send Mattermost notification" >&2
-              exit 1
-            }
-
+            "$MATTERMOST_BASE_URL/api/v4/posts"

@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.2.1"
+gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -91,7 +91,7 @@ gem 'ransack'
 
 gem 'positioning'
 
-gem 'friendly_id', '~> 5.4.0'
+gem 'friendly_id', '~> 5.6.0'
 
 gem 'mustache', '~> 1.0'
 
