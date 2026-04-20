@@ -7,12 +7,16 @@
       </div>
     </td>
     <td><%= question.text %></td>
-    <td><%= question.help_text %></td>
     <td>
       <% if question.active? %>
         <span class="label label-success"><%= t('admin.questions.index.question_active') %></span>
       <% else %>
         <span class="label label-default"><%= t('admin.questions.index.question_inactive') %></span>
+      <% end %>
+    </td>
+    <td>
+      <% if question.mandatory? %>
+        <span class="label label-success simple_tooltip" data-tippy-content="<%= t('admin.questions.index.question_mandatory_to') %>: <%= question.mandatory_to.strftime('%d.%m.%Y') %>"><i class="fas fa-check"></i></span>
       <% end %>
     </td>
     <td class="table--action">

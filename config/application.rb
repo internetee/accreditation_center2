@@ -36,11 +36,15 @@ module AccreditationCenter
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.customization = config_for(:application)
+    # Application configuration can be added here if needed
+    # config.customization = config_for(:application)
 
     config.i18n.available_locales = %i[en et]
-    config.i18n.default_locale = :en
+    config.i18n.default_locale = ENV['locale'] || 'en'
     config.i18n.fallbacks = true
+
+    # Default to UTC if not set
+    config.time_zone = ENV['time_zone'] || 'UTC'
 
     # Don't generate system test files.
     config.generators.system_tests = nil

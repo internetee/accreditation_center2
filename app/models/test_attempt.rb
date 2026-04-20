@@ -3,31 +3,45 @@ class TestAttempt < ApplicationRecord
   belongs_to :test
   has_many :question_responses, dependent: :destroy
   has_many :questions, through: :question_responses
+  has_many :practical_task_results, dependent: :destroy
+  has_many :practical_tasks, through: :practical_task_results
 
   validates :access_code, presence: true, uniqueness: true
+  validate :questions_have_answers, if: -> { test.theoretical? }, on: :create
 
-  before_validation :generate_access_code, on: :create
+  def questions_have_answers
+    # Validate that there is at least one question with at least one correct answer in the test.
+    count = test.questions.joins(:answers)
+                .where(answers: { correct: true })
+                .distinct
+                .count
+
+    return if count.positive?
+
+    errors.add(:base, :questions_without_correct_answers, message: 'Test attempt must have at least one question with at least one correct answer')
+  end
 
   scope :ordered, -> { order(created_at: :desc) }
   scope :not_completed, -> { where(completed_at: nil) }
   scope :completed, -> { where.not(completed_at: nil).where.not(started_at: nil) }
-  scope :in_progress, -> { where(completed_at: nil) }
+  scope :in_progress, -> { where.not(started_at: nil).where(completed_at: nil) }
   scope :recent, -> { where('created_at > ?', 30.days.ago) }
   scope :passed, -> { where(passed: true) }
   scope :failed, -> { where(passed: false) }
 
-  def self.ransackable_attributes(auth_object = nil)
+  TIME_WARNING_MINUTES = 5
+  DETAILS_EXPIRATION_DAYS = 30
+
+  def self.ransackable_attributes(_auth_object = nil)
     %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
   end
 
-  def self.ransackable_associations(auth_object = nil)
+  def self.ransackable_associations(_auth_object = nil)
     %w[test user]
   end
 
-  def generate_access_code
-    return if access_code.present?
-
-    self.access_code = SecureRandom.hex(8)
+  def merge_vars!(hash)
+    update!(vars: vars.merge(hash.stringify_keys))
   end
 
   def set_started_at
@@ -36,7 +50,31 @@ class TestAttempt < ApplicationRecord
 
   def complete!
     self.completed_at = Time.zone.now
+    self.score_percentage = score_percentage
+    self.passed = score_passed?
     save!
+
+    # Send completion email notification
+    AccreditationMailer.test_completion(user, self).deliver_now
+
+    # Sync accreditation to REPP if user is fully accredited
+    sync_accreditation_if_complete
+  end
+
+  def score_percentage
+    if test.practical?
+      return 0 if practical_task_results.empty?
+
+      correct_count = practical_task_results.count(&:correct?)
+
+      (correct_count.to_f / test.practical_tasks.active.count * 100).round(0)
+    else
+      return 0 if question_responses.empty?
+
+      correct_count = question_responses.count(&:correct?)
+
+      (correct_count.to_f / questions.count * 100).round(0)
+    end
   end
 
   def completed?
@@ -60,6 +98,7 @@ class TestAttempt < ApplicationRecord
     return test.time_limit_minutes * 60 if started_at.blank?
 
     elapsed = Time.zone.now - started_at
+
     remaining = (test.time_limit_minutes * 60) - elapsed.to_i
     [remaining, 0].max
   end
@@ -73,7 +112,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def time_warning?
-    time_remaining <= 5.minutes && time_remaining.positive?
+    time_remaining <= TIME_WARNING_MINUTES * 60 && time_remaining.positive?
   end
 
   def time_expired?
@@ -81,7 +120,7 @@ class TestAttempt < ApplicationRecord
   end
 
   def answered_questions
-    question_responses.includes(:question).map(&:question)
+    question_responses.answered.includes(:question).map(&:question)
   end
 
   def unanswered_questions
@@ -92,26 +131,40 @@ class TestAttempt < ApplicationRecord
     question_responses.where(marked_for_later: true).includes(:question).map(&:question)
   end
 
-  def progress_percentage
-    return 100 if test.questions.active.count.zero?
+  def completed_tasks
+    practical_task_results.includes(:practical_task).map(&:practical_task)
+  end
 
-    (answered_questions.count.to_f / test.questions.active.count * 100).round(1)
+  def incompleted_tasks
+    test.practical_tasks.active - completed_tasks
+  end
+
+  def progress_percentage
+    if test.practical?
+      return 0 if test.practical_tasks.active.count.zero?
+
+      (completed_tasks.count.to_f / test.practical_tasks.active.count * 100).round(1)
+    else
+      return 0 if test.questions.active.count.zero?
+
+      (answered_questions.count.to_f / test.questions.active.count * 100).round(1)
+    end
   end
 
   # Returns true when every question in this attempt has a selected answer
   def all_questions_answered?
-    question_responses.where(selected_answer_ids: []).none?
+    question_responses.all?(&:answered?)
   end
 
-  def score_percentage
-    return 0 if question_responses.empty?
+  def all_tasks_completed?
+    return false if practical_task_results.count != test.practical_tasks.active.count
 
-    correct_count = question_responses.count(&:correct?)
-
-    (correct_count.to_f / question_responses.count * 100).round(0)
+    practical_task_results.all? do |result|
+      result.status == 'passed'
+    end
   end
 
-  def passed?
+  def score_passed?
     score_percentage >= test.passing_score_percentage
   end
 
@@ -120,19 +173,45 @@ class TestAttempt < ApplicationRecord
   end
 
   # Initializes a per-attempt randomized question set based on test categories.
-  # Selects up to questions_per_category active questions from each active category
-  # and creates placeholder QuestionResponse records to persist the selection.
+  # First includes all mandatory questions (mandatory_to date hasn't passed),
+  # then randomly selects remaining questions up to questions_per_category limit.
   def initialize_question_set!
     return if question_responses.exists?
 
     test.test_categories.active.find_each do |category|
       # Fallback to 5 if questions_per_category is not present
-      per_category_limit = category.respond_to?(:questions_per_category) && category.questions_per_category.present? ? category.questions_per_category.to_i : 5
+      per_category_limit = if category.respond_to?(:questions_per_category) && category.questions_per_category.present?
+                             category.questions_per_category.to_i
+                           else
+                             5
+                           end
 
-      available_ids = category.questions.active.pluck(:id)
-      next if available_ids.empty?
+      # Get all active questions for this category
+      all_questions = category.questions.active
+      next if all_questions.empty?
 
-      selected_ids = available_ids.sample([per_category_limit, available_ids.size].min)
+      # First, select all mandatory questions (mandatory_to date hasn't passed)
+      mandatory_questions = all_questions.mandatory
+      mandatory_ids = mandatory_questions.pluck(:id)
+
+      # Calculate how many more questions we need
+      remaining_slots = [per_category_limit - mandatory_ids.size, 0].max
+
+      # Get non-mandatory questions and randomly select to fill remaining slots
+      non_mandatory_questions = all_questions.non_mandatory
+      non_mandatory_ids = non_mandatory_questions.pluck(:id)
+
+      # Randomly select from non-mandatory questions
+      random_ids = if remaining_slots.positive? && non_mandatory_ids.any?
+                     non_mandatory_ids.sample([remaining_slots, non_mandatory_ids.size].min)
+                   else
+                     []
+                   end
+
+      # Combine mandatory and randomly selected questions
+      selected_ids = mandatory_ids + random_ids
+
+      # Create question responses for all selected questions
       selected_ids.each do |question_id|
         question_responses.create!(question_id: question_id, selected_answer_ids: [], marked_for_later: false)
       end
@@ -141,14 +220,14 @@ class TestAttempt < ApplicationRecord
 
   # Returns true if detailed results should no longer be shown (older than 30 days)
   def details_expired?
-    completed? && completed_at < 30.days.ago
+    completed? && completed_at < DETAILS_EXPIRATION_DAYS.days.ago
   end
 
   # Remove detailed responses while keeping the overall result
   def purge_details!
     transaction do
       question_responses.delete_all
-      update!(score_percentage: nil)
+      practical_task_results.delete_all
     end
   end
 
@@ -157,5 +236,35 @@ class TestAttempt < ApplicationRecord
     where('completed_at IS NOT NULL AND completed_at < ?', 30.days.ago).find_each do |attempt|
       attempt.purge_details!
     end
+  end
+
+  def build_duplicate
+    dup.tap do |new_attempt|
+      new_attempt.started_at = nil
+      new_attempt.completed_at = nil
+      new_attempt.passed = nil
+      new_attempt.score_percentage = nil
+      new_attempt.access_code = SecureRandom.hex(8)
+    end
+  end
+
+  private
+
+  def sync_accreditation_if_complete
+    return unless passed?
+
+    passed_tests = user.passed_tests.includes(:test)
+    # Check if user has both theoretical and practical tests passed
+    theoretical_passed = passed_tests.where(test: { test_type: :theoretical }).exists?
+    practical_passed = passed_tests.where(test: { test_type: :practical }).exists?
+
+    # Only sync if both tests are passed and this was the last one
+    return unless theoretical_passed && practical_passed
+
+    # Check if this is the most recent passed test
+    latest_passed = passed_tests.last
+
+    # This is the most recent test completion, sync to registry
+    AccreditationSyncJob.perform_later(user.id) if latest_passed == self
   end
 end

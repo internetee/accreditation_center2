@@ -1,5 +1,8 @@
 # Accreditation Center
 
+[![Maintainability](https://qlty.sh/gh/internetee/projects/accreditation_center2/maintainability.svg)](https://qlty.sh/gh/internetee/projects/accreditation_center2)
+[![Code Coverage](https://qlty.sh/gh/internetee/projects/accreditation_center2/coverage.svg)](https://qlty.sh/gh/internetee/projects/accreditation_center2)
+
 **Accreditation Center** is a modern, automated accreditation system for the `.ee` top-level domain (TLD). Built with Ruby on Rails 8, it streamlines the process of accrediting registrars and managing their compliance with the Estonian Internet Foundation's requirements.
 
 ## Project Overview

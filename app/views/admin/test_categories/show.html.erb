@@ -39,6 +39,10 @@
               <td><%= @test_category.description %></td>
             </tr>
             <tr>
+              <th><%= t('admin.test_categories.index.test_category_questions_per_category') %></th>
+              <td><%= @test_category.questions_per_category %></td>
+            </tr>
+            <tr>
               <th><%= t('admin.test_categories.index.test_category_domain_rule_reference') %></th>
               <td><%= link_to_if @test_category.domain_rule_url, @test_category.domain_rule_reference, @test_category.domain_rule_url, target: '_blank' %></td>
             </tr>

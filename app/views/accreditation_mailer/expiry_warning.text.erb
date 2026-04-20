@@ -1,0 +1,24 @@
+Accreditation Expiry Warning
+
+Dear <%= @user.username %>,
+
+⚠️ YOUR ACCREDITATION WILL EXPIRE IN <%= @days_before %> DAYS!
+Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>
+
+This is a friendly reminder that your registrar accreditation will expire on <%= @expiry_date.strftime('%B %d, %Y') %>.
+
+To maintain your accreditation status, you will need to retake and pass both the theoretical and practical tests before the expiry date.
+
+What you need to do:
+- Log into the Accreditation Center
+- Complete the theoretical test
+- Complete the practical test
+- Pass both tests to renew your accreditation
+
+Don't wait until the last minute - start your renewal process today!
+
+Access the Accreditation Center at: <%= root_url %>
+
+---
+This is an automated reminder from the Accreditation Center system.
+If you have any questions, please contact the system administrator.

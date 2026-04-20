@@ -1,4 +1,5 @@
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
+require 'json_log_formatter'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -15,6 +16,10 @@ Rails.application.configure do
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
@@ -25,23 +30,36 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  config.assume_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('RAILS_ASSUME_SSL', true))
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('RAILS_FORCE_SSL', true))
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [ :request_id, :remote_ip ]
+  config.log_tags = [:request_id, :remote_ip]
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = JsonLogFormatter.new
+  if ENV['USE_JSON_LOGGING'].present?
+    config.log_formatter = JsonLogFormatter.new
+  else
+    # Keep default logging format for development
+    config.log_formatter = ::Logger::Formatter.new
+  end
 
-  # Configure logging to always use STDOUT for containerized environments
-  logger = ActiveSupport::Logger.new($stdout)
-  logger.formatter = config.log_formatter
-  config.logger = ActiveSupport::TaggedLogging.new(logger)
+  # Configure logging to use both file and STDOUT
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
+    # Containerized environments - log to STDOUT
+    logger = ActiveSupport::Logger.new($stdout)
+    logger.formatter = config.log_formatter
+    config.logger = ActiveSupport::TaggedLogging.new(logger)
+  else
+    # File-based logging for traditional deployments
+    config.logger = ActiveSupport::TaggedLogging.new(
+      ActiveSupport::Logger.new(Rails.root.join('log', "#{ENV['RAILS_ENV']}.log"))
+    )
+  end
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -49,7 +67,7 @@ Rails.application.configure do
   config.colorize_logging = false
 
   # Prevent health checks from clogging up the logs.
-  config.silence_healthcheck_path = "/up"
+  config.silence_healthcheck_path = "/health"
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
@@ -66,16 +84,24 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  # config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch('mailer_host', nil)
+  }
+
+  routes.default_url_options[:host] = ENV.fetch('mailer_host', nil)
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  config.action_mailer.smtp_settings = {
+    user_name: ENV.fetch('mailer_user_name', nil),
+    password: ENV.fetch('mailer_password', nil),
+    address: ENV.fetch('mailer_address', nil),
+    port: ENV.fetch('mailer_port', nil),
+    authentication: ENV.fetch('mailer_authentication', nil),
+    enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', false).to_s == 'true',
+    domain: ENV.fetch('mailer_domain', nil),
+    openssl_verify_mode: ENV.fetch('mailer_openssl_verify_mode', nil)
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -85,7 +111,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
+  config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

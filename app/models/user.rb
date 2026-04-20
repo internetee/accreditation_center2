@@ -9,7 +9,8 @@ class User < ApplicationRecord
   has_many :tests, through: :test_attempts
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
-  validates :email, presence: true, uniqueness: { case_sensitive: false }
+  # validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :registrar_name, length: { maximum: 255 }, presence: true, if: -> { role == 'user' }
 
   enum :role, { user: 0, admin: 1 }
 
@@ -18,7 +19,7 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[username email]
+    %w[username email registrar_name]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -59,29 +60,32 @@ class User < ApplicationRecord
   end
 
   def latest_accreditation
-    passed_tests.order(:created_at).last
-  end
+    # Get the last passed theoretical and practical tests
+    passed_test_attempts = passed_tests.includes(:test).order(:created_at)
+    last_theoretical = passed_test_attempts.where(test: { test_type: :theoretical }).last
+    last_practical = passed_test_attempts.where(test: { test_type: :practical }).last
 
-  def accreditation_expiry_date
-    latest_accreditation&.created_at&.+ 1.year
+    # Only return accreditation if both tests are passed
+    return nil if last_theoretical.nil? || last_practical.nil?
+
+    # Return the later of the two (last one completed)
+    last_theoretical.created_at > last_practical.created_at ? last_theoretical : last_practical
   end
 
   def accreditation_expired?
-    return true if latest_accreditation.nil?
-
-    accreditation_expiry_date < Time.current
+    accreditation_expire_date.present? && accreditation_expire_date < Time.current
   end
 
   def accreditation_expires_soon?(days = 30)
-    return false if latest_accreditation.nil?
+    return false if accreditation_expire_date.nil?
 
-    accreditation_expiry_date < days.days.from_now
+    accreditation_expire_date < days.days.from_now
   end
 
   def days_until_accreditation_expiry
-    return nil if latest_accreditation.nil?
+    return nil if accreditation_expire_date.nil?
 
-    (accreditation_expiry_date - Time.current).to_i / 1.day
+    (accreditation_expire_date - Time.current).to_i / 1.day
   end
 
   def can_take_test?(test)

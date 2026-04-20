@@ -1,13 +1,33 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
+
+# Start SimpleCov before loading Rails
+if ENV['COVERAGE'] == 'true'
+  require 'simplecov'
+  require 'simplecov-lcov'
+
+  SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
+  SimpleCov.formatter = SimpleCov::Formatter::LcovFormatter
+
+  SimpleCov.start 'rails' do
+    add_filter '/spec/'
+    add_filter '/config/'
+    add_filter '/vendor/'
+    add_filter '/db/'
+    add_filter '/bin/'
+    add_filter '/lib/tasks/'
+  end
+end
+
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
 require 'rspec/rails'
+
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -36,14 +56,20 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
-  ]
-
+  # config.fixture_paths = [
+  #   Rails.root.join('spec/fixtures')
+  # ]
+  config.include FactoryBot::Syntax::Methods
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
+  # Devise helpers for request specs (sign_in, sign_out)
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Time helpers (travel_to, freeze_time)
+  config.include ActiveSupport::Testing::TimeHelpers, type: :request
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
@@ -69,4 +95,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:each, type: :request) do
+    Rails.application.routes.default_url_options[:locale] = I18n.locale
+  end
 end
