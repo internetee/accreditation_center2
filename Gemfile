@@ -89,7 +89,7 @@ gem 'pagy', '~> 9.3' # omit patch digit
 gem 'ransack'
 # gem 'surveyor', path: 'vendor/gems/surveyor'
 
-gem 'positioning'
+gem 'positioning', '>= 0.4.7'
 
 gem 'friendly_id', '~> 5.4.0'
 
