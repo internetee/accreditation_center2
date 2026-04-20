@@ -46,30 +46,40 @@ jobs:
           UPDATE_TYPE="${UPDATE_TYPE:-unknown}"
 
           if [ "$ACTOR" == "dependabot[bot]" ]; then
-            if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
+            if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]] || [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Dependabot patch update detected"
+              if [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
+                echo "level_label=minor" >> $GITHUB_OUTPUT
+              else
+                echo "level_label=patch" >> $GITHUB_OUTPUT
+              fi
             else
               echo "auto_merge=false" >> $GITHUB_OUTPUT
               echo "update_type=${UPDATE_TYPE}" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Dependabot non-patch update, skipping"
             fi
           elif [ "$ACTOR" == "renovate[bot]" ]; then
-            # Extract label names from the labels array
             LABEL_NAMES=$(echo "$LABELS" | jq -r '.[].name' | tr '\n' ' ')
-            if [[ "$LABEL_NAMES" == *"patch"* ]] || [[ "$LABEL_NAMES" == *"bundler"* ]] || [[ "$LABEL_NAMES" == *"ruby-version"* ]] || [[ "$LABEL_NAMES" == *"github-actions"* ]]; then
+            if [[ "$LABEL_NAMES" == *"patch"* ]] || [[ "$LABEL_NAMES" == *"minor"* ]]; then
               echo "auto_merge=true" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Renovate patch update detected (label-based): $LABEL_NAMES"
             else
               echo "auto_merge=false" >> $GITHUB_OUTPUT
-              echo "Auto-merge: Renovate non-patch update, skipping. Labels: $LABEL_NAMES"
             fi
           else
             echo "auto_merge=false" >> $GITHUB_OUTPUT
             echo "update_type=${UPDATE_TYPE}" >> $GITHUB_OUTPUT
-            echo "Auto-merge: Unknown actor, skipping"
           fi
         shell: bash
+
+      - name: Ensure patch/minor label exists (Dependabot only)
+        if: steps.check_auto_merge.outputs.auto_merge == 'true' && github.actor == 'dependabot[bot]'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LEVEL_LABEL: ${{ steps.check_auto_merge.outputs.level_label }}
+        run: |
+          if [ -n "$LEVEL_LABEL" ]; then
+            gh pr edit "$PR_NUMBER" --add-label "$LEVEL_LABEL" || true
+          fi
 
       - name: Wait for CI checks
         if: steps.check_auto_merge.outputs.auto_merge == 'true'
@@ -95,35 +105,3 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Notify Mattermost about auto-merge
-        if: steps.check_auto_merge.outputs.auto_merge == 'true' && steps.auto_merge_pr.outputs.merge_succeeded == 'true'
-        env:
-          MATTERMOST_BOT_TOKEN: ${{ secrets.MATTERMOST_BOT_TOKEN }}
-          MATTERMOST_CHANNEL_ID: ${{ secrets.MATTERMOST_CHANNEL_ID }}
-          MATTERMOST_BASE_URL: ${{ secrets.MATTERMOST_BASE_URL }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          if [ -z "$MATTERMOST_BOT_TOKEN" ] || [ -z "$MATTERMOST_CHANNEL_ID" ] || [ -z "$MATTERMOST_BASE_URL" ]; then
-            echo "Missing Mattermost secrets - skipping notification" >&2
-            exit 0
-          fi
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          payload=$(jq -n \
-            --arg channel_id "$MATTERMOST_CHANNEL_ID" \
-            --arg message "🤖 [$REPO] PR #$PR_NUMBER: \"$PR_TITLE\" was auto-merged by $ACTOR.\nMerged at: $TIMESTAMP\nLink: $PR_URL" \
-            '{channel_id: $channel_id, message: $message}')
-          # -f to fail on http errors, -S to show errors
-          curl -fS -X POST \
-            -H "Authorization: Bearer $MATTERMOST_BOT_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$payload" \
-            "$MATTERMOST_BASE_URL/api/v4/posts" || {
-              echo "Failed to send Mattermost notification" >&2
-              exit 1
-            }
-
