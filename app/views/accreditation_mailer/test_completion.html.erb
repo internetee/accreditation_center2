@@ -1,0 +1,32 @@
+<div class="header">
+  <h1>✅ Test Completion Notification</h1>
+</div>
+
+<div class="content">
+  <p>Dear <%= @user.username %>,</p>
+  
+  <p>Your test attempt for "<%= @test.title %>" has been completed.</p>
+  
+  <div class="result <%= @test_attempt.passed? ? 'passed' : 'failed' %>">
+    <strong>Result: <%= @test_attempt.passed? ? 'PASSED' : 'FAILED' %></strong>
+    <% if @test_attempt.score_percentage.present? %>
+      <br>Score: <%= @test_attempt.score_percentage %>% 
+    <% end %>
+    <% if @test_attempt.completed_at.present? %>
+      <br>Completed: <%= @test_attempt.completed_at.strftime('%B %d, %Y at %I:%M %p') %>
+    <% end %>
+  </div>
+  
+  <% if @test_attempt.passed? %>
+    <p>Congratulations! You have successfully passed the test. Your accreditation has been updated.</p>
+  <% else %>
+    <p>Unfortunately, you did not pass the test this time. You can retake the test after the required waiting period.</p>
+  <% end %>
+  
+  <p>Thank you for using the Accreditation Center.</p>
+</div>
+
+<div class="footer">
+  <p>This is an automated message from the Accreditation Center system.</p>
+  <p>If you have any questions, please contact the system administrator.</p>
+</div>

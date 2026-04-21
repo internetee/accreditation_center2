@@ -8,9 +8,14 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-User.create!(
-  email: 'admin@example.com',
-  username: 'admin',
-  password: 'password',
-  role: 'admin'
-)
+require_relative 'seeds/practical_tasks'
+require_relative 'seeds/theoretical_test_seeds'
+
+if User.where(role: :admin).empty?
+  User.create!(
+    email: 'admin@example.com',
+    username: 'admin',
+    password: 'password',
+    role: 'admin'
+  )
+end

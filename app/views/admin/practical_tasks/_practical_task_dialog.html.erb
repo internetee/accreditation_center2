@@ -1,0 +1,18 @@
+<div data-controller="dialog" data-dialog-id-value="practical_task_dialog" class="dialog" id="practical_task_dialog">
+  <div class="wrapper wrapper__small">
+    <div class="paper paper--text__left">
+      <div class="paper--header">
+        <%= button_tag(class: 'button--close', type: '', data: { action: "click->dialog#close" }) do %>
+          <i class="fas fa-times"></i>
+        <% end %>
+        <h2><%= t('admin.tests.show.practical_task_dialog_title') %></h2>
+      </div>
+      <div class="paper--content">
+        <div class="dialog_flash" data-dialog-target="flash">
+          <%= render 'common/dialog_flash' %>
+        </div>
+        <%= turbo_frame_tag "practical_task_form" %>
+      </div>
+    </div>
+  </div>
+</div>

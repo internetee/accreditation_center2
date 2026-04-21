@@ -1,0 +1,21 @@
+Test Completion Notification
+
+Dear <%= @user.username %>,
+
+Your test attempt for "<%= @test.title %>" has been completed.
+
+Result: <%= @test_attempt.passed? ? 'PASSED' : 'FAILED' %>
+<% if @test_attempt.score_percentage.present? %>Score: <%= @test_attempt.score_percentage %>%<% end %>
+<% if @test_attempt.completed_at.present? %>Completed: <%= @test_attempt.completed_at.strftime('%B %d, %Y at %I:%M %p') %><% end %>
+
+<% if @test_attempt.passed? %>
+Congratulations! You have successfully passed the test. Your accreditation has been updated.
+<% else %>
+Unfortunately, you did not pass the test this time. You can retake the test after the required waiting period.
+<% end %>
+
+Thank you for using the Accreditation Center.
+
+---
+This is an automated message from the Accreditation Center system.
+If you have any questions, please contact the system administrator.

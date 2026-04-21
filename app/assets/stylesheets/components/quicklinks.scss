@@ -4,22 +4,39 @@
     position: relative;
     z-index: 1;
     margin-top: -40px;
-    padding: 100px 50px 80px 50px;
+    padding: 100px 50px 50px 50px;
     color: #fff;
     text-align: center;
-    background: variables.$orange url("html-pattern.png") no-repeat 50% 50% / 728px auto;
+    background: variables.$purple url("html-pattern.png") no-repeat 50% 50% / 728px auto;
     h2 {
-        margin-bottom: 40px;
+        margin-bottom: 20px;
     }
     .bills {
+        max-width: 780px;
+        margin: 0 auto;
+
         p {
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin-bottom: 12px;
+            font-size: 18px;
+
             strong {
-                display: block;
-                font-size: 40px;
-                line-height: 40px;
-                font-weight: 900;
+                display: inline-block;
+                margin-right: 8px;
+                font-size: 24px;
+                line-height: 28px;
+                font-weight: 800;
+            }
+        }
+
+        .status {
+            margin-top: 8px;
+            font-weight: 700;
+
+            &--ok {
+                color: #b6ffb6;
+            }
+            &--expired {
+                color: #ffd6d6;
             }
         }
     }

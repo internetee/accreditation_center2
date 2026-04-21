@@ -1,5 +1,5 @@
 class Admin::TestAttemptsController < Admin::BaseController
-  before_action :set_test, except: [:show]
+  before_action :set_test
   before_action :set_test_attempt, only: %i[show reassign extend_time destroy]
   before_action :set_pagy_params, only: %i[index]
 
@@ -9,35 +9,27 @@ class Admin::TestAttemptsController < Admin::BaseController
 
   def new
     # Get users who haven't been assigned this test yet
-    assigned_user_ids = @test.test_attempts.not_completed.pluck(:user_id)
+    assigned_user_ids = @test.test_attempts.not_completed.reject(&:time_expired?).pluck(:user_id)
     @users = User.not_admin.where.not(id: assigned_user_ids).order(:email)
   end
 
   def create
-    @test_attempt = TestAttempt.new(
-      user_id: test_attempt_params[:user_id],
-      test_id: @test.id
-    )
-
-    if @test_attempt.save
-      redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.assigned')
-    else
-      @users = User.not_admin.order(:email)
-      flash.now[:alert] = @test_attempt.errors.full_messages.join(', ')
-      render :new, status: :unprocessable_entity
-    end
+    user = User.not_admin.find(test_attempt_params[:user_id])
+    @test_attempt = Attempts::Assign.call!(user: user, test: @test)
+    redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.assigned')
+  rescue StandardError => e
+    @users = User.not_admin.order(:email)
+    flash.now[:alert] = "Error assigning test: #{e.message}"
+    render :new, status: :unprocessable_content
   end
 
   def show
-    @question_responses = @test_attempt.question_responses.includes(:question, :answers)
+    @question_responses = @test_attempt.question_responses.includes(:question)
+    @practical_task_results = @test_attempt.practical_task_results.includes(:practical_task)
   end
 
   def reassign
-    # Create a new test attempt for the same user
-    new_attempt = TestAttempt.new(
-      user_id: @test_attempt.user_id,
-      test_id: @test_attempt.test_id
-    )
+    new_attempt = @test_attempt.build_duplicate
 
     if new_attempt.save
       redirect_to admin_test_test_attempts_path(@test), notice: t('admin.test_attempts.reassigned')

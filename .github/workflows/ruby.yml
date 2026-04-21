@@ -1,6 +1,6 @@
 name: Github Testing
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -48,13 +48,13 @@ jobs:
           DISABLE_SPRING: 1
         run: |
           cp config/application.yml.sample config/application.yml
-          bundle exec rake db:setup
+          bundle exec rake db:create db:migrate
           bundle exec rails assets:precompile
           bundle exec rspec
 
       - name: Upload Capybara screenshots
         if: failure() && hashFiles('tmp/capybara/**') != ''
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v4
         with:
           name: capybara-screenshots
           path: tmp/capybara
@@ -65,9 +65,14 @@ jobs:
           echo "${HOME}/.qlty/bin" >> $GITHUB_PATH
 
       - name: Upload coverage to Qlty
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
-          QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          QLTY_TOKEN: ${{ secrets.QLTY_TOKEN }}
         run: |
+          if [ -z "${QLTY_TOKEN:-}" ]; then
+            echo "QLTY_TOKEN is missing; skipping upload" >&2
+            exit 0
+          fi
           if [ -d "coverage" ]; then
             echo "Coverage directory found:"
             ls -la coverage/
@@ -98,7 +103,7 @@ jobs:
       matrix:
         ruby: ['3.4.4']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -115,5 +120,14 @@ jobs:
           cp config/application.yml.sample config/application.yml
           bin/importmap audit
           bundle exec bundler-audit --update
-          bin/brakeman --no-pager
+          bin/brakeman --no-pager --format json --output brakeman-report.json
+          bin/brakeman --no-pager --format html --output brakeman-report.html
         continue-on-error: true
+      - name: Upload security scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: |
+            brakeman-report.json
+            brakeman-report.html

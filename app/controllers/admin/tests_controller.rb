@@ -1,5 +1,5 @@
 class Admin::TestsController < Admin::BaseController
-  before_action :set_test, only: %i[show edit update destroy activate deactivate]
+  before_action :set_test, only: %i[show edit update destroy activate deactivate duplicate]
   before_action :set_pagy_params, only: %i[index]
 
   def index
@@ -9,7 +9,8 @@ class Admin::TestsController < Admin::BaseController
 
   def show
     @test_categories = @test.active_ordered_test_categories_with_join_id
-    @recent_attempts = @test.test_attempts.recent.includes(:user).limit(10)
+    @practical_tasks = @test.practical_tasks.ordered
+    # @recent_attempts = @test.test_attempts.recent.includes(:user).limit(10)
   end
 
   def new
@@ -22,18 +23,19 @@ class Admin::TestsController < Admin::BaseController
     if @test.save
       redirect_to admin_test_path(@test), notice: t('admin.tests.created')
     else
-      render :new, status: :unprocessable_entity
+      flash.now[:alert] = @test.errors.full_messages.join(', ')
+      render :new, status: :unprocessable_content
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @test.update(test_params)
       redirect_to admin_test_path(@test), notice: t('admin.tests.updated')
     else
-      render :edit, status: :unprocessable_entity
+      flash.now[:alert] = @test.errors.full_messages.join(', ')
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -53,34 +55,10 @@ class Admin::TestsController < Admin::BaseController
   end
 
   def duplicate
-    new_test = @test.dup
-    new_test.title_et = "#{@test.title_et} (Copy)"
-    new_test.title_en = "#{@test.title_en} (Copy)"
-    new_test.active = false
-    new_test.display_order = (@test.display_order || 0) + 1
+    new_test = @test.build_duplicate
 
     if new_test.save
-      # Duplicate categories and questions
-      @test.test_categories.each do |category|
-        new_category = category.dup
-        new_category.test = new_test
-        new_category.save
-
-        # Duplicate questions
-        category.questions.each do |question|
-          new_question = question.dup
-          new_question.test_category = new_category
-          new_question.save
-
-          # Duplicate answers
-          question.answers.each do |answer|
-            new_answer = answer.dup
-            new_answer.question = new_question
-            new_answer.save
-          end
-        end
-      end
-
+      duplicate_associations(new_test)
       redirect_to edit_admin_test_path(new_test), notice: t('admin.tests.duplicated')
     else
       redirect_to admin_test_path(@test), alert: t('admin.tests.duplication_failed')
@@ -97,8 +75,31 @@ class Admin::TestsController < Admin::BaseController
     params.require(:test).permit(
       :title_et, :title_en, :description_et, :description_en,
       :time_limit_minutes, :questions_per_category, :passing_score_percentage,
-      :display_order, :active, test_category_ids: []
+      :display_order, :active, :test_type, :auto_assign, test_category_ids: []
     )
   end
+
+  def duplicate_associations(new_test)
+    duplicate_test_categories(new_test)
+    duplicate_practical_tasks(new_test)
+  end
+
+  def duplicate_test_categories(new_test)
+    @test.test_categories_tests.find_each do |category_test|
+      new_category_test = category_test.dup
+      new_category_test.test = new_test
+      new_category_test.save!
+    end
+  end
+
+  def duplicate_practical_tasks(new_test)
+    return unless @test.practical?
+
+    @test.practical_tasks.find_each do |task|
+      new_task = task.dup
+      new_task.test = new_test
+      new_task.display_order = task.display_order
+      new_task.save!
+    end
+  end
 end
- 

@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.2.1"
+gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -57,6 +57,7 @@ group :development, :test do
   # gem "rubocop-rails-omakase", require: false
 
   gem "bundler-audit"
+  gem 'factory_bot_rails'
 
   gem 'rspec-rails', '~> 8.0.0'
 end
@@ -69,11 +70,13 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "rails-controller-testing"
   gem "selenium-webdriver"
   
   # Code coverage
   gem "simplecov", require: false
   gem "simplecov-lcov", require: false
+  gem 'webmock'
 end
 
 gem "dartsass-rails", "~> 0.5.1"
@@ -88,8 +91,12 @@ gem 'ransack'
 
 gem 'positioning'
 
-gem 'friendly_id', '~> 5.4.0'
+gem 'friendly_id', '~> 5.6.0'
 
-# Security updates
-gem 'nokogiri', '>= 1.18.9'
-gem 'thor', '>= 1.4.0'
+gem 'mustache', '~> 1.0'
+
+gem 'simpleidn'
+
+gem 'faker'
+
+gem 'coderay', '~> 1.1', '>= 1.1.2'
