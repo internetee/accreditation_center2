@@ -65,10 +65,14 @@ jobs:
           echo "${HOME}/.qlty/bin" >> $GITHUB_PATH
 
       - name: Upload coverage to Qlty
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
-          QLTY_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
-          QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          QLTY_TOKEN: ${{ secrets.QLTY_TOKEN }}
         run: |
+          if [ -z "${QLTY_TOKEN:-}" ]; then
+            echo "QLTY_TOKEN is missing; skipping upload" >&2
+            exit 0
+          fi
           if [ -d "coverage" ]; then
             echo "Coverage directory found:"
             ls -la coverage/
