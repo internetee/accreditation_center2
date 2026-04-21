@@ -14,17 +14,6 @@
           <%= link_to t(:edit), edit_admin_test_path(@test), class: 'button button--primary' %>
         </div>
         <div class="col-xs-auto">
-          <% if @test.active? %>
-            <%= link_to t(:deactivate), deactivate_admin_test_path(@test),  
-                        class: 'button button--error',
-                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_deactivate') } %>
-          <% else %>
-            <%= link_to t(:activate), activate_admin_test_path(@test),
-                        data: { turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_activate') },
-                        class: 'button button--secondary' %>
-          <% end %>
-        </div>
-        <div class="col-xs-auto">
           <%= link_to t(:duplicate), duplicate_admin_test_path(@test),
                       class: 'button button--primary',
                       data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_duplicate') } %>
@@ -104,7 +93,7 @@
           
           <div class="paper--content">
             <div class="stats-grid">
-              <% if @test.has_theoretical_questions? %>
+              <% if @test.theoretical? %>
                 <div class="stat-item">
                   <span class="stat-label"><%= t('.categories') %></span>
                   <span class="stat-value"><%= @test_categories.count %></span>
@@ -114,7 +103,7 @@
                   <span class="stat-value"><%= @test.theoretical_questions_count %></span>
                 </div>
               <% end %>
-              <% if @test.has_practical_tasks? %>
+              <% if @test.practical? %>
                 <div class="stat-item">
                   <span class="stat-label"><%= t('.practical_tasks') %></span>
                   <span class="stat-value"><%= @test.practical_tasks_count %></span>
@@ -152,7 +141,7 @@
       </div>
     </div>
 
-    <% if @test.has_theoretical_questions? %>
+    <% if @test.theoretical? %>
       <div class="row test-categories-section">
         <div class="col-md-12 col-xs-12">
           <div class="paper">
@@ -187,7 +176,7 @@
       </div>
     <% end %>
 
-    <% if @test.has_practical_tasks? %>
+    <% if @test.practical? %>
       <div class="wrapper">
         <div class="page--header">
           <div class="row between-xs">

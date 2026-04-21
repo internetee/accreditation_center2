@@ -13,6 +13,5 @@ class CreateTests < ActiveRecord::Migration[8.0]
     end
 
     add_index :tests, :active
-    add_index :tests, :display_order
   end
 end

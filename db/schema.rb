@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_29_093605) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_10_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,7 +80,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_29_093605) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "mandatory_to"
     t.index ["active"], name: "index_questions_on_active"
+    t.index ["mandatory_to"], name: "index_questions_on_mandatory_to"
     t.index ["question_type"], name: "index_questions_on_question_type"
     t.index ["test_category_id", "display_order"], name: "index_questions_on_test_category_id_and_display_order", unique: true
     t.index ["test_category_id"], name: "index_questions_on_test_category_id"
@@ -143,6 +145,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_29_093605) do
     t.datetime "updated_at", null: false
     t.string "slug"
     t.integer "test_type", default: 0, null: false
+    t.boolean "auto_assign", default: false, null: false
     t.index ["active"], name: "index_tests_on_active"
     t.index ["slug"], name: "index_tests_on_slug", unique: true
     t.index ["test_type"], name: "index_tests_on_test_type"

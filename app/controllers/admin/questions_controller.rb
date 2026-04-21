@@ -56,34 +56,6 @@ class Admin::QuestionsController < Admin::BaseController
     end
   end
 
-  def duplicate
-    original_question = @test_category.questions.find(params[:id])
-    @question = original_question.dup
-    @question.text_et = "#{original_question.text_et} (copy)"
-    @question.text_en = "#{original_question.text_en} (copy)"
-    @question.display_order = @test_category.questions.maximum(:display_order).to_i + 1
-
-    if @question.save
-      # Duplicate answers
-      original_question.answers.each do |answer|
-        new_answer = answer.dup
-        new_answer.question = @question
-        new_answer.save
-      end
-
-      redirect_to admin_test_category_questions_path(@test_category), notice: t('admin.questions.duplicated')
-    else
-      redirect_to admin_test_category_questions_path(@test_category), alert: t('admin.questions.duplication_failed')
-    end
-  end
-
-  def reorder
-    @test_category.questions.each do |question|
-      question.update_column(:display_order, question.position)
-    end
-    redirect_to admin_test_category_questions_path(@test_category), notice: t('admin.questions.reordered')
-  end
-
   private
 
   def set_test_category
@@ -96,7 +68,7 @@ class Admin::QuestionsController < Admin::BaseController
 
   def question_params
     params.require(:question).permit(
-      :text_et, :text_en, :help_text_et, :help_text_en, :active,
+      :text_et, :text_en, :help_text_et, :help_text_en, :active, :mandatory,
       answers_attributes: %i[id text_et text_en display_order correct _destroy]
     )
   end

@@ -16,7 +16,7 @@
       <div class="user-item">
         <strong><%= user.username %></strong> (<%= user.email %>)
         <br>Registrar: <%= user.registrar_name %>
-        <br>Expiry Date: <%= user.accreditation_expiry_date&.strftime('%B %d, %Y') %>
+        <br>Expiry Date: <%= user.accreditation_expire_date&.strftime('%B %d, %Y') %>
         <br>Days Until Expiry: <%= user.days_until_accreditation_expiry %>
       </div>
     <% end %>

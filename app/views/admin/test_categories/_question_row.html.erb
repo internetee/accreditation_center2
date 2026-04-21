@@ -14,6 +14,11 @@
         <span class="label label-default"><%= t('admin.questions.index.question_inactive') %></span>
       <% end %>
     </td>
+    <td>
+      <% if question.mandatory? %>
+        <span class="label label-success simple_tooltip" data-tippy-content="<%= t('admin.questions.index.question_mandatory_to') %>: <%= question.mandatory_to.strftime('%d.%m.%Y') %>"><i class="fas fa-check"></i></span>
+      <% end %>
+    </td>
     <td class="table--action">
       <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_category_question_path(@test_category, question), 
                       class: 'simple_tooltip', 

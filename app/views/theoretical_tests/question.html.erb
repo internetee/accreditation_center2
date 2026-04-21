@@ -11,7 +11,7 @@
 <div class="page page--test-question">
   <div class="page--header">
     <div class="wrapper">
-      <div class="row center-xs">
+      <div class="row center-xs" style="margin-bottom: 5px;">
         <% @questions.each_with_index do |question, index| %>
           <% response = @test_attempt.question_responses.find_by(question: question) %>
           <% status_class = response&.status || 'unanswered' %>
@@ -146,8 +146,6 @@
                           results_theoretical_test_path(@test, attempt: @test_attempt.access_code),
                           class: 'button button--danger',
                           data: { turbo: true, turbo_method: :get, turbo_confirm: t('tests.confirm_finish') } %>
-            <% else %>
-              <span class="button button--danger disabled"><%= t('tests.finish_test') %></span>
             <% end %>
         </div>
       </div>

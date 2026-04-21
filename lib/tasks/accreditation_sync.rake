@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# This task is used to sync accreditation results to REPP API
+# Run with: bin/rails accreditation:sync_to_repp
 namespace :accreditation do
   desc 'Sync accreditation results to REPP API'
   task sync_to_repp: :environment do

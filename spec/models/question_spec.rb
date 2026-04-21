@@ -44,9 +44,19 @@ RSpec.describe Question, type: :model do
       question = build(:question, display_order: 1, test_category: test_category)
       expect(question.valid?).to be(true)
     end
+
+    it 'validates mandatory only if active' do
+      question = build(:question, mandatory: '1', active: false, test_category: test_category)
+      expect(question.valid?).to be(false)
+      expect(question.errors[:base]).to include('Mandatory question must be active')
+
+      question = build(:question, mandatory: '1', active: true, test_category: test_category)
+      expect(question.valid?).to be(true)
+    end
   end
 
   describe 'associations' do
+    let(:test) { create(:test, :theoretical) }
     let(:question) { create(:question, test_category: test_category) }
 
     it 'belongs to test_category' do
@@ -70,8 +80,10 @@ RSpec.describe Question, type: :model do
     end
 
     it 'has many question_responses' do
-      test_attempt1 = create(:test_attempt)
-      test_attempt2 = create(:test_attempt)
+      create(:answer, question: question, correct: true)
+      create(:test_categories_test, test: test, test_category: test_category)
+      test_attempt1 = create(:test_attempt, test: test)
+      test_attempt2 = create(:test_attempt, test: test)
       response1 = create(:question_response, question: question, test_attempt: test_attempt1)
       response2 = create(:question_response, question: question, test_attempt: test_attempt2)
 
@@ -79,7 +91,9 @@ RSpec.describe Question, type: :model do
     end
 
     it 'destroys associated question_responses when destroyed' do
-      test_attempt = create(:test_attempt)
+      create(:answer, question: question, correct: true)
+      create(:test_categories_test, test: test, test_category: test_category)
+      test_attempt = create(:test_attempt, test: test)
       response = create(:question_response, question: question, test_attempt: test_attempt)
 
       question.destroy

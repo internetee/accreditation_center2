@@ -32,7 +32,7 @@ module Localization
   end
 
   def log_invalid_locale(locale)
-    notice = "#{locale} #{t(:no_translation)}"
+    notice = "#{locale} #{I18n.t(:no_translation)}"
     # flash.now[:notice] = notice
     logger.error notice
   end

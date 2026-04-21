@@ -1,0 +1,39 @@
+<table class="table table--striped">
+  <thead>
+    <tr>
+      <th><%= t('.test') %></th>
+      <th><%= t('.started_at') %></th>
+      <th><%= t('.completed_at') %></th>
+      <th><%= t('.score') %></th>
+      <th><%= t('.status') %></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @test_attempts.each do |attempt| %>
+    <tr>
+      <td><%= link_to attempt.test.title, admin_test_path(attempt.test) %></td>
+      <td><%= l(attempt.started_at, format: :short) if attempt.started_at %></td>
+      <td><%= l(attempt.completed_at, format: :short) if attempt.completed_at %></td>
+      <td><%= number_to_percentage(attempt.score_percentage, precision: 1) %></td>
+      <td>
+      <% if attempt.passed? %>
+        <span class="badge badge-success"><%= t('admin.test_attempts.test_attempts_table.passed') %></span>
+      <% elsif attempt.failed? %>
+        <span class="badge badge-danger"><%= t('admin.test_attempts.test_attempts_table.failed') %></span>
+      <% elsif attempt.in_progress? %>
+        <span class="badge badge-warning"><%= t('admin.test_attempts.test_attempts_table.in_progress') %></span>
+      <% else %>
+        <span class="badge badge-default"><%= t('admin.test_attempts.test_attempts_table.not_started') %></span>
+      <% end %>
+      </td>
+      <td>
+      <%= icon_link_to 'fas fa-eye',
+                  admin_test_test_attempt_path(attempt.test, attempt),
+                  class: 'simple_tooltip',
+                  data: { 'tippy-content': t(:view), turbo: false } %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

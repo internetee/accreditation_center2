@@ -15,7 +15,7 @@ class ApiConnector
 
   # Generic method to make API requests with error handling
   def make_request(method, url, options = {})
-    return error_response('API endpoint not configured') unless url
+    return error_response(nil, I18n.t('errors.api_endpoint_not_configured')) unless url
 
     Rails.logger.debug("Making #{method} request to #{url} with options: #{options}")
 
@@ -50,17 +50,17 @@ class ApiConnector
     when 200
       success_response(response.body)
     when 401
-      error_response('Invalid credentials')
+      error_response(nil, I18n.t('errors.invalid_credentials'))
     when 403
-      error_response(response.body['errors'] || 'Access denied')
+      error_response(response.body['errors'], I18n.t('errors.access_denied'))
     when 404
-      error_response(response.body['errors'] || 'Service not found')
+      error_response(response.body['errors'], I18n.t('errors.object_not_found'))
     when 422
-      error_response('Invalid data')
+      error_response(nil, I18n.t('errors.invalid_data'))
     when 500..599
-      error_response(response.body['errors'] || 'Service error')
+      error_response(response.body['errors'], I18n.t('errors.service_error'))
     else
-      error_response('Unexpected response from service')
+      error_response(nil, I18n.t('errors.unexpected_response'))
     end
   end
 
@@ -80,7 +80,7 @@ class ApiConnector
       # Configure logging if enabled
       if ENV['RAILS_LOG_LEVEL'] == 'debug'
         faraday.response :logger, nil, {
-          headers: false,
+          headers: true,
           bodies: true,
           errors: true,
           log_level: :debug
@@ -93,39 +93,47 @@ class ApiConnector
                    else
                      false
                    end
+      Rails.logger.debug("[ApiConnector] SSL verify: #{ssl_verify}")
       faraday.ssl.verify = ssl_verify
 
       ca_file = @ssl_opts[:ca_file].presence
+      Rails.logger.debug("[ApiConnector] CA file: #{ca_file}, exists: #{ca_file && File.exist?(ca_file)}")
       faraday.ssl.ca_file = ca_file if ca_file.present?
 
       cert_file = @ssl_opts[:client_cert_file].presence
       key_file  = @ssl_opts[:client_key_file].presence
 
+      Rails.logger.debug("[ApiConnector] Client cert file: #{cert_file}, exists: #{cert_file && File.exist?(cert_file)}")
+      Rails.logger.debug("[ApiConnector] Client key  file: #{key_file}, exists: #{key_file && File.exist?(key_file)}")
+
       if cert_file.present? && key_file.present? && File.exist?(cert_file) && File.exist?(key_file)
-        faraday.ssl.client_cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
-        faraday.ssl.client_key  = OpenSSL::PKey.read(File.read(key_file))
+        cert_pem = File.read(cert_file)
+        key_pem  = File.read(key_file)
+        faraday.ssl.client_cert = OpenSSL::X509::Certificate.new(cert_pem)
+        faraday.ssl.client_key  = OpenSSL::PKey.read(key_pem)
+
+        if ENV['RAILS_LOG_LEVEL'] == 'debug'
+          cn = faraday.ssl.client_cert.subject.to_a.find { |a| a[0] == 'CN' }&.dig(1)
+          Rails.logger.debug("[ApiConnector] Loaded client cert CN: #{cn}")
+        end
       end
     end
   end
 
   def handle_timeout_error(error)
-    Rails.logger.error "API Connector timeout: #{error.message}"
-    error_response('Service timeout')
+    error_response(error.message, I18n.t('errors.service_timeout'))
   end
 
   def handle_connection_error(error)
-    Rails.logger.error "API Connector connection failed: #{error.message}"
-    error_response('Cannot connect to service')
+    error_response(error.message, I18n.t('errors.cannot_connect_to_service'))
   end
 
   def handle_faraday_error(error)
-    Rails.logger.error "API Connector Faraday error: #{error.message}"
-    error_response('Network error')
+    error_response(error.message, I18n.t('errors.network_error'))
   end
 
   def handle_generic_error(error)
-    Rails.logger.error "API Connector error: #{error.message}"
-    error_response('Service temporarily unavailable')
+    error_response(error.message, I18n.t('errors.service_temporarily_unavailable'))
   end
 
   def success_response(data)
@@ -136,12 +144,23 @@ class ApiConnector
     }
   end
 
-  def error_response(message)
+  def error_response(error_message, message)
+    Rails.logger.error "API Connector error: #{error_message}" if error_message
+
     {
       success: false,
       message: message,
       data: nil
     }
+  end
+
+  def parse_json(body)
+    return body if body.is_a?(Hash)
+
+    JSON.parse(body)
+  rescue JSON::ParserError => e
+    Rails.logger.error("APIConnector: JSON parse error – #{e.message}")
+    nil
   end
 
   def symbolize_keys_deep(obj)

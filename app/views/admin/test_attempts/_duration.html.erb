@@ -1,0 +1,9 @@
+<% if attempt.completed? && attempt.started_at %>
+  <%= distance_of_time_in_words(attempt.started_at, attempt.completed_at) %>
+<% elsif attempt.time_expired? && !attempt.completed? %>
+  <%= t('admin.test_attempts.test_attempts_table.time_expired') %>
+<% elsif attempt.in_progress? %>
+  <%= distance_of_time_in_words(attempt.started_at, Time.zone.now) %>
+<% else %>
+  <%= t('admin.test_attempts.test_attempts_table.not_started') %>
+<% end %>
