@@ -20,7 +20,7 @@ jobs:
       github.event.pull_request.user.login == 'renovate'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install GitHub CLI and jq
         run: |
@@ -30,7 +30,7 @@ jobs:
           sudo apt install -y gh jq
 
       - name: Auto approve PR
-        uses: hmarr/auto-approve-action@v3
+        uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
