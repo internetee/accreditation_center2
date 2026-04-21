@@ -9,10 +9,13 @@
 #   end
 
 require_relative 'seeds/practical_tasks'
+require_relative 'seeds/theoretical_test_seeds'
 
-User.create!(
-  email: 'admin@example.com',
-  username: 'admin',
-  password: 'password',
-  role: 'admin'
-)
+if User.where(role: :admin).empty?
+  User.create!(
+    email: 'admin@example.com',
+    username: 'admin',
+    password: 'password',
+    role: 'admin'
+  )
+end

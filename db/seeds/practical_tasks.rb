@@ -4,14 +4,14 @@
 
 puts "Creating practical test..."
 
-test = Test.create!(
-  title_en: "Practical Test",
-  title_et: "Praktika Test",
-  test_type: :practical,
-  time_limit_minutes: 120,
-  passing_score_percentage: 100,
-  active: true
-)
+test = Test.find_or_create_by(slug: "practical-test") do |t|
+  t.title_en = "Practical Test"
+  t.title_et = "Praktika Test"
+  t.test_type = :practical
+  t.time_limit_minutes = 120
+  t.passing_score_percentage = 100
+  t.active = true
+end
 
 puts "Creating practical tasks..."
 

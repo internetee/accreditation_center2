@@ -40,8 +40,11 @@ module AccreditationCenter
     # config.customization = config_for(:application)
 
     config.i18n.available_locales = %i[en et]
-    config.i18n.default_locale = :en
+    config.i18n.default_locale = ENV['locale'] || 'en'
     config.i18n.fallbacks = true
+
+    # Default to UTC if not set
+    config.time_zone = ENV['time_zone'] || 'UTC'
 
     # Don't generate system test files.
     config.generators.system_tests = nil

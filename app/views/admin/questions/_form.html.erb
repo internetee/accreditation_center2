@@ -43,6 +43,16 @@
           </div>
         </div>
       </div>
+      <div class="form-row" style="margin-top: 10px;">
+        <div class="form--field">
+          <div class="checkbox">
+            <%= form.check_box :mandatory, checked: @question.mandatory? || false %>
+            <%= form.label :mandatory do %>
+              <span><%= t('admin.questions.mandatory') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="form--actions">

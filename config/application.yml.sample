@@ -1,4 +1,23 @@
-# Add configuration values here, as shown below.
+# This is your application name, as displayed in the UI
+application_name: "EIS Accreditation Center"
+# Timezone and locale
+time_zone: "Tallinn"
+locale: "en"
+
+# Address from which the emails come from
+email_from_address: "noreply@internet.ee"
+
+# Mailer configuration
+mailer_host: 'https://localhost:9001'
+mailer_address: 'mailcatcher'
+mailer_port: '1025'
+mailer_enable_starttls_auto: false
+mailer_user_name: ''
+mailer_password: ''
+# 'plain', 'login', 'cram_md5'
+mailer_authentication: 'plain'
+mailer_domain: ''
+mailer_openssl_verify_mode: 'none'
 
 # Here we will use TEST environment registry base url
 # because all operation with domains and contacts should be in test registry environment
@@ -20,6 +39,16 @@ ACCR_BOT_REGISTRAR_NAME: "ACCREDITATION EIS"
 
 CLIENT_BOT_CERTS_PATH: '/opt/ca/certs/accr_bot.crt.pem'
 CLIENT_BOT_KEY_PATH:  '/opt/ca/private/accr_bot.key.pem'
-CLIENT_BOT_PASSWORD: ''
 
-ACCR_EXPIRY_YEARS: 2
+# Coordinator email address(es) separated by comma
+COORDINATOR_EMAIL: "info@internet.ee,info2@internet.ee"
+# Days before expiry to notify coordinator
+COORDINATOR_ACCR_EXPIRY_NOTIFICATION_DAYS: 14
+# Days before expiry to notify users separated by comma
+ACCR_EXPIRY_NOTIFICATION_DAYS: '14,7'
+
+# Automatically assign test attempts to users after sign in
+AUTO_ASSIGN_TEST_ATTEMPTS: false
+
+# Mandatory question validity period in years
+MANDATORY_QUESTION_VALIDITY_YEARS: 1

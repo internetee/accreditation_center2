@@ -1,4 +1,38 @@
 et:
+  datetime:
+    distance_in_words:
+      x_days: "%{count} päeva"
+      x_weeks: "%{count} nädalat"
+      x_months: "%{count} kuud"
+      x_years: "%{count} aastat"
+      x_minutes: "%{count} minutit"
+      x_seconds: "%{count} sekundit"
+      about_x_hours: "%{count} tundi"
+      about_x_days: "%{count} päeva"
+      about_x_weeks: "%{count} nädalat"
+      about_x_months: "%{count} kuud"
+      about_x_years: "%{count} aastat"
+      half_an_hour: "pool tundi"
+      less_than_x_minutes: "vähem kui %{count} minutit"
+      less_than_x_seconds: "vähem kui %{count} sekundit"
+      over_x_years: "üle %{count} aastat"
+      almost_x_years: "peaaegu %{count} aastat"
+      about_x_years: "%{count} aastat"
+      about_x_years: "%{count} aastat"
+  time:
+    formats:
+      short: "%d.%m.%Y %H:%M"
+      long: "%d. %B %Y %H:%M"
+      default: "%d.%m.%Y %H:%M"
+  date:
+    month_names:
+      [~, Jaanuar, Veebruar, Märts, Aprill, Mai, Juuni, Juuli, August, September, Oktoober, November, Detsember]
+    abbr_month_names:
+      [~, Jaan, Veeb, Märts, Apr, Mai, Juuni, Juuli, Aug, Sep, Okt, Nov, Det]
+    formats:
+      default: "%d.%m.%Y"
+      month_year: "%d. %B %Y"
+      month_year_short: "%b, %Y"
   search: "Otsi"
   language: "eesti keeles"
   minutes: "minutit"
@@ -21,6 +55,19 @@ et:
   view: "Vaata"
   ago: "tagasi"
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
+  no_translation: "Tõlge pole saadaval"
+  errors:
+    invalid_credentials: "Vale kasutajanimi või parool"
+    access_denied: "Pole juurdepääsu"
+    object_not_found: "Objekt ei leitud"
+    invalid_data_format: "Vale andmete formaat"
+    service_error: "Teenuse tõrge"
+    unexpected_response: "Ootamatu vastus teenusest"
+    service_timeout: "Teenuse aegumine"
+    cannot_connect_to_service: "Ei saa ühendust teenusega"
+    network_error: "Võrgutõrge"
+    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
+    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -28,6 +75,7 @@ et:
     users: "Kasutajad"
   users:
     sessions:
+      assignment_failed: "Automaatne testide määramine ebaõnnestus. Koordinaatoritele saadeti teavitus."
       new:
         title: "Eesti Interneti SA Akrediteerimiskeskus"
         login: "Logi sisse"
@@ -56,11 +104,16 @@ et:
         other: "%{count} päeva jäänud"
       accreditation_expired: "Akrediteering on aegunud"
       in_progress_tests: "Pooleliolevad testid"
-      time_remaining: "Aega jäänud: %{time}"
+      time_remaining: "Aega jäänud"
       continue_test: "Jätka testi"
-      recent_history: "Viimased proovid"
+      recent_history: "Viimased läbitud testid"
       start_test: "Alusta testi"
       view_results: "Vaata tulemusi"
+      progress: "Täidetud protsent"
+      actions: "Tegevused"
+      test: "Test"
+      date: "Kuupäev"
+      score: "Tulemus"
   tests:
     history_blocked_while_active: "Poolelioleva testi ajal ei saa testide ajalugu vaadata."
     total_questions: "Küsimusi kokku"
@@ -74,7 +127,9 @@ et:
     answered_questions: "vastatud küsimusi"
     question_counter: "%{current}/%{total}"
     time_remaining: "%{minutes} min %{seconds} s jäänud"
+    time_remaining_short: "%{minutes} min %{seconds} s"
     time_expired: "Aeg on lõppenud"
+    in_progress: "Pooleli"
     time_warning: "Aja hoiatus: %{minutes} minutit jäänud"
     task_current_to_continue: "Palun täida praegune ülesanne, et jätkata."
     answer_and_continue: "Vasta"
@@ -112,22 +167,60 @@ et:
     validation_timeout: "Validatsiooni aegumine"
     finish_all_tasks: "Palun täida kõik ülesanded enne lõpetamist."
     test_not_found: "Testi ei leitud"
+    select_answer_or_marked_for_later: "Palun vali vähemalt üks vastus või märgi küsimus hilisemaks."
     question:
       title: "%{test}"
       question_number: "Küsimus %{number}"
+      task_number: "Ülesanne %{number}"
     task:
       title: "%{test}"
       task_number: "Ülesanne %{number}"
     results:
       page_title: "Testi tulemused - %{test}"
       title: "Testi tulemused"
+      view_test: "Vaata testi"
+  mailers:
+    accreditation:
+      test_completion:
+        subject: "Test on lõpetatud - %{test}"
+      assignment_failed:
+        subject: "Automaatne testide määramine ebaõnnestus kasutajal %{username}"
   validators:
+    change_registrant:
+      source_domain_not_found: "Lähtedomeeni ei leitud: %{domain}"
+      target_domain_not_found: "Sihtdomeeni ei leitud: %{domain}"
+      source_domain_registrant_missing: "Lähtedomeeni registreerija puudub: %{domain}"
+      target_domain_registrant_missing: "Sihtdomeeni registreerija puudub: %{domain}"
+      target_domain_registrant_not_replaced: "Sihtdomeeni %{domain} registreerija ei ole asendatud lähtedomeeni registreerijaga"
+    create_and_cancel_invoice:
+      no_recently_cancelled_invoices: "Hiljutist tühistatud arve ei leitud (viimased %{window} minutit)"
     create_contacts_validator:
       organization_contact_not_found: "Organisatsiooni kontakt ei leitud"
       private_contact_not_found: "Privaatse kontakti ei leitud"
-      org_type_mismatch: "Organisatsiooni kontakti tüüp ei vasta"
-      priv_type_mismatch: "Privaatse kontakti tüüp ei vasta"
+      org_type_mismatch: "Organisatsiooni kontakti tüüp ei vasta õigele kontakti tüüpile"
+      priv_type_mismatch: "Privaatse kontakti tüüp ei vasta õigele kontakti tüüpile"
       org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
       priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"
       org_contact_not_recent: "Organisatsiooni kontakt ei ole hiljuti loodud"
       priv_contact_not_recent: "Privaatse kontakt ei ole hiljuti loodud"
+    delete_domain_verified_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_not_in_pending_delete_status: "Domeen %{domain} ei ole pendingDelete staatuses"
+    register_domains_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_wrong_period: "Domeenil %{domain} on vale periood (soovitud: %{period})"
+      domain_missing_registrant: "Domeenil %{domain} puudub registreerija"
+      domain_wrong_registrant: "Domeenil %{domain} on vale registreerija"
+    renew_domain_validator:
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      domain_expire_time_missing: "Domeeni %{domain} aegumiskuupäev puudub"
+      domain_not_renewed: "Domeen %{domain} ei ole pikendatud"
+    transfer_domains_validator:
+      domains_array_missing: "Validatori konfiguratsioon peab sisaldama 'domains' massiivi"
+      domain_not_found: "Domeen '%{domain}' ei leitud"
+      domain_registrar_info_missing: "Domeeni %{domain} registreerija info puudub"
+      domain_registrar_mismatch: "Domeeni %{domain} registreerija ei vasta õigele registreerijale"
+    update_nameservers_validator:
+      nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
+      domain_not_found: "Domeen ei leitud: %{domain}"
+      nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"

@@ -1,5 +1,5 @@
 class Admin::UsersController < Admin::BaseController
-  before_action :set_pagy_params, only: %i[index]
+  before_action :set_pagy_params
 
   def index
     @search = User.not_admin.ransack(params[:q])
@@ -8,7 +8,9 @@ class Admin::UsersController < Admin::BaseController
 
   def show
     @user = User.find(params[:id])
-    @test_attempts = @user.test_attempts.includes(:test).order(created_at: :desc)
+    @pagy, @test_attempts = pagy(
+      @user.test_attempts.includes(:test).order(created_at: :desc), limit: session[:page_size], page: @page
+    )
     @statistics = @user.test_statistics
   end
 end

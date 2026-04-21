@@ -8,34 +8,16 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def set_pagy_params
-    if params[:per_page]&.to_i&.positive?
-      session[:page_size] = params[:per_page].to_i
-    else
-      session[:page_size] ||= Pagy::DEFAULT[:items]
-    end
-    @page = params[:page] || 1
-    @offset = session[:page_size] * (@page.to_i - 1)
+    session[:page_size] = computed_page_size
+    @page = (params[:page] || 1).to_i
+    @offset = session[:page_size] * (@page - 1)
   end
 
   def update_positions
-    ActiveRecord::Base.transaction do
-      positions = params[:positions]
-
-      positions.each do |id, index|
-        model_class.find(id).update(display_order: index)
-      end
-    end
-
-    respond_to do |format|
-      format.json { head :no_content }
-      format.turbo_stream
-    end
+    update_records!
+    respond_successfully
   rescue StandardError => e
-    flash.now[:alert] = e.message
-    respond_to do |format|
-      format.json { render json: { error: e.message }, status: :unprocessable_entity }
-      format.turbo_stream { render turbo_stream: turbo_stream.update('flash', partial: 'common/flash') }
-    end
+    handle_update_error(e)
   end
 
   private
@@ -48,13 +30,34 @@ class ApplicationController < ActionController::Base
     redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user.admin?
   end
 
-  # Prevent viewing history while a test attempt is in progress for the same account
-  def block_history_during_active_attempt!
-    return unless current_user
-
-    if current_user.test_attempts.in_progress.exists?
-      redirect_to tests_path, alert: I18n.t('tests.history_blocked_while_active')
+  def update_records!
+    ActiveRecord::Base.transaction do
+      params[:positions].each do |id, index|
+        model_class.find(id).update(display_order: index)
+      end
     end
+  end
+
+  def respond_successfully
+    respond_to do |format|
+      format.json { head :no_content }
+      format.turbo_stream
+    end
+  end
+
+  def handle_update_error(error)
+    flash.now[:alert] = error.message
+    respond_to do |format|
+      format.json { render json: { error: error.message }, status: :unprocessable_content }
+      format.turbo_stream { render turbo_stream: turbo_stream.update('flash', partial: 'common/flash') }
+    end
+  end
+
+  def computed_page_size
+    per_page = params[:per_page].to_i
+    return per_page if per_page.positive?
+
+    session[:page_size] ||= Pagy::DEFAULT[:items]
   end
 
   protected

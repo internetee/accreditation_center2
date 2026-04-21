@@ -1,7 +1,6 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
-import "cookieconsent-config"
 import '@popperjs/core'
 import Header from "src/header"
 import Select from "src/select"
@@ -30,16 +29,19 @@ class App {
       })
 
       const per_page_select = document.getElementById('per_page')
-        if (per_page_select) {
-          per_page_select.onchange = function(evt){
-            var value = evt.target.value
-            // if(value){window.location='?per_page='+value;}
+      if (per_page_select) {
+        per_page_select.onchange = function(evt){
+          var value = evt.target.value
+          // if(value){window.location='?per_page='+value;}
 
-            const urlParams = new URLSearchParams(window.location.search)
-            urlParams.set('per_page', value)
-            window.location.search = urlParams
+          const urlParams = new URLSearchParams(window.location.search)
+          urlParams.set('per_page', value)
+          if (urlParams.get('page')) {
+            urlParams.delete('page')
           }
+          window.location.search = urlParams.toString()
         }
+      }
     }
 }
 
