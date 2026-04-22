@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    action_policy (0.7.5)
+    action_policy (0.7.6)
       ruby-next-core (>= 1.0)
     action_text-trix (2.1.18)
       railties
@@ -328,7 +328,7 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.4)
-    ruby-next-core (1.1.2)
+    ruby-next-core (1.2.0)
     rubyzip (2.4.1)
     sass-embedded (1.89.2-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
