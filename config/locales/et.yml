@@ -147,8 +147,9 @@ et:
     practical_response_placeholder: "Sisesta oma vastus siia"
     results_title: "Testi tulemused"
     test_name: "Test"
+    completion_date: "Lõpetamise kuupäev"
     completion_time: "Kulunud aeg"
-    score: "Tulemus"
+    score: "Õigete vastuste protsent"
     result: "Tulemus"
     passed: "Läbitud"
     failed: "Ebaõnnestunud"
@@ -174,6 +175,7 @@ et:
     validation_timeout: "Validatsiooni aegumine"
     finish_all_tasks: "Palun täida kõik ülesanded enne lõpetamist."
     test_not_found: "Testi ei leitud"
+    review_access_expired: "Detailne ülevaade on saadaval ainult samas seansis 10 minutit pärast lõpetamist."
     select_answer_or_marked_for_later: "Palun vali vähemalt üks vastus või märgi küsimus hilisemaks."
     question:
       title: "%{test}"
@@ -186,6 +188,7 @@ et:
       page_title: "Testi tulemused - %{test}"
       title: "Testi tulemused"
       view_test: "Vaata testi"
+      view_test_unavailable: "Ülevaade pole saadaval"
   mailers:
     accreditation:
       test_completion:

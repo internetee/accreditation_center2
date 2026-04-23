@@ -63,7 +63,8 @@ RSpec.describe 'PracticalTests', type: :request do
   end
 
   it 'serves a question and renders the question template if test attempt is completed and another test attempt is not started yet' do
-    test_attempt.update(started_at: Time.current, completed_at: Time.current)
+    test_attempt.update(started_at: 1.hour.ago)
+    get question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
     create(:test_attempt, user: user, test: test, started_at: nil)
     get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
 
@@ -86,7 +87,49 @@ RSpec.describe 'PracticalTests', type: :request do
   end
 
   it 'serves a question and renders the question template if test attempt is completed' do
+    test_attempt.update(started_at: 1.hour.ago)
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to have_http_status(:ok)
+    expect(response).to render_template(:question)
+  end
+
+  it 'does not serve a completed attempt question without review access in session' do
     test_attempt.update(started_at: Time.current, completed_at: Time.current)
+
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to redirect_to(results_practical_test_path(test, attempt: test_attempt.access_code))
+    expect(flash[:alert]).to eq(I18n.t('tests.review_access_expired'))
+  end
+
+  it 'serves a completed attempt question within the same session and 10 minute window' do
+    test_attempt.update(started_at: 1.hour.ago)
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+    expect(response).to have_http_status(:ok)
+    expect(response).to render_template(:question)
+  end
+
+  it 'does not serve a completed attempt question after 10 minute review window' do
+    freeze_time do
+      test_attempt.update(started_at: 1.hour.ago)
+      get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+
+      travel 11.minutes
+      get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
+    end
+
+    expect(response).to redirect_to(results_practical_test_path(test, attempt: test_attempt.access_code))
+    expect(flash[:alert]).to eq(I18n.t('tests.review_access_expired'))
+  end
+
+  it 'serves a question when test attempt is in progress' do
+    test_attempt.update(started_at: Time.current)
+
     get question_practical_test_path(test, attempt: test_attempt.access_code, question_index: 0)
 
     expect(response).to have_http_status(:ok)
