@@ -9,8 +9,6 @@
     <% end %>
     <nav class="menu--portal">
         <a href="https://internet.ee"><span><%= t('common.header.open_portal') %></span></a>
-        <a href="https://auction.internet.ee/"><%= t('common.header.auction_portal') %></a>
-        <a href="https://registrar.internet.ee" class="active"><span><%= t('common.header.registrar_portal') %></span></a>
-        <a href="https://registrant.internet.ee"><span><%= t('common.header.registrant_portal') %></span></a>
+        <a href="<%= ENV['registrar_portal_url'] %>" target="_blank"><span><%= t('common.header.registrar_portal') %></span></a>
     </nav>
 </div>

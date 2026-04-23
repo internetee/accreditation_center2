@@ -17,10 +17,10 @@
             background: variables.$blue;
         }
         &.active:nth-child(2) {
-            background: variables.$green;
+            background: variables.$orange;
         }
         &.active:nth-child(3) {
-            background: variables.$orange;
+            background: variables.$green;
         }
         &.active:nth-child(4) {
             background: variables.$green;
@@ -32,10 +32,10 @@
                 background: variables.$blue;
             }
             &:nth-child(2) {
-                background: variables.$green;
+                background: variables.$orange;
             }
             &:nth-child(3) {
-                background: variables.$orange;
+                background: variables.$green;
             }
             &:nth-child(4) {
                 background: variables.$green;
