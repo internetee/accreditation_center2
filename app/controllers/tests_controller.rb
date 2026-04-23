@@ -1,8 +1,14 @@
 class TestsController < ApplicationController
+  COMPLETED_ATTEMPT_REVIEW_WINDOW = 10.minutes
+  REVIEW_ACCESS_SESSION_KEY = :completed_attempt_review_access
+
   before_action :ensure_regular_user!
   before_action :find_resources
   before_action :ensure_test_not_expired, except: %i[start]
   before_action :block_history_during_active_attempt!, only: :question
+  before_action :ensure_completed_attempt_review_access!, only: %i[question answer]
+
+  helper_method :can_review_completed_attempt?
 
   def start
     return if @test_attempt.in_progress?
@@ -37,6 +43,7 @@ class TestsController < ApplicationController
     return unless @test_attempt.time_expired?
 
     @test_attempt.complete!
+    grant_completed_attempt_review_access!
     redirect_to send("results_#{@test.test_type.underscore}_test_path", @test, attempt: @test_attempt.access_code),
                 alert: t('tests.time_expired')
   end
@@ -52,5 +59,36 @@ class TestsController < ApplicationController
     return if !other_in_progress_attempt || @test_attempt.in_progress?
 
     redirect_to root_path, alert: I18n.t('tests.history_blocked_while_active')
+  end
+
+  def ensure_completed_attempt_review_access!
+    return unless @test_attempt.completed?
+    return if can_review_completed_attempt?
+
+    redirect_to send("results_#{@test.test_type.underscore}_test_path", @test, attempt: @test_attempt.access_code),
+                alert: t('tests.review_access_expired')
+  end
+
+  def can_review_completed_attempt?
+    return false unless @test_attempt&.completed?
+    return false unless @test_attempt.completed_at >= COMPLETED_ATTEMPT_REVIEW_WINDOW.ago
+
+    review_granted_at = completed_attempt_review_access[@test_attempt.access_code]
+    return false if review_granted_at.blank?
+
+    Time.zone.at(review_granted_at.to_i) >= COMPLETED_ATTEMPT_REVIEW_WINDOW.ago
+  end
+
+  def grant_completed_attempt_review_access!
+    return unless @test_attempt.completed?
+
+    session[REVIEW_ACCESS_SESSION_KEY] = completed_attempt_review_access
+      .merge(@test_attempt.access_code => Time.current.to_i)
+      .select { |_access_code, granted_at| granted_at.to_i >= COMPLETED_ATTEMPT_REVIEW_WINDOW.ago.to_i }
+  end
+
+  def completed_attempt_review_access
+    raw = session[REVIEW_ACCESS_SESSION_KEY]
+    raw.is_a?(Hash) ? raw : {}
   end
 end

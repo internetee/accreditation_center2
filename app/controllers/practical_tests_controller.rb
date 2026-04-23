@@ -53,6 +53,7 @@ class PracticalTestsController < TestsController
                   alert: t('tests.finish_all_tasks') and return
     end
     @test_attempt.complete!
+    grant_completed_attempt_review_access!
   end
 
   private

@@ -42,6 +42,7 @@ class TheoreticalTestsController < TestsController
                     alert: t('tests.answer_all_questions') and return
       end
       @test_attempt.complete!
+      grant_completed_attempt_review_access!
     end
 
     load_results_data

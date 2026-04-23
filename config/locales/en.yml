@@ -125,6 +125,7 @@ en:
     practical_response_placeholder: "Enter your response here"
     results_title: "Test results"
     test_name: "Test"
+    completion_date: "Completion date"
     completion_time: "Time spent"
     score: "Score"
     result: "Result"
@@ -154,6 +155,7 @@ en:
     validation_timeout: "Validation timeout"
     finish_all_tasks: "Please complete all tasks before finishing."
     test_not_found: "Test not found"
+    review_access_expired: "Detailed review is only available in this session for 10 minutes after completion."
     select_answer_or_marked_for_later: "Please select at least one answer or mark the question for later."
     question:
       title: "%{test}"
@@ -163,6 +165,7 @@ en:
       page_title: "Test results - %{test}"
       title: "Test results"
       view_test: "View test"
+      view_test_unavailable: "Review unavailable"
   mailers:
     accreditation:
       test_completion:
