@@ -1,0 +1,33 @@
+---
+globs:
+  - "app/controllers/**/*.rb"
+alwaysApply: false
+---
+
+# Controllers (23)
+
+- Admin::AnswersController (5 actions)
+- Admin::BaseController (2 actions)
+- Admin::DashboardController (1 actions)
+- Admin::PracticalTaskResultsController (3 actions)
+- Admin::PracticalTasksController (6 actions)
+- Admin::QuestionsController (5 actions)
+- Admin::TestAttemptsController (6 actions)
+- Admin::TestCategoriesController (7 actions)
+- Admin::TestCategoriesTestsController (2 actions)
+- Admin::TestsController (10 actions)
+- Admin::UsersController (2 actions)
+- Devise::OmniauthCallbacksController (4 actions)
+- Devise::PasswordsController (6 actions)
+- Devise::SessionsController (5 actions)
+- DeviseController (3 actions)
+- HomeController (1 actions)
+- PracticalTestsController (4 actions)
+- TestsController (4 actions)
+- TheoreticalTestsController (4 actions)
+- Users::Admin::PasswordsController (3 actions)
+- Users::Admin::SessionsController (2 actions)
+- Users::OmniauthCallbacksController (2 actions)
+- Users::SessionsController (1 actions)
+
+Use `rails_get_controllers` MCP tool with controller:"Name" for full detail.

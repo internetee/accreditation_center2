@@ -1,0 +1,45 @@
+<% content_for(:title) { "EIS | #{t('users.admin.passwords.new.title', default: 'Reset admin password')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('users.admin.passwords.new.title', default: 'Reset admin password') %></h1>
+  </div>
+<% end %>
+
+<div class="page">
+  <div class="page--content">
+    <div class="wrapper">
+      <div class="row" style="justify-content: center;">
+        <div class="col-md-6 col-xs-12">
+          <article class="paper">
+            <header class="paper--header">
+              <h3><%= t('users.admin.passwords.new.subtitle', default: 'Send reset instructions') %></h3>
+            </header>
+            <div class="paper--content">
+              <%= form_with scope: resource_name, url: admin_password_path, class: 'form', data: { turbo: false } do |f| %>
+                <div class="form--row">
+                  <%= f.label :email, t('users.admin.passwords.new.email', default: 'Email'), class: 'form--label' %>
+                  <div class="form--field">
+                    <div class="form--input">
+                      <%= f.email_field :email, class: 'input', autofocus: true, autocomplete: 'email' %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form--actions">
+                  <%= f.button t('users.admin.passwords.new.submit', default: 'Send reset instructions'),
+                               type: 'submit',
+                               name: '',
+                               class: 'button button--primary' %>
+                </div>
+                <div class="form--actions" style="margin-top: 12px;">
+                  <%= link_to t('users.admin.passwords.new.back_to_login', default: 'Back to admin login'),
+                              new_admin_session_path,
+                              class: 'link' %>
+                </div>
+              <% end %>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

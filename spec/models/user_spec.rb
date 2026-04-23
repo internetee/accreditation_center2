@@ -2,28 +2,41 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'validations' do
-    it 'validates presence and uniqueness of username and email' do
-      u1 = create(:user) # use factory sequences to avoid collisions
+    it 'requires provider, uid and name' do
+      user = build(:user, provider: nil, uid: nil, name: nil)
 
-      expect(u1).to be_persisted
-
-      u2 = build(:user, username: u1.username, email: u1.email)
-
-      expect(u2.valid?).to be(false)
-      expect(u2.errors[:username]).to be_present
-      expect(u2.errors[:email]).to be_present
+      expect(user.valid?).to be(false)
+      expect(user.errors[:provider]).to be_present
+      expect(user.errors[:uid]).to be_present
+      expect(user.errors[:name]).to be_present
     end
 
-    it 'requires registrar_name when role is user' do
-      user = build(:user, username: 'no-registrar', email: 'no-registrar@example.test', registrar_name: nil)
+    it 'requires password for admin users' do
+      admin = build(:user, :admin, password: nil, password_confirmation: nil)
 
-      # default role is user
-      expect(user.role).to eq('user')
-      expect(user.valid?).to be(false)
-      expect(user.errors[:registrar_name]).to be_present
+      expect(admin.valid?).to be(false)
+      expect(admin.errors[:password]).to be_present
+    end
 
-      user.registrar_name = 'Example Registrar'
+    it 'requires password confirmation to match for admin users' do
+      admin = build(:user, :admin, password: 'AdminPass123!', password_confirmation: 'DifferentPass123!')
+
+      expect(admin.valid?).to be(false)
+      expect(admin.errors[:password_confirmation]).to be_present
+    end
+
+    it 'allows duplicate registrar_name for users' do
+      create(:user, role: :user, registrar_name: 'Registrar A')
+      user = build(:user, role: :user, registrar_name: 'Registrar A')
+
       expect(user.valid?).to be(true)
+    end
+
+    it 'allows duplicate registrar_name for admins' do
+      create(:user, :admin, registrar_name: 'Registrar A')
+      admin = build(:user, :admin, registrar_name: 'Registrar A')
+
+      expect(admin.valid?).to be(true)
     end
   end
 
@@ -49,8 +62,8 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns not_admin scope' do
-      u1 = create(:user, username: 'u1', email: 'u1@example.test', registrar_name: 'R')
-      u2 = create(:user, username: 'u2', email: 'u2@example.test', registrar_name: 'R', role: :admin)
+      u1 = create(:user, registrar_name: 'R')
+      u2 = create(:user, :admin, role: :admin, password: 'AdminPass123!', password_confirmation: 'AdminPass123!')
 
       expect(described_class.not_admin).to include(u1)
       expect(described_class.not_admin).not_to include(u2)
@@ -89,32 +102,22 @@ RSpec.describe User, type: :model do
       expect(user.in_progress_tests).to include(a2)
     end
 
-    it 'computes latest_accreditation only when both tests are passed' do
-      # Only theoretical passed -> nil
-      create(:test_attempt, :passed, user: user, test: theoretical, started_at: 3.hours.ago, completed_at: 2.hours.ago)
-      expect(user.latest_accreditation).to be_nil
-
-      # Add practical passed later -> latest should be practical attempt
-      prac = create(:test_attempt, :passed, user: user, test: practical, started_at: 90.minutes.ago, completed_at: 30.minutes.ago)
-      expect(user.latest_accreditation).to eq(prac)
-    end
-
     it 'detects accreditation_expired? and expires_soon?' do
-      user.update!(accreditation_expire_date: 10.days.from_now)
-      expect(user.accreditation_expired?).to be(false)
-      expect(user.accreditation_expires_soon?(30)).to be(true)
+      user.update!(registrar_accreditation_expire_date: 10.days.from_now)
+      expect(user.registrar_accreditation_expired?).to be(false)
+      expect(user.registrar_accreditation_expires_soon?).to be(true)
 
-      user.update!(accreditation_expire_date: 1.day.ago)
-      expect(user.accreditation_expired?).to be(true)
-      expect(user.accreditation_expires_soon?(30)).to be(true)
+      user.update!(registrar_accreditation_expire_date: 1.day.ago)
+      expect(user.registrar_accreditation_expired?).to be(true)
+      expect(user.registrar_accreditation_expires_soon?).to be(true)
     end
 
     it 'returns days_until_accreditation_expiry' do
-      user.update!(accreditation_expire_date: 5.days.from_now)
-      expect(user.days_until_accreditation_expiry).to be_between(4, 5)
+      user.update!(registrar_accreditation_expire_date: 5.days.from_now)
+      expect(user.days_until_registrar_accreditation_expiry).to be_between(4, 5)
 
-      user.update!(accreditation_expire_date: nil)
-      expect(user.days_until_accreditation_expiry).to be_nil
+      user.update!(registrar_accreditation_expire_date: nil)
+      expect(user.days_until_registrar_accreditation_expiry).to be_nil
     end
 
     it 'evaluates can_take_test? based on in-progress and recent passes' do
@@ -150,13 +153,46 @@ RSpec.describe User, type: :model do
 
   describe 'role helpers' do
     it 'returns admin? and user? predicates' do
-      u = create(:user, username: 'roles', email: 'roles@example.test', registrar_name: 'R')
+      u = create(:user, registrar_name: 'R')
       expect(u.user?).to be(true)
       expect(u.admin?).to be(false)
 
       u.update!(role: :admin)
       expect(u.admin?).to be(true)
       expect(u.user?).to be(false)
+    end
+  end
+
+  describe '.from_omniauth' do
+    let(:auth) do
+      OmniAuth::AuthHash.new(
+        provider: :oidc,
+        uid: 'EE39901012239',
+        info: OmniAuth::AuthHash::InfoHash.new(
+          email: 'oidc@example.test',
+          name: nil,
+          given_name: 'Ok',
+          family_name: 'Test'
+        )
+      )
+    end
+
+    it 'creates user from provider and uid' do
+      user = described_class.from_omniauth(auth)
+
+      expect(user).to be_persisted
+      expect(user.provider).to eq('oidc')
+      expect(user.uid).to eq('EE39901012239')
+      expect(user.email).to eq('oidc@example.test')
+      expect(user.name).to eq('Ok Test')
+    end
+
+    it 'returns existing user when provider and uid already exist' do
+      existing = create(:user, provider: 'oidc', uid: 'EE39901012239', name: 'Existing User')
+
+      user = described_class.from_omniauth(auth)
+
+      expect(user.id).to eq(existing.id)
     end
   end
 end

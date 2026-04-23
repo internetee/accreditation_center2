@@ -1,0 +1,52 @@
+<div class="col-md-6 col-xs-12">
+  <div class="paper">
+    <div class="paper--header">
+      <h3><%= t('admin.tests.show.test_information') %></h3>
+      <div class="test-status">
+        <% if test.active? %>
+          <span class="label label-success"><%= t('admin.tests.show.active') %></span>
+        <% else %>
+          <span class="label label-default"><%= t('admin.tests.show.inactive') %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="paper--content">
+      <div class="info-section">
+        <h4><%= t('admin.tests.show.descriptions') %></h4>
+        <div class="description-pair">
+          <div class="description-item">
+            <strong><%= t('admin.tests.show.estonian') %>:</strong>
+            <p><%= test.description_et %></p>
+          </div>
+          <div class="description-item">
+            <strong><%= t('admin.tests.show.english') %>:</strong>
+            <p><%= test.description_en %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h4><%= t('admin.tests.show.test_configuration') %></h4>
+        <div class="config-grid">
+          <div class="config-item">
+            <span class="config-label"><%= t('admin.tests.show.test_type') %>:</span>
+            <span class="config-value">
+              <span class="label label-<%= test.test_type == 'theoretical' ? 'info' : 'warning' %>">
+                <%= t("admin.tests.show.#{test.test_type}") %>
+              </span>
+            </span>
+          </div>
+          <div class="config-item">
+            <span class="config-label"><%= t('admin.tests.index.time_limit') %>:</span>
+            <span class="config-value"><%= test.time_limit_minutes %> <%= t(:minutes) %></span>
+          </div>
+          <div class="config-item">
+            <span class="config-label"><%= t('admin.tests.index.passing_score') %>:</span>
+            <span class="config-value"><%= test.passing_score_percentage %>%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

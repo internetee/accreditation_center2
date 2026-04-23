@@ -6,7 +6,6 @@ class RegisterDomainsValidator < BaseTaskValidator
   #     "{{domain1}}": "1y",
   #     "{{domain2}}": "2y"
   #   },
-  #   "enforce_registrant_from_task1": true
   # }
   #
   # Validates that:
@@ -101,7 +100,6 @@ class RegisterDomainsValidator < BaseTaskValidator
   end
 
   def registrant_match_errors(info, domain)
-    return [] unless enforce_registrant?
     return [] if info.dig(:registrant, :code) == domain[:registrant]
 
     [
@@ -115,10 +113,6 @@ class RegisterDomainsValidator < BaseTaskValidator
   def period_matches?(info, expected_period)
     expected_expiry = calculate_expiry(info[:created_at], expected_period)
     info[:expire_time].present? && expected_expiry.present? && info[:expire_time].to_date == expected_expiry.to_date
-  end
-
-  def enforce_registrant?
-    @config['enforce_registrant_from_task1']
   end
 
   def api_service_adapter

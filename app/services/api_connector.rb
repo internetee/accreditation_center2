@@ -5,6 +5,7 @@ require 'openssl'
 class ApiConnector
   # Default configuration
   TIMEOUT = 10
+  UnauthorizedError = Class.new(StandardError)
 
   def initialize(username: nil, password: nil, token: nil, ssl: {})
     @auth_token = token || ApiTokenService.new(username: username, password: password).generate
@@ -38,6 +39,10 @@ class ApiConnector
       handle_connection_error(e)
     rescue Faraday::Error => e
       handle_faraday_error(e)
+    rescue UnauthorizedError => e
+      raise UnauthorizedError, e.message
+    rescue JSON::ParserError => e
+      handle_json_parser_error(e)
     rescue StandardError => e
       handle_generic_error(e)
     ensure
@@ -46,19 +51,20 @@ class ApiConnector
   end
 
   def handle_response(response)
+    response_body = parse_json(response.body)
     case response.status
     when 200
-      success_response(response.body)
+      success_response(response_body)
     when 401
-      error_response(nil, I18n.t('errors.invalid_credentials'))
+      raise UnauthorizedError, I18n.t('errors.invalid_credentials')
     when 403
-      error_response(response.body['errors'], I18n.t('errors.access_denied'))
+      error_response(response_body['message'], I18n.t('errors.access_denied'))
     when 404
-      error_response(response.body['errors'], I18n.t('errors.object_not_found'))
+      error_response(response_body['message'], I18n.t('errors.object_not_found'))
     when 422
       error_response(nil, I18n.t('errors.invalid_data'))
     when 500..599
-      error_response(response.body['errors'], I18n.t('errors.service_error'))
+      error_response(response_body['message'], I18n.t('errors.service_error'))
     else
       error_response(nil, I18n.t('errors.unexpected_response'))
     end
@@ -132,15 +138,19 @@ class ApiConnector
     error_response(error.message, I18n.t('errors.network_error'))
   end
 
+  def handle_json_parser_error(error)
+    error_response(error.message, I18n.t('errors.invalid_data_format'))
+  end
+
   def handle_generic_error(error)
     error_response(error.message, I18n.t('errors.service_temporarily_unavailable'))
   end
 
-  def success_response(data)
+  def success_response(response_body)
     {
       success: true,
-      data: data,
-      message: 'Operation successful'
+      data: response_body['data'],
+      message: response_body['message'] || 'Operation successful'
     }
   end
 
@@ -158,9 +168,6 @@ class ApiConnector
     return body if body.is_a?(Hash)
 
     JSON.parse(body)
-  rescue JSON::ParserError => e
-    Rails.logger.error("APIConnector: JSON parse error – #{e.message}")
-    nil
   end
 
   def symbolize_keys_deep(obj)

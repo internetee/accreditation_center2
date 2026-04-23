@@ -68,6 +68,9 @@ class CreateContactsValidator < BaseTaskValidator
       unless priv && required_fields_present?(priv)
         errors << I18n.t('validators.create_contacts_validator.priv_required_fields_missing')
       end
+      unless priv && private_contact_verified?(priv)
+        errors << I18n.t('validators.create_contacts_validator.priv_contact_not_verified')
+      end
     end
   end
 
@@ -76,7 +79,7 @@ class CreateContactsValidator < BaseTaskValidator
       unless recent_enough?(org, cutoff_time)
         errors << I18n.t('validators.create_contacts_validator.org_contact_not_recent')
       end
-      unless recent_enough?(priv, cutoff_time)
+      unless private_contact_recent_enough?(priv, cutoff_time)
         errors << I18n.t('validators.create_contacts_validator.priv_contact_not_recent')
       end
     end
@@ -90,9 +93,20 @@ class CreateContactsValidator < BaseTaskValidator
     %i[code name ident phone email].all? { |k| contact && contact[k].present? }
   end
 
+  def private_contact_verified?(contact)
+    %i[verification_id verified_at ident_request_sent_at].all? { |k| contact && contact[k].present? }
+  end
+
   def recent_enough?(contact, cutoff_time)
     created_at = parse_time(contact&.fetch(:created_at, nil))
     created_at.present? && created_at >= cutoff_time
+  end
+
+  def private_contact_recent_enough?(contact, cutoff_time)
+    verified_at = parse_time(contact&.fetch(:verified_at, nil))
+    ident_request_sent_at = parse_time(contact&.fetch(:ident_request_sent_at, nil))
+    verified_at.present? && verified_at >= cutoff_time &&
+      ident_request_sent_at.present? && ident_request_sent_at >= cutoff_time
   end
 
   def api_service_adapter

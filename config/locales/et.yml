@@ -56,18 +56,6 @@ et:
   ago: "tagasi"
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
   no_translation: "Tõlge pole saadaval"
-  errors:
-    invalid_credentials: "Vale kasutajanimi või parool"
-    access_denied: "Pole juurdepääsu"
-    object_not_found: "Objekt ei leitud"
-    invalid_data_format: "Vale andmete formaat"
-    service_error: "Teenuse tõrge"
-    unexpected_response: "Ootamatu vastus teenusest"
-    service_timeout: "Teenuse aegumine"
-    cannot_connect_to_service: "Ei saa ühendust teenusega"
-    network_error: "Võrgutõrge"
-    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
-    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
   nav:
     dashboard: "Koduleht"
     tests: "Testid"
@@ -80,24 +68,43 @@ et:
         title: "Eesti Interneti SA Akrediteerimiskeskus"
         login: "Logi sisse"
         login_with_password_title: "Logi sisse"
-        login_with_id_title: "Logi sisse ID-ga"
+        login_with_id_title: "Logi sisse"
         login_with_id: "Logi sisse EEID-ga"
-        login_with_id_text: "Logi sisse kasutades Eesti (sh e-residendi) ID-kaarti, Mobiil-ID-d, pangalinki või muud EIDAS-toega EL-i elektroonilist ID-d."
-        username: "Kasutajanimi"
-        password: "Parool"
-        remember_me: "Jäta mind meelde"
+        login_with_id_text: "Tuvasta ennast elektrooniliselt, kasutades toetatud identifitseerimisvahendeid nagu riiklikud ID-kaardid, Mobiil-ID, Smart-ID, pääsuvõtmed jne."
+    admin:
+      sessions:
+        new:
+          login: "Sisene"
+          title: "Administraatori sisselogimine"
+          email: "E-posti aadress"
+          password: "Parool"
+          forgot_your_password: "Unustasid parooli?"
+      passwords:
+        new:
+          title: "Administraatori parooli lähtestamine"
+          subtitle: "Saada lähtestamise juhised"
+          email: "E-posti aadress"
+          submit: "Saada lähtestamise juhised"
+          back_to_login: "Tagasi administraatori sisselogimisse"
+        edit:
+          title: "Määra uus administraatori parool"
+          subtitle: "Vali uus parool"
+          password: "Uus parool"
+          password_confirmation: "Kinnita uus parool"
+          submit: "Uuenda parooli"
+          back_to_login: "Tagasi administraatori sisselogimisse"
   home:
     index:
       title: "Koduleht"
       welcome_back: "Tere tulemast tagasi, %{username}!"
-      accreditation_expires_soon: "Teie akrediteering aegub %{days} päeva pärast"
+      accreditation_expires_soon: "Teie registripidaja akrediteerimine aegub %{days} päeva pärast"
       statistics: "Statistika"
       assigned_tests: "Määratud testid"
       total_attempts: "Kokku proove"
       passed_tests: "Läbitud testid"
       failed_tests: "Ebaõnnestunud testid"
       success_rate: "Edukuse protsent"
-      accreditation_status: "Akrediteeringu olek"
+      accreditation_status: "Registripidaja akrediteerimise olek"
       expiry_date: "Aegumise kuupäev"
       days_remaining:
         one: "%{count} päev jäänud"
@@ -201,6 +208,7 @@ et:
       priv_type_mismatch: "Privaatse kontakti tüüp ei vasta õigele kontakti tüüpile"
       org_required_fields_missing: "Organisatsiooni kontakti nõutavad väljad puuduvad"
       priv_required_fields_missing: "Privaatse kontakti nõutavad väljad puuduvad"
+      priv_contact_not_verified: "Privaatne kontakt ei ole verifitseeritud"
       org_contact_not_recent: "Organisatsiooni kontakt ei ole hiljuti loodud"
       priv_contact_not_recent: "Privaatse kontakt ei ole hiljuti loodud"
     delete_domain_verified_validator:
@@ -224,3 +232,35 @@ et:
       nameservers_config_missing_or_empty: "Nimeserverite konfiguratsioon puudub või on tühi"
       domain_not_found: "Domeen ei leitud: %{domain}"
       nameservers_mismatch: "Domeeni %{domain} nimeserverid ei vasta nimeserverite konfiguratsioonile"
+
+  # ActiveRecord validation translations (used by presence: true, etc.)
+  activerecord:
+    attributes:
+      user:
+        password: "Parool"
+        password_confirmation: "Parooli kinnitus"
+    errors:
+      messages:
+        blank: "Väli ei tohi olla tühi"
+      models:
+        user:
+          attributes:
+            registrar_name:
+              blank: "Registreerija nimi ei tohi olla tühi"
+
+  errors:
+    invalid_credentials: "Vale kasutajanimi või parool"
+    access_denied: "Pole juurdepääsu"
+    object_not_found: "Objekt ei leitud"
+    invalid_data_format: "Vale andmete formaat"
+    service_error: "Teenuse tõrge"
+    unexpected_response: "Ootamatu vastus teenusest"
+    service_timeout: "Teenuse aegumine"
+    cannot_connect_to_service: "Ei saa ühendust teenusega"
+    network_error: "Võrgutõrge"
+    service_temporarily_unavailable: "Teenus on ajutiselt mittekasutatav"
+    api_endpoint_not_configured: "API endpoint pole konfigureeritud"
+    registry_session_expired: "Teie API sessioon on aegunud. Palun logi uuesti sisse."
+    messages:
+      blank: "Väli ei tohi olla tühi"
+      confirmation: "ei ühti väljaga %{attribute}"

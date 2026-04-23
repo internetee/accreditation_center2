@@ -13,7 +13,6 @@ class InvoiceService < ApiConnector
     return result unless result[:success]
 
     data = result[:data]
-    data = parse_json(data)
 
     if data.is_a?(Hash) && data.key?('invoices')
       Array(data['invoices']).map { |h| symbolize_keys_deep(h) }

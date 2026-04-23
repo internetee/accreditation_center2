@@ -1,11 +1,14 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
   include Localization
+  include RegistryTokenGuard
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
+  rescue_from ApiConnector::UnauthorizedError, with: :handle_api_unauthorized
 
   def set_pagy_params
     session[:page_size] = computed_page_size
@@ -22,12 +25,18 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def handle_api_unauthorized
+    sign_out(current_user) if user_signed_in?
+    reset_session
+    redirect_to new_user_session_path, alert: t('errors.invalid_credentials')
+  end
+
   def model_class
     controller_name.singularize.classify.constantize
   end
 
   def ensure_regular_user!
-    redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user.admin?
+    redirect_to admin_dashboard_path, alert: t(:access_denied_admin) if current_user&.admin?
   end
 
   def update_records!
@@ -60,12 +69,29 @@ class ApplicationController < ActionController::Base
     session[:page_size] ||= Pagy::DEFAULT[:items]
   end
 
+  def store_location
+    session[:return_to] = request.fullpath
+  end
+
   protected
 
   def configure_permitted_parameters
-    added_attrs = %i[username email password password_confirmation remember_me]
-    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
-    devise_parameter_sanitizer.permit :sign_in, keys: %i[username password]
+    added_attrs = %i[email name]
     devise_parameter_sanitizer.permit :account_update, keys: added_attrs
+  end
+
+  def after_sign_in_path_for(resource)
+    stored_location = stored_location_for(resource)
+    return stored_location if stored_location
+
+    if resource.admin?
+      admin_dashboard_path
+    else
+      root_path
+    end
+  end
+
+  def after_sign_out_path_for(*)
+    new_user_session_path
   end
 end

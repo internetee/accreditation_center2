@@ -5,7 +5,7 @@
     <div class="monospace">
       <%= @test_attempt.user.username %> - <%= @test.title %>
     </div>
-    <%= back_link(text: t('.back_to_test_attempts'), path: admin_test_test_attempts_path(@test)) %>
+    <%= back_link(text: t(:back), path: admin_test_test_attempts_path(@test)) %>
   </div>
 <% end %>
 
@@ -13,13 +13,6 @@
   <div class="page--header">
     <div class="wrapper">
       <div class="row center-xs">
-        <div class="col-xs-auto">
-          <% if @test_attempt.failed? %>
-            <%= link_to t('.reassign_test'), reassign_admin_test_test_attempt_path(@test, @test_attempt), 
-              class: 'button button--secondary',
-              data: { turbo: true, turbo_method: :post, turbo_confirm: t('.confirm_reassign') } %>
-          <% end %>
-        </div>
         <div class="col-xs-auto">
           <%= link_to t('.remove_assignment'), admin_test_test_attempt_path(@test, @test_attempt), 
             class: 'button button--danger',
@@ -40,7 +33,7 @@
             <div class="summary-stats">
               <div class="stat-item">
                 <span class="stat-label"><%= t('.user') %></span>
-                <span class="stat-value"><%= link_to @test_attempt.user.username, admin_user_path(@test_attempt.user) %></span>
+                <span class="stat-value"><%= link_to @test_attempt.user.display_name, admin_user_path(@test_attempt.user) %></span>
               </div>
               <div class="stat-item">
                 <span class="stat-label"><%= t('.test') %></span>

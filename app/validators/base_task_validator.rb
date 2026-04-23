@@ -57,6 +57,8 @@ class BaseTaskValidator
     res = yield
     api << { op: operation, ok: api_audit_ok?(res), ms: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0) * 1000).round }
     res
+  rescue ApiConnector::UnauthorizedError => e
+    raise ApiConnector::UnauthorizedError, e.message
   rescue StandardError => e
     api << { op: operation, ok: false, error: e.message }
     nil

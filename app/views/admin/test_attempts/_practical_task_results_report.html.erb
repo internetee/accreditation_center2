@@ -21,7 +21,7 @@
       </div>
 
       <div class="task-body">
-        <p><%= simple_format Mustache.render(result.practical_task.body, @test_attempt.vars) if result.practical_task.body.present? %></p>
+        <%= render_practical_task_body(result.practical_task.body, @test_attempt.vars) if result.practical_task.body.present? %>
       </div>
 
       <% inputs = result.inputs || {} %>

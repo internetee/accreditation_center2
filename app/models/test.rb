@@ -24,7 +24,8 @@ class Test < ApplicationRecord
     return unless auto_assign?
 
     errors.add(:base, 'Auto assign allowed only for active tests') unless active?
-    return if Test.where(test_type: test_type).where(auto_assign: true).count.zero?
+    existing_auto_assign = Test.where(test_type: test_type, auto_assign: true).where.not(id: id)
+    return unless existing_auto_assign.exists?
 
     errors.add(:base, 'Auto assign allowed only once for each test type')
   end
@@ -85,7 +86,36 @@ class Test < ApplicationRecord
     end
   end
 
+  def build_duplicate
+    dup.tap do |new_test|
+      copy_title_et, copy_title_en = next_unique_copy_titles
+
+      new_test.title_et = copy_title_et
+      new_test.title_en = copy_title_en
+      new_test.description_et = "#{description_et} (Copy)" if description_et.present?
+      new_test.description_en = "#{description_en} (Copy)" if description_en.present?
+      new_test.active = false
+      new_test.auto_assign = false
+    end
+  end
+
   private
+
+  def next_unique_copy_titles
+    suffix = 1
+
+    loop do
+      label = suffix == 1 ? 'Copy' : "Copy #{suffix}"
+      candidate_et = "#{title_et} (#{label})"
+      candidate_en = "#{title_en} (#{label})"
+
+      et_taken = Test.exists?(title_et: candidate_et)
+      en_taken = Test.exists?(title_en: candidate_en)
+      return [candidate_et, candidate_en] unless et_taken || en_taken
+
+      suffix += 1
+    end
+  end
 
   def practical_test_passing_score
     return unless practical? && passing_score_percentage != 100
@@ -104,21 +134,7 @@ class Test < ApplicationRecord
       # Generate a random 8-character alphanumeric string
       random_slug = SecureRandom.alphanumeric(8).downcase
       # Check if this slug already exists
-      unless Test.exists?(slug: random_slug)
-        return random_slug
-      end
-    end
-  end
-
-  public
-
-  def build_duplicate
-    dup.tap do |new_test|
-      new_test.title_et = "#{title_et} (Copy)"
-      new_test.title_en = "#{title_en} (Copy)"
-      new_test.description_et = "#{description_et} (Copy)" if description_et.present?
-      new_test.description_en = "#{description_en} (Copy)" if description_en.present?
-      new_test.active = false
+      return random_slug unless Test.exists?(slug: random_slug)
     end
   end
 end

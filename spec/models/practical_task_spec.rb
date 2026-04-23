@@ -82,7 +82,6 @@ RSpec.describe PracticalTask, type: :model do
         expect(task.klass_name).to eq('DnssecValidator')
         expect(task.conf).to eq({ 'allow_algo' => [8] })
         expect(task.input_fields).to match_array(%w[domain_name ds_record])
-        expect(task.deps).to match_array([1, 2])
       end
     end
 
@@ -101,7 +100,6 @@ RSpec.describe PracticalTask, type: :model do
         expect(task.klass_name).to eq('ContactValidator')
         expect(task.conf).to eq({ 'required' => ['name'] })
         expect(task.input_fields).to eq(['name'])
-        expect(task.deps).to eq([])
       end
     end
 
@@ -112,7 +110,6 @@ RSpec.describe PracticalTask, type: :model do
         expect(task.klass_name).to be_nil
         expect(task.conf).to eq({})
         expect(task.input_fields).to eq([])
-        expect(task.deps).to eq([])
       end
     end
   end

@@ -6,7 +6,7 @@ RSpec.describe 'Admin::QuestionsController', type: :request do
   let(:question) { create(:question, test_category: test_category, display_order: 1) }
   let(:other_question) { create(:question, test_category: test_category, display_order: 2) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/test_categories/:test_category_id/questions/new' do
     it 'renders the new page' do

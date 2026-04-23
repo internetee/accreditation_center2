@@ -45,7 +45,7 @@ RSpec.describe ApiConnector do
     end
 
     it 'returns success response for 200 status' do
-      response = instance_double(Faraday::Response, status: 200, body: { 'result' => 'ok' })
+      response = instance_double(Faraday::Response, status: 200, body: { data: { 'result' => 'ok' } }.to_json)
       allow(connection).to receive(:send).and_return(response)
 
       result = connector.make_request(:get, url)
@@ -57,9 +57,7 @@ RSpec.describe ApiConnector do
       response = instance_double(Faraday::Response, status: 401, body: {})
       allow(connection).to receive(:send).and_return(response)
 
-      result = connector.make_request(:get, url)
-
-      expect(result).to eq(success: false, message: 'Invalid credentials', data: nil)
+      expect { connector.make_request(:get, url) }.to raise_error(ApiConnector::UnauthorizedError, I18n.t('errors.invalid_credentials'))
     end
 
     it 'returns custom error for 403 status' do

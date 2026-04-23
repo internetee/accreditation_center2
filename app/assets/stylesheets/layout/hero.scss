@@ -88,5 +88,26 @@
             }
         }
     }
+
+    &.hero--warning {
+        background: url("hero-purple.png") no-repeat 50% 50% / cover, linear-gradient(135deg, #7a1326 0%, #5a0f1d 100%);
+        background-blend-mode: overlay;
+    }
+
+    .hero--warning-message {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        font-weight: 600;
+        color: #ffd166;
+
+        i {
+            color: #ffd166;
+        }
+    }
 }
 

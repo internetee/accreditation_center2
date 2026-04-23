@@ -1,0 +1,69 @@
+<% if test.practical? %>
+  <div class="wrapper">
+    <div class="page--header">
+      <div class="row between-xs">
+        <div class="col-xs-auto">
+          <h2><%= t('admin.tests.show.practical_tasks') %></h2>
+        </div>
+        <div class="col-xs-auto">
+          <%= link_to t(:add_new), new_admin_test_practical_task_path(test),
+                      class: 'button button--primary',
+                      data: {
+                        turbo: true,
+                        turbo_frame: "practical_task_form"
+                      } %>
+        </div>
+      </div>
+    </div>
+    <% if practical_tasks.any? %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="5px"></th>
+            <th><%= t('admin.tests.show.task_body') %></th>
+            <th><%= t('admin.tests.show.task_status') %></th>
+            <th class="table--action"></th>
+          </tr>
+        </thead>
+        <tbody data-controller="drag" data-drag-url-value="<%= update_positions_admin_test_practical_tasks_path(test) %>">
+          <% practical_tasks.each do |task| %>
+            <tr class="item" data-id="<%= task.id %>" id="<%= dom_id(task) %>">
+              <td>
+                <div class="drag-handle">
+                  <i class="fas fa-grip-vertical"></i>
+                </div>
+              </td>
+              <td>
+                <p><strong><%= link_to task.title, admin_test_practical_task_path(test, task) %></strong></p>
+                <div><%= render_practical_task_body(task.body) %></div>
+              </td>
+              <td>
+                <% if task.active? %>
+                  <span class="label label-success"><%= t('admin.tests.show.active') %></span>
+                <% else %>
+                  <span class="label label-default"><%= t('admin.tests.show.inactive') %></span>
+                <% end %>
+              </td>
+              <td class="table--action">
+                <%= icon_link_to 'fas fa-pencil-alt', edit_admin_test_practical_task_path(test, task),
+                                class: 'simple_tooltip',
+                                data: {
+                                  'tippy-content': t(:edit),
+                                  turbo: true,
+                                  turbo_frame: "practical_task_form"
+                                } %>
+                <%= icon_link_to 'fas fa-trash-alt', admin_test_practical_task_path(test, task), class: 'simple_tooltip', data: { 'tippy-content': t(:delete), turbo: true, turbo_method: :delete, turbo_confirm: t(:delete_confirmation) } %>
+              </td>
+            </tr>
+          <% end %>
+          <tr>
+            <td colspan="2">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="message message--info"><%= t('admin.tests.show.no_practical_tasks') %></p>
+    <% end %>
+  </div>
+<% end %>

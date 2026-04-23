@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Admin::TestsController', type: :request do
   let(:admin) { create(:user, :admin) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/tests' do
     it 'renders the index successfully' do
@@ -30,6 +30,16 @@ RSpec.describe 'Admin::TestsController', type: :request do
     end
   end
 
+  describe 'GET /admin/tests/new' do
+    it 'renders the new page' do
+      get new_admin_test_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:new)
+      expect(assigns(:test)).to be_a_new(Test)
+    end
+  end
+
   describe 'POST /admin/tests' do
     it 'creates a new test and redirects' do
       test_params = attributes_for(:test)
@@ -42,6 +52,16 @@ RSpec.describe 'Admin::TestsController', type: :request do
       expect(response).to redirect_to(admin_test_path(new_test))
       expect(flash[:notice]).to eq(I18n.t('admin.tests.created'))
     end
+
+    it 'renders the new page with error when creation fails' do
+      test_params = attributes_for(:test, title_et: nil)
+
+      post admin_tests_path, params: { test: test_params }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to render_template(:new)
+      expect(flash[:alert]).to eq("Title et (ET) can't be blank")
+    end
   end
 
   describe 'PATCH /admin/tests/:id' do
@@ -53,6 +73,16 @@ RSpec.describe 'Admin::TestsController', type: :request do
       expect(response).to redirect_to(admin_test_path(test))
       expect(test.reload.title_et).to eq('New Title')
       expect(flash[:notice]).to eq(I18n.t('admin.tests.updated'))
+    end
+
+    it 'renders the edit page with error when update fails' do
+      test = create(:test, title_et: 'Old Title')
+
+      patch admin_test_path(test), params: { test: { title_et: nil } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to render_template(:edit)
+      expect(flash[:alert]).to eq("Title et (ET) can't be blank")
     end
   end
 
@@ -125,6 +155,16 @@ RSpec.describe 'Admin::TestsController', type: :request do
       expect(duplicated.practical_tasks.count).to eq(1)
       expect(response).to redirect_to(edit_admin_test_path(duplicated))
       expect(flash[:notice]).to eq(I18n.t('admin.tests.duplicated'))
+    end
+
+    it 'renders the duplicate page with error when duplication fails' do
+      original = create(:test, title_et: 'Original', title_en: 'Original EN', description_et: 'Desc', description_en: 'Desc EN', active: true)
+      invalid_test = build(:test, title_et: nil)
+      allow_any_instance_of(Test).to receive(:build_duplicate).and_return(invalid_test)
+      post duplicate_admin_test_path(original)
+
+      expect(response).to redirect_to(admin_test_path(original))
+      expect(flash[:alert]).to eq(I18n.t('admin.tests.duplication_failed', errors: "Title et (ET) can't be blank"))
     end
   end
 end

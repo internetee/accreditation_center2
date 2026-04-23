@@ -61,7 +61,7 @@
       <tbody>
         <% @recent_activity.each do |attempt| %>
           <tr>
-            <td><strong><%= link_to attempt.user.username, admin_user_path(attempt.user) %></strong> <%= t('admin.dashboard.attempted') %> <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong></td>
+            <td><strong><%= link_to attempt.user.display_name, admin_user_path(attempt.user) %></strong> <%= t('admin.dashboard.attempted') %> <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong></td>
             <td><%= attempt.score_percentage %>%</td>
             <td><%= l(attempt.created_at, format: :long) %></td>
             <td>
@@ -94,10 +94,18 @@
         </tr>
       </thead>
       <tbody>
-        <% @expiring_accreditations.each do |user| %>
+        <% if @expiring_accreditations.any? %>
+          <% @expiring_accreditations.each do |user| %>
+            <tr>
+              <td><strong><%= link_to user.display_name, admin_user_path(user) %></strong> <%= t('admin.dashboard.accreditation_expires') %></td>
+              <td><%= user.days_until_registrar_accreditation_expiry %> <%= t('days') %></td>
+            </tr>
+          <% end %>
+        <% else %>
           <tr>
-            <td><strong><%= link_to user.username, admin_user_path(user) %></strong> <%= t('admin.dashboard.accreditation_expires') %></td>
-            <td><%= user.days_until_accreditation_expiry %> <%= t('days') %></td>
+            <td colspan="2">
+              <%= t('admin.dashboard.no_expiring_accreditations') %>
+            </td>
           </tr>
         <% end %>
       </tbody>

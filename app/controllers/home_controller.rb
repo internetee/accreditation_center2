@@ -16,8 +16,8 @@ class HomeController < ApplicationController
   end
 
   def load_accreditation_info
-    @accreditation_expiry_date = current_user.accreditation_expire_date
-    @accreditation_expires_soon = current_user.accreditation_expires_soon?
-    @days_until_expiry = current_user.days_until_accreditation_expiry
+    @accreditation_expiry_date = current_user.registrar_accreditation_expire_date
+    @accreditation_expires_soon = current_user.registrar_accreditation_expires_soon?
+    @days_until_expiry = current_user.days_until_registrar_accreditation_expiry
   end
 end

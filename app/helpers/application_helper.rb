@@ -39,21 +39,43 @@ module ApplicationHelper
     end
   end
 
-  def format_time(seconds)
-    return '0:00' if seconds.nil? || seconds <= 0
+  def render_markdown(text)
+    return ''.html_safe if text.blank?
 
-    hours = seconds / 3600
-    minutes = (seconds % 3600) / 60
-    remaining_seconds = seconds % 60
+    html = Kramdown::Document.new(text.to_s, hard_wrap: true).to_html
+    sanitize(
+      html,
+      tags: %w[p br strong em a ul ol li h1 h2 h3 h4 blockquote code pre hr],
+      attributes: %w[href title]
+    )
+  end
 
-    if hours.positive?
-      format('%d:%02d:%02d', hours, minutes, remaining_seconds)
-    else
-      format('%d:%02d', minutes, remaining_seconds)
-    end
+  def render_practical_task_body(body, vars = {})
+    rendered = vars.present? ? Mustache.render(body.to_s, vars) : body.to_s
+    render_markdown(rendered)
+  end
+
+  def practical_task_result_status_badge(status, label = nil)
+    css_variant = practical_task_result_status_variant(status)
+    content_tag(:span, label || status.to_s.humanize, class: "label label-#{css_variant}")
   end
 
   private
+
+  def practical_task_result_status_variant(status)
+    case status.to_s
+    when 'passed'
+      'success'
+    when 'failed'
+      'danger'
+    when 'pending'
+      'warning'
+    when 'running'
+      'info'
+    else
+      'default'
+    end
+  end
 
   def links(links_list)
     links_list.each do |item|

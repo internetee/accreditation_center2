@@ -33,11 +33,34 @@ class TestAttempt < ApplicationRecord
   DETAILS_EXPIRATION_DAYS = 30
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[access_code completed_at created_at id passed score_percentage started_at test_id updated_at user_id]
+    %w[access_code completed_at created_at duration id passed score_percentage started_at status test_id updated_at user_id]
   end
 
   def self.ransackable_associations(_auth_object = nil)
     %w[test user]
+  end
+
+  ransacker :duration do
+    Arel.sql('COALESCE(EXTRACT(EPOCH FROM (COALESCE(completed_at, NOW()) - started_at)), 0)')
+  end
+
+  # Sort status by the same business buckets used in the admin table:
+  # not_started -> in_progress -> time_expired -> failed -> passed
+  ransacker :status do
+    Arel.sql(<<~SQL.squish)
+      CASE
+        WHEN passed = TRUE THEN 5
+        WHEN completed_at IS NOT NULL AND passed = FALSE THEN 4
+        WHEN started_at IS NULL THEN 1
+        WHEN started_at + (
+          COALESCE(
+            (SELECT time_limit_minutes FROM tests WHERE tests.id = test_attempts.test_id),
+            0
+          ) * INTERVAL '1 minute'
+        ) <= NOW() THEN 3
+        ELSE 2
+      END
+    SQL
   end
 
   def merge_vars!(hash)
@@ -55,9 +78,9 @@ class TestAttempt < ApplicationRecord
     save!
 
     # Send completion email notification
-    AccreditationMailer.test_completion(user, self).deliver_now
+    # AccreditationMailer.test_completion(user, self).deliver_now
 
-    # Sync accreditation to REPP if user is fully accredited
+    # Sync accreditation to REPP if registrar is fully accredited
     sync_accreditation_if_complete
   end
 
@@ -153,7 +176,9 @@ class TestAttempt < ApplicationRecord
 
   # Returns true when every question in this attempt has a selected answer
   def all_questions_answered?
-    question_responses.all?(&:answered?)
+    return false if question_responses.empty?
+
+    question_responses.answered.count == question_responses.count
   end
 
   def all_tasks_completed?
@@ -253,18 +278,9 @@ class TestAttempt < ApplicationRecord
   def sync_accreditation_if_complete
     return unless passed?
 
-    passed_tests = user.passed_tests.includes(:test)
-    # Check if user has both theoretical and practical tests passed
-    theoretical_passed = passed_tests.where(test: { test_type: :theoretical }).exists?
-    practical_passed = passed_tests.where(test: { test_type: :practical }).exists?
+    registrar_name = user.registrar_name
+    return unless RegistrarAccreditationEligibility.accredited?(registrar_name)
 
-    # Only sync if both tests are passed and this was the last one
-    return unless theoretical_passed && practical_passed
-
-    # Check if this is the most recent passed test
-    latest_passed = passed_tests.last
-
-    # This is the most recent test completion, sync to registry
-    AccreditationSyncJob.perform_later(user.id) if latest_passed == self
+    AccreditationSyncJob.perform_later(registrar_name)
   end
 end

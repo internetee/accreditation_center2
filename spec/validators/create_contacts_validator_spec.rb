@@ -14,7 +14,10 @@ RSpec.describe CreateContactsValidator do
       ident: { type: 'org' },
       phone: '+372123456',
       email: 'contact@example.test',
-      created_at: Time.current.iso8601
+      created_at: Time.current.iso8601,
+      verification_id: 'VER-1',
+      verified_at: Time.current.iso8601,
+      ident_request_sent_at: Time.current.iso8601
     }
   end
 
@@ -94,9 +97,30 @@ RSpec.describe CreateContactsValidator do
       end
     end
 
+    context 'when private contact is not verified' do
+      before do
+        allow(service).to receive(:contact_info).with(id: 'ORG-1').and_return(contact_template.merge(ident: { type: 'org' }))
+        allow(service).to receive(:contact_info).with(id: 'PRIV-1').and_return(
+          contact_template.merge(ident: { type: 'priv' }, verification_id: nil)
+        )
+        allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)
+      end
+
+      it 'fails with private contact not verified error' do
+        result = validator.call
+
+        expect(result[:passed]).to be(false)
+        expect(result[:errors]).to include(I18n.t('validators.create_contacts_validator.priv_contact_not_verified'))
+      end
+    end
+
     context 'when contacts are not recent' do
       before do
-        stale_contact = contact_template.merge(created_at: (Time.zone.now - 1.day).iso8601)
+        stale_contact = contact_template.merge(
+          created_at: (Time.zone.now - 1.day).iso8601,
+          verified_at: (Time.zone.now - 1.day).iso8601,
+          ident_request_sent_at: (Time.zone.now - 1.day).iso8601
+        )
         allow(service).to receive(:contact_info).with(id: 'ORG-1').and_return(stale_contact.merge(ident: { type: 'org' }))
         allow(service).to receive(:contact_info).with(id: 'PRIV-1').and_return(stale_contact.merge(ident: { type: 'priv' }))
         allow(Process).to receive(:clock_gettime).and_return(0.0, 0.05, 0.1, 0.15)

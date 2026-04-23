@@ -46,6 +46,10 @@ gem 'figaro'
 
 gem 'font-awesome-sass', '~> 5.15.1'
 
+gem 'omniauth', '>=2.0.0'
+gem 'omniauth_openid_connect'
+gem 'omniauth-rails_csrf_protection'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -63,6 +67,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "rails-ai-context"
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
@@ -100,3 +105,4 @@ gem 'simpleidn'
 gem 'faker'
 
 gem 'coderay', '~> 1.1', '>= 1.1.2'
+gem 'kramdown'

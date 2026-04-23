@@ -34,6 +34,7 @@ en:
     network_error: "Network error"
     service_temporarily_unavailable: "Service temporarily unavailable"
     api_endpoint_not_configured: "API endpoint not configured"
+    registry_session_expired: "Your API session expired. Please sign in again."
   nav:
     dashboard: "Dashboard"
     tests: "Tests"
@@ -46,24 +47,44 @@ en:
         title: "Eesti Interneti SA Accreditation Center"
         login: "Sign in"
         login_with_password_title: "Sign in"
-        login_with_id_title: "Sign in with ID"
+        login_with_id_title: "Sign in"
         login_with_id: "Sign in with EEID"
-        login_with_id_text: "Sign in using Estonian (incl. e-residents) ID card, mobile ID, Bank link or other EU citizen's electronic ID supported by EIDAS."
-        username: "Username"
-        password: "Password"
-        remember_me: "Remember me"
+        login_with_id_text: "Authenticate yourself electronically using supported identification tools such as national ID cards, Mobile ID, Smart-ID, passkeys, etc."
+   
+    admin:
+      sessions:
+        new:
+          login: "Sing in"
+          title: "Admin Login"
+          email: "Email"
+          password: "Password"
+          forgot_your_password: "Forgot your password?"
+      passwords:
+        new:
+          title: "Reset admin password"
+          subtitle: "Send reset instructions"
+          email: "Email"
+          submit: "Send reset instructions"
+          back_to_login: "Back to admin login"
+        edit:
+          title: "Set new admin password"
+          subtitle: "Choose a new password"
+          password: "New password"
+          password_confirmation: "Confirm new password"
+          submit: "Update password"
+          back_to_login: "Back to admin login"
   home:
     index:
       title: "Dashboard"
       welcome_back: "Welcome back, %{username}!"
-      accreditation_expires_soon: "Your accreditation expires in %{days} days"
+      accreditation_expires_soon: "Your registrar accreditation expires in %{days} days"
       statistics: "Statistics"
       assigned_tests: "Assigned Tests"
       total_attempts: "Total Attempts"
       passed_tests: "Passed Tests"
       failed_tests: "Failed Tests"
       success_rate: "Success Rate"
-      accreditation_status: "Accreditation Status"
+      accreditation_status: "Registrar Accreditation Status"
       expiry_date: "Expiry Date"
       days_remaining:
         one: "%{count} day remaining"
@@ -170,6 +191,7 @@ en:
       priv_type_mismatch: "Priv type mismatch"
       org_required_fields_missing: "Org required fields missing"
       priv_required_fields_missing: "Priv required fields missing"
+      priv_contact_not_verified: "Private contact is not verified"
       org_contact_not_recent: "Org contact not recent"
       priv_contact_not_recent: "Priv contact not recent"
     delete_domain_verified_validator:

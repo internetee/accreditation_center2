@@ -9,12 +9,13 @@ et:
     failure:
       already_authenticated: "Oled juba sisse logitud."
       inactive: "Sinu konto ei ole veel aktiveeritud."
-      invalid: "Vale %{authentication_keys} või salasõna."
+      invalid: "Vale e-posti aadress või salasõna."
       locked: "Sinu konto on blokeeritud."
       last_attempt: "Veel üks katse enne konto blokeerimist"
-      not_found_in_database: "Vale %{authentication_keys} või salasõna."
+      not_found_in_database: "Vale e-posti aadress või salasõna."
       timeout: "Teie seanss on aegunud. Jätkamiseks autentige end palun uuesti!"
       unauthenticated: "Enne jätkamist logi sisse või registreeru."
+      unauthorized: "Sul puudub selle toimingu jaoks õigus."
       unconfirmed: "Konto aktiveerimiseks saatsime teie eposti aadressile kirja aktiveerimise lingiga. Palun klõpsake sellel!"
     mailer:
       confirmation_instructions:
@@ -28,13 +29,14 @@ et:
       password_change:
         subject: "Parool muudetud"
     omniauth_callbacks:
-      failure: "Ei saanud autentida %{kind} , kuna \"%{reason}\"."
-      success: "Autentimine %{kind} kontolt."
+      failure: "Ei saanud autentida. Palun proovi uuesti"
+      success: "Autentimine õnnestus!"
     passwords:
       no_token: "Juurdepääs ainlast salasõna lähtestamise e-kirjaga. Kui kasutasid salasõna lähtestamise e-kirja, kontrolli, et kasutasid tervet URL-i."
+      invalid_token: "Parooli lähtestamise link on vigane või aegunud."
       send_instructions: "Mõne minuti jooksul saadetakse sulle e-kiri juhistega, kuidas ennistada salasõna. "
       send_paranoid_instructions: "Kui sinu e-posti aadress on meie andmebaasis, saadetakse  mõne minuti jooksul sinu e-posti aadressile link salasõna taastamiseks."
-      updated: "Salasõna on muudetud. Oled sisse logitud."
+      updated: "Salasõna on muudetud."
       updated_not_active: "Salasõna on muudetud."
     registrations:
       destroyed: "Nägemist! Sinu konto on tühistatud. Loodame, et kohtume varsti jälle."

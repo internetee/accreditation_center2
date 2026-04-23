@@ -58,6 +58,13 @@ RSpec.describe Test, type: :model do
       expect(test.valid?).to be(false)
       expect(test.errors[:base]).to be_present
     end
+
+    it 'allows updating the same auto_assign test' do
+      test = create(:test, :theoretical, auto_assign: true, active: true, title_et: 'Original', title_en: 'Original EN')
+
+      expect(test.update(title_et: 'Updated title')).to be(true)
+      expect(test.errors[:base]).to be_empty
+    end
   end
 
   describe 'associations' do
@@ -249,6 +256,20 @@ RSpec.describe Test, type: :model do
         # each row includes the join id aliased as test_categories_test_id
         expect(result.first.attributes).to have_key('test_categories_test_id')
         expect(result.map { |r| r.attributes['test_categories_test_id'] }).to eq([j2.id, j1.id])
+      end
+    end
+
+    describe '#build_duplicate' do
+      it 'generates unique copy titles' do
+        original = create(:test, title_et: 'Original', title_en: 'Original EN')
+        create(:test, title_et: 'Original (Copy)', title_en: 'Original EN (Copy)')
+
+        duplicate = original.build_duplicate
+
+        expect(duplicate.title_et).to eq('Original (Copy 2)')
+        expect(duplicate.title_en).to eq('Original EN (Copy 2)')
+        expect(duplicate.active).to be(false)
+        expect(duplicate.auto_assign).to be(false)
       end
     end
   end

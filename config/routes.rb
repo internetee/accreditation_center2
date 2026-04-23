@@ -8,18 +8,27 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  devise_for :users, skip: %i[sessions registrations], skip_helpers: true, controllers: {
+    omniauth_callbacks: 'users/omniauth_callbacks',
+    passwords: 'users/admin/passwords'
+  }, path_names: {
+    password: 'admin/password'
+  }
 
   # Internationalization scope
   scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
     root 'home#index'
 
-    devise_for :users, controllers: {
-      sessions: 'users/sessions'
-    }
-
     devise_scope :user do
-      get 'login', to: 'users/sessions#new'
-      get 'logout', to: 'users/sessions#destroy'
+      get 'login', to: 'users/sessions#new', as: :new_user_session
+      delete 'logout', to: 'users/sessions#destroy', as: :destroy_user_session
+      get 'admin/login', to: 'users/admin/sessions#new', as: :new_admin_session
+      post 'admin/login', to: 'users/admin/sessions#create', as: :admin_session
+      get 'admin/password/new', to: 'users/admin/passwords#new', as: :new_admin_password
+      post 'admin/password', to: 'users/admin/passwords#create', as: :admin_password
+      get 'admin/password/edit', to: 'users/admin/passwords#edit', as: :edit_admin_password
+      patch 'admin/password',      to: 'users/admin/passwords#update'
+      put   'admin/password',      to: 'users/admin/passwords#update'
     end
 
     concern :test_actions do
@@ -47,14 +56,13 @@ Rails.application.routes.draw do
 
         resources :test_attempts, only: %i[index show new create destroy] do
           member do
-            post :reassign
             patch :extend_time
           end
         end
         resources :test_categories_tests, only: [] do
           post :update_positions, on: :collection
         end
-        resources :practical_tasks, except: %i[index show] do
+        resources :practical_tasks, except: %i[index] do
           collection do
             post :update_positions
           end

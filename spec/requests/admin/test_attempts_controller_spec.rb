@@ -10,7 +10,7 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
   let!(:test_categories_test) { create(:test_categories_test, test: test_record, test_category: test_category) }
   let!(:test_attempt) { create(:test_attempt, test: test_record, user: user) }
 
-  before { sign_in admin, scope: :user }
+  before { sign_in(admin, scope: :user) }
 
   describe 'GET /admin/tests/:test_id/test_attempts' do
     it 'renders the index successfully' do
@@ -66,27 +66,6 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(response).to render_template(:new)
       expect(flash[:alert]).to eq('Error assigning test: Assignment failed')
-    end
-  end
-
-  describe 'POST /admin/tests/:test_id/test_attempts/:id/reassign' do
-    it 'duplicates the attempt for the same user' do
-      expect do
-        post reassign_admin_test_test_attempt_path(test_record, test_attempt)
-      end.to change(TestAttempt, :count).by(1)
-
-      expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
-      expect(flash[:notice]).to eq(I18n.t('admin.test_attempts.reassigned'))
-    end
-
-    it 'renders the new page with error when reassign fails' do
-      invalid_attempt = build(:test_attempt, test: test_record, user: user, access_code: nil)
-      allow_any_instance_of(TestAttempt).to receive(:build_duplicate).and_return(invalid_attempt)
-
-      post reassign_admin_test_test_attempt_path(test_record, test_attempt)
-
-      expect(response).to redirect_to(admin_test_test_attempts_path(test_record))
-      expect(flash[:alert]).to eq(I18n.t('admin.test_attempts.reassign_failed'))
     end
   end
 

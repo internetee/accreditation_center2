@@ -22,10 +22,8 @@ class AuthenticationService < ApiConnector
   private
 
   def handle_auth_success(data)
-    data = parse_json(data)
-
-    if data.is_a?(Hash) && data['code'] == 1000
-      success_auth_response(data['data'])
+    if data.is_a?(Hash) && data.key?('id')
+      success_auth_response(data)
     else
       error_response(nil, I18n.t('errors.unexpected_response'))
     end

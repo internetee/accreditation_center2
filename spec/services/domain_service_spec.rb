@@ -9,7 +9,7 @@ RSpec.describe DomainService do
       .with(headers: { 'Authorization' => "Basic #{token}" })
       .and_return(
         status: 200,
-        body: { domain: { name: 'example.ee', status: 'ok' } }.to_json
+        body: { data: { domain: { name: 'example.ee', status: 'ok' } } }.to_json
       )
 
     expect(service.domain_info(name: 'example.ee')).to include({ name: 'example.ee', status: 'ok' })
@@ -21,10 +21,10 @@ RSpec.describe DomainService do
       .with(headers: { 'Authorization' => "Basic #{token}" })
       .and_return(
         status: 401,
-        body: { code: 2202, message: 'Invalid authorization information' }.to_json
+        body: { message: 'Invalid authorization information' }.to_json
       )
 
-    expect(service.domain_info(name: 'example.ee')).to include(success: false, data: nil, message: I18n.t('errors.invalid_credentials'))
+    expect { service.domain_info(name: 'example.ee') }.to raise_error(ApiConnector::UnauthorizedError, I18n.t('errors.invalid_credentials'))
   end
 
   it 'returns domain not found error on domain not found' do
@@ -48,6 +48,10 @@ RSpec.describe DomainService do
         body: 'invalid data format'
       )
 
-    expect(service.domain_info(name: 'example.ee')).to include(success: false, data: nil, message: I18n.t('errors.unexpected_response'))
+    expect(service.domain_info(name: 'example.ee')).to include(
+      success: false,
+      data: nil,
+      message: I18n.t('errors.invalid_data_format')
+    )
   end
 end

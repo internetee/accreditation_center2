@@ -1,0 +1,54 @@
+<div class="col-md-6 col-xs-12">
+  <div class="paper">
+    <div class="paper--header">
+      <h3><%= t('admin.tests.show.statistics') %></h3>
+    </div>
+
+    <div class="paper--content">
+      <div class="stats-grid">
+        <% if test.theoretical? %>
+          <div class="stat-item">
+            <span class="stat-label"><%= t('admin.tests.show.categories') %></span>
+            <span class="stat-value"><%= test_categories.count %></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label"><%= t('admin.tests.show.total_questions') %></span>
+            <span class="stat-value"><%= test.theoretical_questions_count %></span>
+          </div>
+        <% end %>
+        <% if test.practical? %>
+          <div class="stat-item">
+            <span class="stat-label"><%= t('admin.tests.show.practical_tasks') %></span>
+            <span class="stat-value"><%= test.practical_tasks_count %></span>
+          </div>
+        <% end %>
+        <div class="stat-item">
+          <span class="stat-label"><%= t('admin.tests.show.total_components') %></span>
+          <span class="stat-value"><%= test.total_components %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label"><%= t('admin.tests.show.total_attempts') %></span>
+          <span class="stat-value"><%= link_to_if test.test_attempts.count.positive?, test.test_attempts.count, admin_test_test_attempts_path(test) %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label"><%= t('admin.tests.show.passed_attempts') %></span>
+          <span class="stat-value"><%= test.test_attempts.passed.count %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label"><%= t('admin.tests.show.failed_attempts') %></span>
+          <span class="stat-value"><%= test.test_attempts.failed.count %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label"><%= t('admin.tests.show.pass_rate') %></span>
+          <span class="stat-value">
+            <% if test.test_attempts.count.positive? %>
+              <%= number_to_percentage((test.test_attempts.passed.count.to_f / test.test_attempts.count * 100), precision: 1) %>
+            <% else %>
+              <%= t('admin.tests.show.no_attempts') %>
+            <% end %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

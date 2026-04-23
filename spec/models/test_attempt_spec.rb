@@ -60,26 +60,24 @@ RSpec.describe TestAttempt, type: :model do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       expect(attempt.completed?).to be(false)
 
-      expect { attempt.complete! }.to change { ActionMailer::Base.deliveries.count }.by(1)
+      expect { attempt.complete! }.not_to have_enqueued_job(AccreditationSyncJob).with(user.registrar_name)
       expect(attempt.completed?).to be(true)
     end
 
-    it 'syncs accreditation when user completes both theoretical and practical tests' do
-      # First, create a passed theoretical attempt
-      create(:test_attempt, user: user, test: theoretical_test, passed: true, completed_at: 1.hour.ago)
+    it 'syncs accreditation when registrar has both theory and practical passes' do
+      teammate = create(:user)
+      teammate.update_column(:registrar_name, user.registrar_name)
 
-      # Now complete practical test with passing score
+      # Theoretical pass by teammate, practical pass by current user.
+      create(:test_attempt, :passed, user: teammate, test: theoretical_test, completed_at: 1.day.ago)
+
       practical_attempt = create(:test_attempt, user: user, test: practical_test)
-
-      # Setup practical test to pass (all tasks passed = 100% score)
       task1 = create(:practical_task, test: practical_test)
       task2 = create(:practical_task, test: practical_test)
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task1, status: 'passed')
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
-      expect {
-        practical_attempt.complete!
-      }.to have_enqueued_job(AccreditationSyncJob).with(user.id)
+      expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar_name)
     end
 
     it 'does not sync when test is not passed' do
@@ -92,14 +90,14 @@ RSpec.describe TestAttempt, type: :model do
       }.not_to have_enqueued_job(AccreditationSyncJob)
     end
 
-    it 'does not sync when only one test type is passed' do
-      # Complete only theoretical test - setup to pass
-      theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
-      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+    it 'does not sync when registrar has only one passed test type' do
+      practical_attempt = create(:test_attempt, user: user, test: practical_test)
+      task1 = create(:practical_task, test: practical_test)
+      task2 = create(:practical_task, test: practical_test)
+      create(:practical_task_result, test_attempt: practical_attempt, practical_task: task1, status: 'passed')
+      create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
-      expect {
-        theoretical_attempt.complete!
-      }.not_to have_enqueued_job(AccreditationSyncJob)
+      expect { practical_attempt.complete! }.not_to have_enqueued_job(AccreditationSyncJob)
     end
   end
 

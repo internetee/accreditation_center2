@@ -1,6 +1,6 @@
 Accreditation Expiry Warning
 
-Dear <%= @user.username %>,
+Dear <%= @user.display_name %>,
 
 ⚠️ YOUR ACCREDITATION WILL EXPIRE IN <%= @days_before %> DAYS!
 Expiry Date: <%= @expiry_date.strftime('%B %d, %Y') %>

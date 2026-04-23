@@ -22,8 +22,6 @@ class ContactService < ApiConnector
   private
 
   def handle_auth_success(data)
-    data = parse_json(data)
-
     if data.is_a?(Hash) && data.key?('contact')
       symbolize_keys_deep(data['contact'])
     else
