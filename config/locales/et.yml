@@ -34,7 +34,7 @@ et:
       month_year: "%d. %B %Y"
       month_year_short: "%b, %Y"
   search: "Otsi"
-  language: "eesti keeles"
+  language: "Eesti keeles"
   minutes: "minutit"
   edit: "Muuda"
   delete: "Kustuta"
@@ -57,7 +57,7 @@ et:
   access_denied_admin: "Administraatorid ei pääse ligi kasutaja lehele"
   no_translation: "Tõlge pole saadaval"
   nav:
-    dashboard: "Koduleht"
+    dashboard: "Avaleht"
     tests: "Testid"
     test_categories: "Testikategooriad"
     users: "Kasutajad"
@@ -95,7 +95,7 @@ et:
           back_to_login: "Tagasi administraatori sisselogimisse"
   home:
     index:
-      title: "Koduleht"
+      title: "Avaleht"
       welcome_back: "Tere tulemast tagasi, %{username}!"
       accreditation_expires_soon: "Teie registripidaja akrediteerimine aegub %{days} päeva pärast"
       statistics: "Statistika"

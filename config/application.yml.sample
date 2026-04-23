@@ -4,6 +4,9 @@ application_name: "EIS Accreditation Center"
 time_zone: "Tallinn"
 locale: "en"
 
+# Portal URLs
+registrar_portal_url: "https://registrar.internet.ee"
+
 # Address from which the emails come from
 email_from_address: "noreply@internet.ee"
 
