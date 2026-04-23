@@ -2,7 +2,7 @@ et:
   admin:
     dashboard:
       index:
-        title: "Koduleht"
+        title: "Avaleht"
       create_test: "Loo test"
       total_tests: "Kokku teste"
       total_users: "Kokku kasutajaid"
