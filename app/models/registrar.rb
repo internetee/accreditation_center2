@@ -2,6 +2,8 @@ class Registrar < ApplicationRecord
   has_many :users, dependent: :restrict_with_exception
   has_many :test_attempts, through: :users
 
+  validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+
   scope :with_non_admin_users, -> { joins(:users).merge(User.not_admin).distinct }
 
   def self.ransackable_attributes(_auth_object = nil)

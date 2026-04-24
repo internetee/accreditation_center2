@@ -9,7 +9,7 @@ FactoryBot.define do
 
     transient do
       sequence(:registrar_name) { |n| "Example Registrar #{n}" }
-      registrar_email { nil }
+      sequence(:registrar_email) { |n| "registrar#{n}@example.test" }
       registrar_accreditation_date { nil }
       registrar_accreditation_expire_date { nil }
     end

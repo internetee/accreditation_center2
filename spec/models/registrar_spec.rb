@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Registrar, type: :model do
   describe 'validations' do
     it 'requires a name' do
-      registrar = described_class.new(name: nil)
+      registrar = described_class.new(name: nil, email: 'registrar@example.test')
 
       expect(registrar.valid?).to be(false)
       expect(registrar.errors[:name]).to be_present
@@ -15,6 +15,20 @@ RSpec.describe Registrar, type: :model do
 
       expect(duplicate.valid?).to be(false)
       expect(duplicate.errors[:name]).to be_present
+    end
+
+    it 'requires an email' do
+      registrar = described_class.new(name: 'Registrar A', email: nil)
+
+      expect(registrar.valid?).to be(false)
+      expect(registrar.errors[:email]).to be_present
+    end
+
+    it 'validates email format' do
+      registrar = described_class.new(name: 'Registrar A', email: 'not-an-email')
+
+      expect(registrar.valid?).to be(false)
+      expect(registrar.errors[:email]).to be_present
     end
   end
 

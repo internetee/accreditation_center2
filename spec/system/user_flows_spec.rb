@@ -31,6 +31,7 @@ RSpec.describe 'User flows', type: :system do
     existing_user = create(
       :user,
       registrar_name: 'Registrar Ltd',
+      registrar_email: 'existing.registrar@example.test',
       registrar_accreditation_date: 1.year.ago.to_date,
       registrar_accreditation_expire_date: existing_expire_date
     )
@@ -55,7 +56,7 @@ RSpec.describe 'User flows', type: :system do
   end
 
   it 'creates a new registrar when another user logs in with a different registrar' do
-    existing_user = create(:user, registrar_name: 'Registrar Ltd')
+    existing_user = create(:user, registrar_name: 'Registrar Ltd', registrar_email: 'existing.registrar@example.test')
     existing_registrar_id = existing_user.registrar_id
 
     mock_oidc_auth(uid: 'EE79901012239', email: 'other.registrar.user@example.test', given_name: 'Other', family_name: 'Registrar')

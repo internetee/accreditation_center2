@@ -6,7 +6,7 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
 
   it 'allows admin to assign test to user, user completes it, and admin views detailed results' do
     admin = create(:user, :admin)
-    regular_user = create(:user, name: 'Test User', username: 'testuser')
+    regular_user = create(:user, name: 'Test User', username: 'testuser', registrar_email: 'regular.registrar@example.test')
 
     test_category = create(:test_category, questions_per_category: 2, active: true)
     question1 = create(:question, test_category: test_category, display_order: 1, active: true)
