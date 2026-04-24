@@ -61,6 +61,7 @@ et:
     tests: "Testid"
     test_categories: "Testikategooriad"
     users: "Kasutajad"
+    registrars: "Registripidajad"
   users:
     sessions:
       assignment_failed: "Automaatne testide määramine ebaõnnestus. Koordinaatoritele saadeti teavitus."
@@ -105,6 +106,7 @@ et:
       failed_tests: "Ebaõnnestunud testid"
       success_rate: "Edukuse protsent"
       accreditation_status: "Registripidaja akrediteerimise olek"
+      registrar_name: Registripidaja
       expiry_date: "Aegumise kuupäev"
       days_remaining:
         one: "%{count} päev jäänud"

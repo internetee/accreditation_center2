@@ -17,14 +17,14 @@ module SystemOidcHelpers
     )
   end
 
-  def stub_oidc_api_auth(email:)
+  def stub_oidc_api_auth(email:, registrar_name: 'Registrar Ltd')
     service = instance_double(OidcAuthenticationService)
     allow(OidcAuthenticationService).to receive(:new).and_return(service)
     allow(service).to receive(:authenticate_user).and_return(
       success: true,
       auth_token: 'registry-token',
       registrar_email: email,
-      registrar_name: 'Registrar Ltd',
+      registrar_name: registrar_name,
       accreditation_date: Date.current,
       accreditation_expire_date: 1.year.from_now.to_date
     )

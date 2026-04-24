@@ -1,15 +1,19 @@
 <div class="quicklinks">
     <div class="wrapper">
         <div class="bills">
-            <% if @accreditation_expiry_date %>
-                <h2><%= t('home.index.accreditation_status') %></h2>
+            <h2><%= t('home.index.accreditation_status') %></h2>
+            <p>
+                <strong><%= t('home.index.registrar_name', default: 'Registrar') %>:</strong>
+                <%= registrar&.name.presence || '-' %>
+            </p>
+            <% if registrar.accreditation_expire_date %>
                 <p>
                     <strong><%= t('home.index.expiry_date') %>:</strong>
-                    <%= l(@accreditation_expiry_date, format: :long) %>
+                    <%= l(registrar.accreditation_expire_date, format: :long) %>
                 </p>
-                <% if @days_until_expiry > 0 %>
+                <% if registrar.days_until_accreditation_expiry > 0 %>
                     <p class="status status--ok">
-                        <%= t('home.index.days_remaining', count: @days_until_expiry) %>
+                        <%= t('home.index.days_remaining', count: registrar.days_until_accreditation_expiry) %>
                     </p>
                 <% else %>
                     <p class="status status--expired">
@@ -17,7 +21,6 @@
                     </p>
                 <% end %>
             <% else %>
-                <h2><%= t('home.index.accreditation_status') %></h2>
                 <p class="status status--expired">
                     <strong><%= t('home.index.accreditation_expired') %></strong>
                 </p>

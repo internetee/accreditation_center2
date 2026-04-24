@@ -4,7 +4,7 @@ globs:
 alwaysApply: false
 ---
 
-# Models (10)
+# Models (11)
 
 Check here first for scopes, constants, associations. Read model files for business logic/methods.
 
@@ -17,6 +17,8 @@ Check here first for scopes, constants, associations. Read model files for busin
   scopes: ordered, active, mandatory, non_mandatory
 - QuestionResponse (2 associations, table: question_responses)
   scopes: answered
+- Registrar (2 associations, table: registrars)
+  scopes: with_non_admin_users
 - Test (5 associations, table: tests)
   scopes: active, auto_assignable
 - TestAttempt (6 associations, table: test_attempts)
@@ -24,7 +26,7 @@ Check here first for scopes, constants, associations. Read model files for busin
 - TestCategoriesTest (2 associations, table: test_categories_tests)
 - TestCategory (3 associations, table: test_categories)
   scopes: active
-- User (2 associations, table: users)
+- User (3 associations, table: users)
   scopes: not_admin, admin
 
 Use `rails_get_model_details` MCP tool with model:"Name" for full detail.

@@ -7,7 +7,7 @@ RSpec.describe 'User completes practical test', type: :system do
   it 'allows user to start and complete a practical test flow' do
     regular_user = create(:user, name: 'Test User', username: 'testuser')
     test = create(:test, :practical, active: true)
-    
+
     practical_task = create(:practical_task,
       test: test,
       title_et: 'Test ülesanne',
@@ -64,7 +64,7 @@ RSpec.describe 'User completes practical test', type: :system do
 
       validator_class_name = task.klass_name
       validator_class = validator_class_name.to_s.safe_constantize
-      
+
       if validator_class
         validator_instance = double(call: mock_validator_result)
         allow(validator_class).to receive(:new).and_return(validator_instance)

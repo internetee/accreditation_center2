@@ -2,17 +2,17 @@
 <% content_for :hero do %>
 <div class="layout--hero <%= 'hero--warning' if @accreditation_expires_soon %>">
   <h1><%= t('.welcome_back', username: current_user.display_name) %></h1>
-  <% if @accreditation_expires_soon %>
+  <% if @registrar.accreditation_expires_soon? %>
     <div class="hero--warning-message">
       <i class="fas fa-exclamation-triangle"></i>
-      <%= t('.accreditation_expires_soon', days: @days_until_expiry) %>
+      <%= t('.accreditation_expires_soon', days: @registrar.days_until_accreditation_expiry) %>
     </div>
   <% end %>
 </div>
 <% end %>
 
 <div class="page page--dashboard">
-  <%= render 'common/top_grid' %>
+  <%= render 'common/top_grid', registrar: @registrar %>
   <!-- Statistics Overview -->
   <div class="wrapper">
     <div class="row">

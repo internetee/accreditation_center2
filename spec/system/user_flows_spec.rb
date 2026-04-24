@@ -21,6 +21,41 @@ RSpec.describe 'User flows', type: :system do
     login_with_oidc
 
     expect(page).to have_current_path(root_path(locale: I18n.default_locale))
+    expect(Registrar.count).to eq(1)
+    expect(Registrar.first.name).to eq('Registrar Ltd')
+    expect(Registrar.first.email).to eq('user@example.test')
+  end
+
+  it 'reuses existing registrar when another user logs in with the same registrar' do
+    existing_user = create(:user, registrar_name: 'Registrar Ltd')
+    existing_registrar_id = existing_user.registrar_id
+
+    mock_oidc_auth(uid: 'EE69901012239', email: 'second.user@example.test', given_name: 'Second', family_name: 'User')
+    stub_oidc_api_auth(email: 'second.user@example.test')
+
+    login_with_oidc
+
+    new_user = User.find_by(provider: 'oidc', uid: 'EE69901012239')
+    expect(new_user).to be_present
+    expect(new_user.registrar_id).to eq(existing_registrar_id)
+    expect(Registrar.count).to eq(1)
+    expect(Registrar.find(existing_registrar_id).users.count).to eq(2)
+  end
+
+  it 'creates a new registrar when another user logs in with a different registrar' do
+    existing_user = create(:user, registrar_name: 'Registrar Ltd')
+    existing_registrar_id = existing_user.registrar_id
+
+    mock_oidc_auth(uid: 'EE79901012239', email: 'other.registrar.user@example.test', given_name: 'Other', family_name: 'Registrar')
+    stub_oidc_api_auth(email: 'other.registrar.user@example.test', registrar_name: 'Other Registrar Ltd')
+
+    login_with_oidc
+
+    new_user = User.find_by(provider: 'oidc', uid: 'EE79901012239')
+    expect(new_user).to be_present
+    expect(new_user.registrar.name).to eq('Other Registrar Ltd')
+    expect(new_user.registrar_id).not_to eq(existing_registrar_id)
+    expect(Registrar.count).to eq(2)
   end
 
   it 'logs out and returns to login page for normal user' do

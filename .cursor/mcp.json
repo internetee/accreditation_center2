@@ -1,9 +1,11 @@
 {
   "mcpServers": {
     "rails-ai-context": {
-      "command": "rails-ai-context",
+      "command": "bundle",
       "args": [
-        "serve"
+        "exec",
+        "rails",
+        "ai:serve"
       ]
     }
   }

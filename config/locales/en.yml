@@ -40,6 +40,7 @@ en:
     tests: "Tests"
     test_categories: "Categories"
     users: "Users"
+    registrars: "Registrars"
   users:
     sessions:
       assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
@@ -85,6 +86,7 @@ en:
       failed_tests: "Failed Tests"
       success_rate: "Success Rate"
       accreditation_status: "Registrar Accreditation Status"
+      registrar_name: Registrar
       expiry_date: "Expiry Date"
       days_remaining:
         one: "%{count} day remaining"

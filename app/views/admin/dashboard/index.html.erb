@@ -31,6 +31,10 @@
                 <span class="stat-value"><%= link_to_if User.not_admin.count.positive?, User.not_admin.count, admin_users_path %></span>
               </div>
               <div class="stat-item">
+                <span class="stat-label"><%= t('admin.dashboard.total_registrars') %></span>
+                <span class="stat-value"><%= link_to_if Registrar.count.positive?, Registrar.count, admin_registrars_path %></span>
+              </div>
+              <div class="stat-item">
                 <span class="stat-label"><%= t('admin.dashboard.total_attempts') %></span>
                 <span class="stat-value"><%= TestAttempt.count %></span>
               </div>
@@ -89,16 +93,16 @@
     <table class="table">
       <thead>
         <tr>
-          <th><%= t('admin.dashboard.user') %></th>
+          <th><%= t('admin.dashboard.registrar') %></th>
           <th><%= t('admin.dashboard.days_until_expiry') %></th>
         </tr>
       </thead>
       <tbody>
         <% if @expiring_accreditations.any? %>
-          <% @expiring_accreditations.each do |user| %>
+          <% @expiring_accreditations.each do |registrar| %>
             <tr>
-              <td><strong><%= link_to user.display_name, admin_user_path(user) %></strong> <%= t('admin.dashboard.accreditation_expires') %></td>
-              <td><%= user.days_until_registrar_accreditation_expiry %> <%= t('days') %></td>
+              <td><strong><%= registrar.name %></strong> <%= t('admin.dashboard.accreditation_expires') %></td>
+              <td><%= registrar.days_until_accreditation_expiry %> <%= t('days') %></td>
             </tr>
           <% end %>
         <% else %>

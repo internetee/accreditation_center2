@@ -78,6 +78,7 @@ Rails.application.routes.draw do
       end
 
       resources :users, only: %i[index show]
+      resources :registrars, only: %i[index show]
     end
   end
 end

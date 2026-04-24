@@ -11,14 +11,14 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
     test_category = create(:test_category, questions_per_category: 2, active: true)
     question1 = create(:question, test_category: test_category, display_order: 1, active: true)
     question2 = create(:question, test_category: test_category, display_order: 2, active: true)
-    
+
     answer1_correct = create(:answer, :correct, question: question1, display_order: 1)
     create(:answer, question: question1, display_order: 2)
     create(:answer, question: question1, display_order: 3)
-    
+
     answer2_correct = create(:answer, :correct, question: question2, display_order: 1)
     create(:answer, question: question2, display_order: 2)
-    
+
     test = create(:test, :theoretical, active: true)
     test.test_categories << test_category
 
@@ -33,12 +33,12 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
     click_link I18n.t(:assign)
 
     expect(page).to have_current_path(new_admin_test_test_attempt_path(test, locale: 'en'))
-    
+
     select "#{regular_user.display_name} (#{regular_user.registrar_name})", from: 'test_attempt[user_id]'
     click_button I18n.t('admin.test_attempts.form.assign_test')
 
     expect(page).to have_content(I18n.t('admin.test_attempts.assigned'))
-    
+
     test_attempt = TestAttempt.find_by(user: regular_user, test: test)
     expect(test_attempt).to be_present
 
@@ -59,15 +59,15 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
 
     test_attempt.reload
     questions = test_attempt.questions
-    
+
     questions.each_with_index do |question, index|
       expect(page).to have_content(question.text)
-      
+
       correct_answer = question.answers.find_by(correct: true)
       choose "answer_#{correct_answer.id}"
-      
+
       click_button I18n.t('tests.save_answer')
-      
+
       if index < questions.count - 1
         expect(page).to have_current_path(question_theoretical_test_path(test, attempt: test_attempt.access_code, question_index: index + 1, locale: 'en'))
       end
@@ -77,7 +77,7 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
     expect(test_attempt.all_questions_answered?).to be true
 
     visit results_theoretical_test_path(test, attempt: test_attempt.access_code, locale: 'en')
-    
+
     test_attempt.reload
     expect(test_attempt.completed?).to be true
     expect(page).to have_content(I18n.t('tests.results.title'))
@@ -92,11 +92,11 @@ RSpec.describe 'Admin assigns and reviews test attempt', type: :system do
     click_button I18n.t('users.sessions.new.login')
 
     visit admin_test_test_attempt_path(test, test_attempt, locale: 'en')
-    
+
     expect(page).to have_content(regular_user.display_name)
     expect(page).to have_content(test.title)
     expect(page).to have_content(I18n.t('admin.test_attempts.show.question_responses', default: 'Question responses'))
-    
+
     test_attempt.reload
     expect(test_attempt.question_responses.count).to eq(questions.count)
   end

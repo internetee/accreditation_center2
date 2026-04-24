@@ -1,14 +1,14 @@
 # AccreditationCenter — Overview
 
-Rails 8.0.2.1 | Ruby 3.4.4
+Rails 8.1.3 | Ruby 3.4.4
 
-- Database: static_parse — 10 tables
-- Models: 10
-- Routes: 114
+- Database: static_parse — 11 tables
+- Models: 11
+- Routes: 116
 - Auth: Devise + Pundit
 - I18n: 2 locales (en, et)
 - Assets: propshaft, importmap
-- Performance: 17 issues detected
+- Performance: 20 issues detected
 
 **Global before_actions:** authenticate_user!, configure_permitted_parameters
 

@@ -66,7 +66,7 @@ RSpec.describe TestAttempt, type: :model do
 
     it 'syncs accreditation when registrar has both theory and practical passes' do
       teammate = create(:user)
-      teammate.update_column(:registrar_name, user.registrar_name)
+      teammate.update!(registrar: user.registrar)
 
       # Theoretical pass by teammate, practical pass by current user.
       create(:test_attempt, :passed, user: teammate, test: theoretical_test, completed_at: 1.day.ago)
@@ -77,7 +77,7 @@ RSpec.describe TestAttempt, type: :model do
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task1, status: 'passed')
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
-      expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar_name)
+      expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
     end
 
     it 'does not sync when test is not passed' do

@@ -26,7 +26,13 @@ namespace :accreditation do
     end
 
     service = AccreditationResultsService.new
-    result = service.sync_registrar_accreditation(registrar_name)
+    registrar = Registrar.find_by(name: registrar_name)
+    if registrar.blank?
+      warn "Registrar not found: '#{registrar_name}'"
+      exit 1
+    end
+
+    result = service.sync_registrar_accreditation(registrar)
 
     if result[:success]
       puts "Successfully synced accreditation for registrar '#{registrar_name}'"

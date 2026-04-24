@@ -102,24 +102,6 @@ RSpec.describe User, type: :model do
       expect(user.in_progress_tests).to include(a2)
     end
 
-    it 'detects accreditation_expired? and expires_soon?' do
-      user.update!(registrar_accreditation_expire_date: 10.days.from_now)
-      expect(user.registrar_accreditation_expired?).to be(false)
-      expect(user.registrar_accreditation_expires_soon?).to be(true)
-
-      user.update!(registrar_accreditation_expire_date: 1.day.ago)
-      expect(user.registrar_accreditation_expired?).to be(true)
-      expect(user.registrar_accreditation_expires_soon?).to be(true)
-    end
-
-    it 'returns days_until_accreditation_expiry' do
-      user.update!(registrar_accreditation_expire_date: 5.days.from_now)
-      expect(user.days_until_registrar_accreditation_expiry).to be_between(4, 5)
-
-      user.update!(registrar_accreditation_expire_date: nil)
-      expect(user.days_until_registrar_accreditation_expiry).to be_nil
-    end
-
     it 'evaluates can_take_test? based on in-progress and recent passes' do
       # No attempts yet -> can take
       expect(user.can_take_test?(theoretical)).to be(true)

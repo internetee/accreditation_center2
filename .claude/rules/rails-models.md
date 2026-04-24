@@ -3,7 +3,7 @@ paths:
   - "app/models/**/*.rb"
 ---
 
-# ActiveRecord Models (10)
+# ActiveRecord Models (11)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
@@ -23,6 +23,9 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - QuestionResponse (table: question_responses) — 2 assocs, 2 validations
   scopes: answered
   methods: selected_answers, correct?, partially_correct?, answered?, status, question, test_attempt
+- Registrar (table: registrars) — 2 assocs, 2 validations
+  scopes: with_non_admin_users
+  methods: accreditation_expired?, accreditation_expires_soon?, days_until_accreditation_expiry, test_attempts, users
 - Test (table: tests) — 5 assocs, 8 validations
   scopes: active, auto_assignable
   methods: auto_assign_check, active_ordered_test_categories_with_join_id, total_questions, estimated_duration, theoretical_questions_count, practical_tasks_count, total_components, build_duplicate, description, description?, friendly_id, friendly_id_config, normalize_friendly_id, practical!, practical?, practical_tasks, questions, resolve_friendly_id_conflict, should_generate_new_friendly_id?, test_attempts
@@ -35,7 +38,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - TestCategory (table: test_categories) — 3 assocs, 4 validations
   scopes: active
   methods: name_with_rule, description, description?, name, name?, questions, test_categories_tests, tests, translatable_attributes, translatable_attributes?
-- User (table: users) — 2 assocs, 5 validations
+- User (table: users) — 3 assocs, 5 validations
   scopes: not_admin, admin
-  methods: admin_password_required?, set_default_role, first_sign_in?, last_sign_in_ip_address, current_sign_in_ip_address, passed_tests, failed_tests, completed_tests, in_progress_tests, registrar_accreditation_expired?, registrar_accreditation_expires_soon?, days_until_registrar_accreditation_expiry, can_take_test?, test_history, test_statistics, display_name, admin?, user?, admin!, devise_saved_change_to_email?
+  methods: admin_password_required?, assign_registrar_from_api!, set_default_role, first_sign_in?, last_sign_in_ip_address, current_sign_in_ip_address, passed_tests, failed_tests, completed_tests, in_progress_tests, can_take_test?, test_history, test_statistics, display_name, admin?, user?, admin!, devise_saved_change_to_email?, devise_saved_change_to_encrypted_password?, devise_unconfirmed_email_will_change!
   role: user, admin
