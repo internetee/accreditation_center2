@@ -27,19 +27,31 @@ RSpec.describe 'User flows', type: :system do
   end
 
   it 'reuses existing registrar when another user logs in with the same registrar' do
-    existing_user = create(:user, registrar_name: 'Registrar Ltd')
+    existing_expire_date = 2.years.from_now.to_date
+    existing_user = create(
+      :user,
+      registrar_name: 'Registrar Ltd',
+      registrar_accreditation_date: 1.year.ago.to_date,
+      registrar_accreditation_expire_date: existing_expire_date
+    )
     existing_registrar_id = existing_user.registrar_id
 
     mock_oidc_auth(uid: 'EE69901012239', email: 'second.user@example.test', given_name: 'Second', family_name: 'User')
-    stub_oidc_api_auth(email: 'second.user@example.test')
+    stub_oidc_api_auth(
+      email: 'second.user@example.test',
+      accreditation_date: Date.current,
+      accreditation_expire_date: 3.months.from_now.to_date
+    )
 
     login_with_oidc
 
     new_user = User.find_by(provider: 'oidc', uid: 'EE69901012239')
+    existing_registrar = Registrar.find(existing_registrar_id)
     expect(new_user).to be_present
     expect(new_user.registrar_id).to eq(existing_registrar_id)
     expect(Registrar.count).to eq(1)
-    expect(Registrar.find(existing_registrar_id).users.count).to eq(2)
+    expect(existing_registrar.users.count).to eq(2)
+    expect(existing_registrar.accreditation_expire_date.to_date).to eq(existing_expire_date)
   end
 
   it 'creates a new registrar when another user logs in with a different registrar' do
