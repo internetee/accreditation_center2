@@ -90,7 +90,7 @@ gem 'action_policy'
 
 gem 'traco'
 
-gem 'pagy', '~> 9.3' # omit patch digit
+gem 'pagy', '~> 43.5' # omit patch digit
 gem 'ransack'
 # gem 'surveyor', path: 'vendor/gems/surveyor'
 
