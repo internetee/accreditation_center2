@@ -4,7 +4,7 @@ globs:
 alwaysApply: false
 ---
 
-# Models (11)
+# Models (12)
 
 Check here first for scopes, constants, associations. Read model files for business logic/methods.
 
@@ -17,8 +17,9 @@ Check here first for scopes, constants, associations. Read model files for busin
   scopes: ordered, active, mandatory, non_mandatory
 - QuestionResponse (2 associations, table: question_responses)
   scopes: answered
-- Registrar (2 associations, table: registrars)
+- Registrar (3 associations, table: registrars)
   scopes: with_non_admin_users
+- RegistrarNotificationEvent (1 associations, table: registrar_notification_events)
 - Test (5 associations, table: tests)
   scopes: active, auto_assignable
 - TestAttempt (6 associations, table: test_attempts)

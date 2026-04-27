@@ -28,6 +28,8 @@ class AccreditationResultsService < BotAuthService
     return { success: false, message: 'Registrar is required' } unless registrar.is_a?(Registrar)
 
     registrar_name = registrar.name
+    previous_accreditation_date = registrar.accreditation_date
+    previous_accreditation_expire_date = registrar.accreditation_expire_date
     eligibility = RegistrarAccreditationEligibility.new(registrar)
     return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
 
@@ -42,6 +44,11 @@ class AccreditationResultsService < BotAuthService
       accreditation_date: cast_to_time(result[:accreditation_date]),
       accreditation_expire_date: cast_to_time(result[:accreditation_expire_date]),
       updated_at: Time.current
+    )
+    RegistrarAccreditationNotificationsService.new.notify_accreditation_sync(
+      registrar: registrar,
+      previous_accreditation_date: previous_accreditation_date,
+      previous_accreditation_expire_date: previous_accreditation_expire_date
     )
 
     { success: true, message: 'Accreditation synced successfully' }

@@ -1,25 +1,5 @@
 class AccreditationMailer < ApplicationMailer
-  # def expiry_warning(user, days_before)
-  #   @user = user
-  #   @days_before = days_before
-  #   @expiry_date = user.accreditation_expire_date
-
-  #   mail(
-  #     to: user.email,
-  #     subject: t('mailers.accreditation.expiry_warning.subject', days: days_before)
-  #   )
-  # end
-
-  # def expiry_notification(user)
-  #   @user = user
-  #   @expiry_date = user.accreditation_expire_date
-
-  #   mail(
-  #     to: user.email,
-  #     subject: t('mailers.accreditation.expiry_notification.subject')
-  #   )
-  # end
-
+ 
   def test_completion(user, test_attempt)
     @user = user
     @test_attempt = test_attempt
@@ -31,14 +11,64 @@ class AccreditationMailer < ApplicationMailer
     )
   end
 
-  # def coordinator_notification(expiring_users)
-  #   @expiring_users = expiring_users
+  def accreditation_granted_or_reaccredited(registrar, reaccreditation: false)
+    @registrar = registrar
+    @reaccreditation = reaccreditation
 
-  #   mail(
-  #     to: User.admin.pluck(:email),
-  #     subject: t('mailers.accreditation.coordinator_notification.subject', count: expiring_users.count)
-  #   )
-  # end
+    subject_key = reaccreditation ? 'mailers.accreditation.reaccreditation_granted.subject' : 'mailers.accreditation.accreditation_granted.subject'
+
+    mail(
+      to: registrar.email,
+      subject: I18n.t(subject_key, registrar: registrar.name)
+    )
+  end
+
+  def expiry_30_days(registrar)
+    @registrar = registrar
+
+    mail(
+      to: registrar.email,
+      subject: I18n.t('mailers.accreditation.expiry_30_days.subject', registrar: registrar.name, expiry_date: localized_expiry_date(registrar))
+    )
+  end
+
+  def expiry_or_passed(registrar)
+    @registrar = registrar
+
+    mail(
+      to: registrar.email,
+      subject: I18n.t('mailers.accreditation.expiry_or_passed.subject', registrar: registrar.name)
+    )
+  end
+
+  def practical_passed_not_accredited(registrar, test_attempt)
+    @registrar = registrar
+    @test_attempt = test_attempt
+
+    mail(
+      to: registrar.email,
+      subject: I18n.t('mailers.accreditation.practical_passed_not_accredited.subject', registrar: registrar.name)
+    )
+  end
+
+  def theoretical_passed_not_accredited(registrar, test_attempt)
+    @registrar = registrar
+    @test_attempt = test_attempt
+
+    mail(
+      to: registrar.email,
+      subject: I18n.t('mailers.accreditation.theoretical_passed_not_accredited.subject', registrar: registrar.name)
+    )
+  end
+
+  def admin_accreditation_window_notice(registrar)
+    @registrar = registrar
+
+    mail(
+      to: User.admin.pluck(:email),
+      subject: I18n.t('mailers.accreditation.admin_accreditation_window_notice.subject', registrar: registrar.name)
+    )
+  end
 
   def assignment_failed(user, failures)
     @user = user
@@ -48,5 +78,13 @@ class AccreditationMailer < ApplicationMailer
       to: User.admin.pluck(:email),
       subject: t('mailers.accreditation.assignment_failed.subject', username: user.username)
     )
+  end
+
+  private
+
+  def localized_expiry_date(registrar)
+    return '' if registrar.accreditation_expire_date.blank?
+
+    I18n.l(registrar.accreditation_expire_date.to_date, format: :default)
   end
 end

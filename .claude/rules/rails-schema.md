@@ -4,7 +4,7 @@ paths:
   - "db/migrate/**"
 ---
 
-# Database Tables (11)
+# Database Tables (12)
 
 _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._
 
@@ -15,6 +15,7 @@ _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")
 - **question_responses** (6 cols) — marked_for_later:boolean(=false), selected_answer_ids:integer[](=[]) | FK: test_attempt_id→test_attempts | Idx: test_attempt_id+question_id(unique)
 - **questions** (11 cols) — active:boolean(=true), display_order:integer, help_text_en:text, help_text_et:text, mandatory_to:date, question_type:string(=multiple_choice), text_en:text, text_et:text | FK: test_category_id→test_categories | Idx: test_category_id+display_order(unique)
   question_type: multiple_choice
+- **registrar_notification_events** (6 cols) — cycle_key:string, event_type:string, sent_at:datetime | FK: registrar_id→registrars | Idx: registrar_id+event_type+cycle_key(unique)
 - **registrars** (6 cols) — accreditation_date:datetime, accreditation_expire_date:datetime, email:string, name:string | Idx: lower((name)::text)(unique)
 - **test_attempts** (10 cols) — access_code:string, completed_at:datetime, passed:boolean, score_percentage:integer, started_at:datetime, vars:jsonb(={}) | FK: test_id→tests, user_id→users | Idx: access_code(unique)
 - **test_categories** (10 cols) — active:boolean(=true), description_en:text, description_et:text, domain_rule_reference:string, domain_rule_url:string, name_en:string, name_et:string, questions_per_category:integer(=5)

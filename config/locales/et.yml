@@ -191,12 +191,6 @@ et:
       title: "Testi tulemused"
       view_test: "Vaata testi"
       view_test_unavailable: "Ülevaade pole saadaval"
-  mailers:
-    accreditation:
-      test_completion:
-        subject: "Test on lõpetatud - %{test}"
-      assignment_failed:
-        subject: "Automaatne testide määramine ebaõnnestus kasutajal %{username}"
   validators:
     change_registrant:
       source_domain_not_found: "Lähtedomeeni ei leitud: %{domain}"

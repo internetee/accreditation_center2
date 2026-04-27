@@ -56,6 +56,16 @@ RSpec.describe TestAttempt, type: :model do
   end
 
   describe 'state transitions' do
+    it 'delegates completion notifications to registrar orchestrator' do
+      attempt = create(:test_attempt, user: user, test: theoretical_test)
+      notifications_service = instance_double(RegistrarAccreditationNotificationsService, notify_test_completion: true)
+      allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
+
+      attempt.complete!
+
+      expect(notifications_service).to have_received(:notify_test_completion).with(attempt)
+    end
+
     it 'sets completed_at in complete!' do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       expect(attempt.completed?).to be(false)

@@ -1,0 +1,52 @@
+en:
+  mailers:
+    accreditation:
+      test_completion:
+        subject: "Test Completed - %{test}"
+      shared:
+        greeting: "Hello!"
+        support: "If you have any questions or issues, contact us at"
+        closing: "Kind regards,"
+      expiry_warning:
+        subject: "Accreditation Expires in %{days} Days"
+      expiry_notification:
+        subject: "Accreditation Expired - Action Required"
+      expiry_30_days:
+        subject: "%{registrar} accreditation expires on %{expiry_date}"
+        intro: "EIS reminds that %{registrar} accreditation expires on %{expiry_date}."
+        renewal_notice: "To continue providing .ee domain registration services, accreditation must be renewed before the expiry date."
+        test_details: "To renew accreditation, pass the theoretical test in the accreditation environment (https://st-accred.infra.tld.ee/et). The test is successful with at least 70% correct answers and has a 40-minute limit."
+        two_year_rule: "Passing the theoretical test is mandatory every two years to keep accreditation active."
+      expiry_or_passed:
+        subject: "Reminder: %{registrar} accreditation expiry notice"
+        intro: "EIS notifies that %{registrar} accreditation has reached or passed its expiry date (%{expiry_date})."
+        renewal_notice: "Accreditation must be successfully renewed to continue providing .ee domain registration services."
+        test_details: "For renewal, pass the theoretical test in the accreditation environment (https://st-accred.infra.tld.ee/et). The test is successful with at least 70% correct answers and has a 40-minute limit."
+        two_year_rule: "At least one registrar employee must pass the theoretical test every two years."
+      accreditation_granted:
+        subject: "%{registrar} accreditation has been granted"
+      reaccreditation_granted:
+        subject: "%{registrar} accreditation has been successfully renewed"
+      accreditation_granted_or_reaccredited:
+        intro: "EIS confirms that %{registrar} accreditation has been successfully renewed."
+        valid_until: "The accreditation is valid until %{expiry_date}."
+        follow_up: "Until then, you can continue using the accreditation environment for onboarding and knowledge checks for current or new team members."
+      practical_passed_not_accredited:
+        subject: "%{registrar} practical test has been passed"
+        intro: "EIS confirms that %{registrar} practical test has been successfully passed."
+        requirement: "For accreditation, both practical and theoretical tests must be passed."
+        theory_details: "If the theoretical test is still pending, you can complete it at a suitable time in the accreditation environment. The test duration is 40 minutes and at least 70% correct answers are required."
+      theoretical_passed_not_accredited:
+        subject: "%{registrar} theoretical test has been passed"
+        intro: "EIS confirms that %{registrar} theoretical test has been successfully passed."
+        requirement: "For accreditation, both practical and theoretical tests must be passed."
+        practical_details: "If the practical test is still pending, you can complete it at a suitable time in the accreditation environment. The practical test duration is 90 minutes and all answers must be correct."
+      admin_accreditation_window_notice:
+        subject: "Registrar %{registrar} accredited in 30-day renewal window"
+        intro: "Registrar %{registrar} became accredited/reaccredited within the 30-day renewal window."
+        accreditation_date: "Accreditation date: %{accreditation_date}"
+        expiry_date: "Accreditation expiry date: %{expiry_date}"
+      coordinator_notification:
+        subject: "Accreditation Expiry Alert - %{count} Users"
+      assignment_failed:
+        subject: "Automatic Test Assignment Failed for %{username}"
