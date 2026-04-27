@@ -8,7 +8,9 @@ class Admin::RegistrarsController < Admin::BaseController
   end
 
   def show
-    @registrar = Registrar.includes(:users).find(params[:id])
+    @registrar = Registrar.includes(:users, :registrar_notification_events).find(params[:id])
+    @registrar_users = @registrar.users.order(:name)
+    @registrar_notification_events = @registrar.registrar_notification_events.order(sent_at: :desc)
   end
 
   private

@@ -1,0 +1,117 @@
+<%= form_with model: [:admin, @user], local: true, class: 'form form__styled', data: { controller: 'role-form' } do |form| %>
+  <div class="row">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.user_information') %></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :role, "#{t('.role')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= simple_select_tag 'user[role]',
+                    options_for_select(User.roles.keys.map { |role| [t(".roles.#{role}"), role] }, @user.role),
+                    { required: true, data: { 'role-form-target': 'role', action: 'change->role-form#toggle' } } %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row" data-role-form-target="field" data-role-form-visible-for-value="admin,user" data-role-form-required-for-value="admin">
+            <%= form.label :email, t('.email'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.email_field :email, class: 'input' %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row" data-role-form-target="field" data-role-form-visible-for-value="user">
+            <%= form.label :registrar_id, t('.registrar'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= simple_select_tag 'user[registrar_id]',
+                    options_for_select([[t('.no_registrar'), nil]] + @registrars.map { |registrar| [registrar.name, registrar.id] }, @user.registrar_id),
+                    required: false %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row" data-role-form-target="field" data-role-form-visible-for-value="user" data-role-form-required-for-value="user">
+            <%= form.label :uid, t('.uid'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :uid, class: 'input' %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :name, "#{t('.name')} *", class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :name, class: 'input', required: true %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row" data-role-form-target="field" data-role-form-visible-for-value="user">
+            <%= form.label :username, t('.username'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :username, class: 'input' %>
+              </div>
+            </div>
+          </div>
+          <div class="form--row" data-role-form-target="field" data-role-form-visible-for-value="user" data-role-form-required-for-value="user">
+            <%= form.label :provider, t('.provider'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.text_field :provider, class: 'input', placeholder: 'oidc' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+  <div class="row" data-role-form-target="field" data-role-form-visible-for-value="admin" data-role-form-required-for-value="admin">
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+      <div class="form--header">
+          <h3><%= t('.password') %></h3>
+      </div>
+      <div class="form--row">
+        <p class="form--hint"><%= t('.password_hint') %></p>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :password, t('.password'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.password_field :password, class: 'input', autocomplete: 'new-password' %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <div class="form--row">
+            <%= form.label :password_confirmation, t('.password_confirmation'), class: 'form--label' %>
+            <div class="form--field">
+              <div class="form--input">
+                <%= form.password_field :password_confirmation, class: 'input', autocomplete: 'new-password' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="form--break"></span>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
+      <div class="form--actions">
+        <%= form.submit t('.create_user'), class: 'button button--primary' %>
+        <%= link_to t(:cancel), admin_users_path, class: 'button button--link' %>
+      </div>
+    </div>
+  </div>
+<% end %>

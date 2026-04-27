@@ -13,6 +13,9 @@
     </div>
   </div>
   <div class="page--actions">
+    <div class="wrapper">
+      <%= link_to t('.new_user'), new_admin_user_path, class: 'button button--primary' %>
+    </div>
   </div>
   <div class="wrapper">
     <%= render 'user_table' %>

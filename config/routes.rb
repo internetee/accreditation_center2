@@ -83,7 +83,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :users, only: %i[index show]
+      resources :users, only: %i[index show new create destroy]
       resources :registrars, only: %i[index show]
     end
   end

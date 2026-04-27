@@ -67,7 +67,7 @@
             <h3><%= t('.users') %></h3>
           </div>
           <div class="paper--content">
-            <% if @registrar.users.any? %>
+            <% if @registrar_users.any? %>
               <table class="table">
                 <thead>
                   <tr>
@@ -76,7 +76,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% @registrar.users.each do |user| %>
+                  <% @registrar_users.each do |user| %>
                     <tr>
                       <td><%= link_to user.display_name, admin_user_path(user) %></td>
                       <td><%= user.email.presence || '-' %></td>
@@ -86,6 +86,38 @@
               </table>
             <% else %>
               <p><%= t('.no_users') %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.notification_events') %></h3>
+          </div>
+          <div class="paper--content">
+            <% if @registrar_notification_events.any? %>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th><%= t('.event_type') %></th>
+                    <th><%= t('.cycle_key') %></th>
+                    <th><%= t('.sent_at') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @registrar_notification_events.each do |event| %>
+                    <tr>
+                      <td><%= event.event_type %></td>
+                      <td><%= event.cycle_key %></td>
+                      <td><%= l(event.sent_at, format: :long) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% else %>
+              <p><%= t('.no_notification_events') %></p>
             <% end %>
           </div>
         </div>
