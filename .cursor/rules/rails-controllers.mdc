@@ -4,11 +4,12 @@ globs:
 alwaysApply: false
 ---
 
-# Controllers (24)
+# Controllers (25)
 
 - Admin::AnswersController (5 actions)
 - Admin::BaseController (2 actions)
 - Admin::DashboardController (1 actions)
+- Admin::JobsController (3 actions)
 - Admin::PracticalTaskResultsController (3 actions)
 - Admin::PracticalTasksController (6 actions)
 - Admin::QuestionsController (5 actions)
@@ -17,7 +18,7 @@ alwaysApply: false
 - Admin::TestCategoriesController (7 actions)
 - Admin::TestCategoriesTestsController (2 actions)
 - Admin::TestsController (10 actions)
-- Admin::UsersController (2 actions)
+- Admin::UsersController (5 actions)
 - Devise::OmniauthCallbacksController (4 actions)
 - Devise::PasswordsController (6 actions)
 - Devise::SessionsController (5 actions)

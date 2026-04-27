@@ -7,13 +7,13 @@
 ## Stack
 - Database: static_parse — 12 tables
 - Models: 12
-- Routes: 116 across 18 controllers
+- Routes: 122 across 19 controllers
 - Async: 2 jobs
 - Migrations: 31 total, 0 pending
 - Auth: Devise + Pundit
 - I18n: 2 locales (en, et)
 - Assets: propshaft, importmap
-- Performance: 20 issues detected
+- Performance: 22 issues detected
 
 ## Key models (12 total)
 - **Answer** (1a, 3v) — belongs_to :question
