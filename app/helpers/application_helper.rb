@@ -103,7 +103,8 @@ module ApplicationHelper
       { name: I18n.t('nav.tests'), path: admin_tests_path },
       { name: I18n.t('nav.test_categories'), path: admin_test_categories_path },
       { name: I18n.t('nav.users'), path: admin_users_path },
-      { name: I18n.t('nav.registrars'), path: admin_registrars_path }
+      { name: I18n.t('nav.registrars'), path: admin_registrars_path },
+      { name: I18n.t('nav.jobs'), path: admin_jobs_path }
     ]
   end
 end

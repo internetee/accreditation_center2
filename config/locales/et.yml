@@ -62,6 +62,7 @@ et:
     test_categories: "Testikategooriad"
     users: "Kasutajad"
     registrars: "Registripidajad"
+    jobs: "Tegevused"
   users:
     sessions:
       assignment_failed: "Automaatne testide määramine ebaõnnestus. Koordinaatoritele saadeti teavitus."

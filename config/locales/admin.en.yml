@@ -19,6 +19,25 @@ en:
       score: "Score"
       activity: "Activity"
       no_expiring_accreditations: "No expiring accreditations found"
+    jobs:
+      index:
+        title: "Jobs"
+        dedupe_note: "Email deduplication is still handled by RegistrarAccreditationNotificationsService."
+        accreditation_sync:
+          title: "Accreditation sync job"
+          registrar: "Registrar"
+          select_registrar: "Select a registrar"
+          submit: "Run accreditation sync"
+        expiry_check:
+          title: "Accreditation expiry check job"
+          reference_date: "Reference date"
+          submit: "Run expiry check"
+      accreditation_sync:
+        invalid_registrar: "Please choose a valid registrar."
+        enqueued: "Accreditation sync job was enqueued."
+      expiry_check:
+        invalid_date: "Please enter a valid date."
+        enqueued: "Expiry check job was enqueued."
     test_categories:
       updated: "Category updated"
       created: "Category created"

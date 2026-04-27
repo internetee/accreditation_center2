@@ -46,6 +46,12 @@ Rails.application.routes.draw do
     # Admin routes
     namespace :admin do
       get 'dashboard', to: 'dashboard#index'
+      resources :jobs, only: %i[index], controller: :jobs do
+        collection do
+          post :accreditation_sync
+          post :expiry_check
+        end
+      end
 
       resources :tests do
         member do

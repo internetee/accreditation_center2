@@ -19,6 +19,25 @@ et:
       score: "Tulemus"
       activity: "Tegevus"
       no_expiring_accreditations: "Aeguvate akrediteeringute ei leitud"
+    jobs:
+      index:
+        title: "Tegevused"
+        dedupe_note: "E-kirjade duplikaatide vältimine toimub endiselt RegistrarAccreditationNotificationsService teenuses."
+        accreditation_sync:
+          title: "Akrediteerimise sünkroonimise töö"
+          registrar: "Registripidaja"
+          select_registrar: "Vali registripidaja"
+          submit: "Käivita akrediteerimise sünkroonimine"
+        expiry_check:
+          title: "Akrediteerimise aegumise kontrolli töö"
+          reference_date: "Võrdluskuupäev"
+          submit: "Käivita aegumise kontroll"
+      accreditation_sync:
+        invalid_registrar: "Palun vali korrektne registripidaja."
+        enqueued: "Akrediteerimise sünkroonimise töö lisati järjekorda."
+      expiry_check:
+        invalid_date: "Palun sisesta korrektne kuupäev."
+        enqueued: "Aegumise kontrolli töö lisati järjekorda."
     test_categories:
       updated: "Kategooria salvestatud"
       created: "Kategooria loodud"

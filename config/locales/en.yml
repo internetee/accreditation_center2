@@ -41,6 +41,7 @@ en:
     test_categories: "Categories"
     users: "Users"
     registrars: "Registrars"
+    jobs: "Jobs"
   users:
     sessions:
       assignment_failed: "Automatic test assignment failed. Coordinators have been notified."

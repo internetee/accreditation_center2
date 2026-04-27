@@ -48,12 +48,13 @@ GET_CONTACT: "/api/v1/accreditation_center/contacts"
 GET_DOMAIN_INFO: "/api/v1/accreditation_center/domains"
 GET_INVOICES: "/api/v1/accreditation_center/invoice_status"
 
-#ACCR_BOT DATA
+# ACCR_BOT DATA - Authentication for REPP API updates
 ACCR_BOT_USERNAME: ""
 ACCR_BOT_PASSWORD: ""
 ACCR_BOT_CONTACT_CODE: ""
 ACCR_BOT_REGISTRAR_NAME: "ACCREDITATION EIS"
 
+# SSL Certificate paths for accr_bot
 CLIENT_BOT_CERTS_PATH: '/opt/ca/certs/accr_bot.crt.pem'
 CLIENT_BOT_KEY_PATH:  '/opt/ca/private/accr_bot.key.pem'
 
