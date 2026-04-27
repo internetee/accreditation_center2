@@ -278,9 +278,11 @@ class TestAttempt < ApplicationRecord
   def sync_accreditation_if_complete
     return unless passed?
 
-    registrar_name = user.registrar_name
-    return unless RegistrarAccreditationEligibility.accredited?(registrar_name)
+    registrar = user.registrar
+    return if registrar.blank?
 
-    AccreditationSyncJob.perform_later(registrar_name)
+    return unless RegistrarAccreditationEligibility.accredited?(registrar)
+
+    AccreditationSyncJob.perform_later(registrar)
   end
 end

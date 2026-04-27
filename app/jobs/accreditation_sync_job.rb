@@ -5,25 +5,25 @@ class AccreditationSyncJob < ApplicationJob
   queue_as :default
 
   # Sync accreditation for a specific registrar
-  # @param registrar_name [String] Name of the registrar to sync
-  def perform(registrar_name)
-    if registrar_name.blank?
-      Rails.logger.error 'Accreditation sync skipped: registrar_name is blank'
+  # @param registrar [Registrar]
+  def perform(registrar)
+    unless registrar.is_a?(Registrar)
+      Rails.logger.error "Accreditation sync skipped: Registrar instance required, got #{registrar.class}"
       return
     end
 
     service = AccreditationResultsService.new
 
-    result = service.sync_registrar_accreditation(registrar_name)
+    result = service.sync_registrar_accreditation(registrar)
     message = result&.dig(:message).presence || 'Unknown error'
 
     unless result&.dig(:success)
-      Rails.logger.error "Failed to sync accreditation for registrar #{registrar_name}: #{message}"
+      Rails.logger.error "Failed to sync accreditation for registrar #{registrar.name}: #{message}"
       return
     end
 
-    Rails.logger.info "Successfully synced accreditation for registrar #{registrar_name}"
+    Rails.logger.info "Successfully synced accreditation for registrar #{registrar.name}"
   rescue StandardError => e
-    Rails.logger.error "Accreditation sync failed for registrar #{registrar_name}: #{e.message}"
+    Rails.logger.error "Accreditation sync failed for registrar #{registrar&.name || 'unknown'}: #{e.message}"
   end
 end

@@ -21,6 +21,54 @@ RSpec.describe 'User flows', type: :system do
     login_with_oidc
 
     expect(page).to have_current_path(root_path(locale: I18n.default_locale))
+    expect(Registrar.count).to eq(1)
+    expect(Registrar.first.name).to eq('Registrar Ltd')
+    expect(Registrar.first.email).to eq('user@example.test')
+  end
+
+  it 'reuses existing registrar when another user logs in with the same registrar' do
+    existing_expire_date = 2.years.from_now.to_date
+    existing_user = create(
+      :user,
+      registrar_name: 'Registrar Ltd',
+      registrar_email: 'existing.registrar@example.test',
+      registrar_accreditation_date: 1.year.ago.to_date,
+      registrar_accreditation_expire_date: existing_expire_date
+    )
+    existing_registrar_id = existing_user.registrar_id
+
+    mock_oidc_auth(uid: 'EE69901012239', email: 'second.user@example.test', given_name: 'Second', family_name: 'User')
+    stub_oidc_api_auth(
+      email: 'second.user@example.test',
+      accreditation_date: Date.current,
+      accreditation_expire_date: 3.months.from_now.to_date
+    )
+
+    login_with_oidc
+
+    new_user = User.find_by(provider: 'oidc', uid: 'EE69901012239')
+    existing_registrar = Registrar.find(existing_registrar_id)
+    expect(new_user).to be_present
+    expect(new_user.registrar_id).to eq(existing_registrar_id)
+    expect(Registrar.count).to eq(1)
+    expect(existing_registrar.users.count).to eq(2)
+    expect(existing_registrar.accreditation_expire_date.to_date).to eq(existing_expire_date)
+  end
+
+  it 'creates a new registrar when another user logs in with a different registrar' do
+    existing_user = create(:user, registrar_name: 'Registrar Ltd', registrar_email: 'existing.registrar@example.test')
+    existing_registrar_id = existing_user.registrar_id
+
+    mock_oidc_auth(uid: 'EE79901012239', email: 'other.registrar.user@example.test', given_name: 'Other', family_name: 'Registrar')
+    stub_oidc_api_auth(email: 'other.registrar.user@example.test', registrar_name: 'Other Registrar Ltd')
+
+    login_with_oidc
+
+    new_user = User.find_by(provider: 'oidc', uid: 'EE79901012239')
+    expect(new_user).to be_present
+    expect(new_user.registrar.name).to eq('Other Registrar Ltd')
+    expect(new_user.registrar_id).not_to eq(existing_registrar_id)
+    expect(Registrar.count).to eq(2)
   end
 
   it 'logs out and returns to login page for normal user' do

@@ -22,10 +22,13 @@ class AccreditationResultsService < BotAuthService
   end
 
   # Sync accreditation for a registrar if they're newly accredited
-  # @param registrar_name [String] Registrar name to sync
+  # @param registrar [Registrar]
   # @return [Hash] Response from API
-  def sync_registrar_accreditation(registrar_name)
-    eligibility = RegistrarAccreditationEligibility.new(registrar_name)
+  def sync_registrar_accreditation(registrar)
+    return { success: false, message: 'Registrar is required' } unless registrar.is_a?(Registrar)
+
+    registrar_name = registrar.name
+    eligibility = RegistrarAccreditationEligibility.new(registrar)
     return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
 
     result = update_accreditation(
@@ -35,10 +38,10 @@ class AccreditationResultsService < BotAuthService
 
     return { success: false, message: 'Failed to update accreditation' } if result.nil? || result[:success] == false
 
-    update_registrar_users_accreditation!(
-      registrar_name: registrar_name,
-      accreditation_date: result[:accreditation_date],
-      accreditation_expire_date: result[:accreditation_expire_date]
+    registrar.update!(
+      accreditation_date: cast_to_time(result[:accreditation_date]),
+      accreditation_expire_date: cast_to_time(result[:accreditation_expire_date]),
+      updated_at: Time.current
     )
 
     { success: true, message: 'Accreditation synced successfully' }
@@ -49,26 +52,17 @@ class AccreditationResultsService < BotAuthService
   # Sync all accredited registrars
   # @return [Integer] Number of registrars synced
   def sync_all_accredited_registrars
-    synced_count = 0
+    registrars.find_each.count do |registrar|
+      next false unless should_sync_registrar?(registrar)
 
-    registrar_names.each do |registrar_name|
-      next unless RegistrarAccreditationEligibility.accredited?(registrar_name)
-      next unless should_sync_registrar?(registrar_name)
-
-      result = sync_registrar_accreditation(registrar_name)
-      synced_count += 1 if result[:success]
+      sync_registrar_accreditation(registrar)[:success]
     end
-
-    synced_count
   end
 
   private
 
-  def registrar_names
-    User.not_admin
-        .pluck(:registrar_name)
-        .filter_map { |name| name.to_s.strip.presence }
-        .uniq
+  def registrars
+    Registrar.with_non_admin_users
   end
 
   # Update accreditation date for a registrar
@@ -95,19 +89,9 @@ class AccreditationResultsService < BotAuthService
     end
   end
 
-  def should_sync_registrar?(_registrar_name)
+  def should_sync_registrar?(_registrar)
     # Placeholder for deduping/rate-limit logic if needed later.
     true
-  end
-
-  def update_registrar_users_accreditation!(registrar_name:, accreditation_date:, accreditation_expire_date:)
-    attrs = {
-      registrar_accreditation_date: cast_to_time(accreditation_date),
-      registrar_accreditation_expire_date: cast_to_time(accreditation_expire_date),
-      updated_at: Time.current
-    }
-
-    User.where(registrar_name: registrar_name).update_all(attrs)
   end
 
   def cast_to_time(value)

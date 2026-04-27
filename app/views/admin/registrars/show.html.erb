@@ -1,0 +1,95 @@
+<% content_for(:title) { "EIS | #{t('.title')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <div class="monospace">
+      <%= @registrar.name %> - <%= @registrar.email.presence || '-' %>
+    </div>
+    <%= back_link(text: t('.back_to_registrars'), path: admin_registrars_path) %>
+  </div>
+<% end %>
+
+<div class="page page--admin-registrar-detail">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.registrar_information') %></h3>
+          </div>
+          <div class="paper--content">
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.name') %></span>
+                <span class="stat-value"><%= @registrar.name %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.email') %></span>
+                <span class="stat-value" style="word-break: break-all;"><%= @registrar.email.presence || '-' %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.accreditation_status') %></span>
+                <span class="stat-value">
+                  <% if @registrar.accreditation_expire_date.blank? %>
+                    <span class="badge badge-default"><%= t('admin.registrars.index.no_accreditation') %></span>
+                  <% elsif @registrar.accreditation_expired? %>
+                    <span class="badge badge-danger"><%= t('admin.registrars.index.expired') %></span>
+                  <% elsif @registrar.accreditation_expires_soon? %>
+                    <span class="badge badge-warning"><%= t('admin.registrars.index.expires_soon') %></span>
+                  <% else %>
+                    <span class="badge badge-success"><%= t('admin.registrars.index.accredited') %></span>
+                  <% end %>
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.accreditation_expires_at') %></span>
+                <span class="stat-value"><%= @registrar.accreditation_expire_date ? l(@registrar.accreditation_expire_date.to_date) : '-' %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.users_count') %></span>
+                <span class="stat-value"><%= @registrar.users.size %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-xs-12">
+        <div class="paper">
+          <div class="paper--header">
+            <h3><%= t('.users') %></h3>
+          </div>
+          <div class="paper--content">
+            <% if @registrar.users.any? %>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th><%= t('.user_name') %></th>
+                    <th><%= t('.user_email') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @registrar.users.each do |user| %>
+                    <tr>
+                      <td><%= link_to user.display_name, admin_user_path(user) %></td>
+                      <td><%= user.email.presence || '-' %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% else %>
+              <p><%= t('.no_users') %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

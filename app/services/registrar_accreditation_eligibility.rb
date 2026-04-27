@@ -2,22 +2,22 @@
 
 # Encapsulates registrar-level accreditation rules shared by model/service flows.
 class RegistrarAccreditationEligibility
-  def self.accredited?(registrar_name)
-    new(registrar_name).accredited?
+  def self.accredited?(registrar)
+    new(registrar).accredited?
   end
 
-  def initialize(registrar_name)
-    @registrar_name = registrar_name.to_s.strip
+  def initialize(registrar)
+    @registrar = registrar
   end
 
   def accredited?
-    return false if @registrar_name.blank?
+    return false unless @registrar
 
-    theory_passed? && practical_passed?
+    theory_attempts.exists? && practical_attempts.exists?
   end
 
   def last_theory_passed_at
-    return nil if @registrar_name.blank?
+    return nil unless @registrar
 
     theory_attempts.maximum(:completed_at)
   end
@@ -25,20 +25,14 @@ class RegistrarAccreditationEligibility
   private
 
   def attempts
-    @attempts ||= TestAttempt.passed.completed
-                             .joins(:user, :test)
-                             .where(users: { registrar_name: @registrar_name })
-  end
-
-  def theory_passed?
-    theory_attempts.exists?
-  end
-
-  def practical_passed?
-    attempts.where(tests: { test_type: :practical }).exists?
+    @attempts ||= @registrar.test_attempts.passed.completed.joins(:test)
   end
 
   def theory_attempts
     attempts.where(tests: { test_type: :theoretical })
+  end
+
+  def practical_attempts
+    attempts.where(tests: { test_type: :practical })
   end
 end

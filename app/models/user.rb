@@ -4,6 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :recoverable, :trackable, :omniauthable, omniauth_providers: [:oidc]
 
   # Associations
+  belongs_to :registrar, optional: true
   has_many :test_attempts, dependent: :destroy
   has_many :tests, through: :test_attempts
 
@@ -24,11 +25,28 @@ class User < ApplicationRecord
   scope :admin, -> { where(role: :admin) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[name uid registrar_name username role]
+    %w[name uid registrar_id registrar_name username role]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[test_attempts tests]
+    %w[registrar test_attempts tests]
+  end
+
+  delegate :name, to: :registrar, prefix: true, allow_nil: true
+  delegate :email, :accreditation_date, :accreditation_expire_date, to: :registrar, prefix: true, allow_nil: true
+
+  ransacker :registrar_name do
+    Arel.sql('(SELECT registrars.name FROM registrars WHERE registrars.id = users.registrar_id)')
+  end
+
+  def assign_registrar_from_api!(registrar_name:, registrar_email:, accreditation_date:, accreditation_expire_date:)
+    normalized_name = registrar_name.to_s.strip
+    return if normalized_name.blank?
+
+    self.registrar = Registrar.find_or_initialize_by(name: normalized_name)
+    registrar.email = registrar_email if registrar_email.present?
+    registrar.accreditation_date = accreditation_date if accreditation_date.present?
+    registrar.accreditation_expire_date = accreditation_expire_date if accreditation_expire_date.present?
   end
 
   def set_default_role
@@ -47,7 +65,6 @@ class User < ApplicationRecord
     current_sign_in_ip
   end
 
-  # Accreditation methods
   def passed_tests
     test_attempts.where(passed: true)
   end
@@ -62,20 +79,6 @@ class User < ApplicationRecord
 
   def in_progress_tests
     test_attempts.in_progress
-  end
-
-  def registrar_accreditation_expired?
-    registrar_accreditation_expire_date.present? && registrar_accreditation_expire_date < Time.current
-  end
-
-  def registrar_accreditation_expires_soon?
-    registrar_accreditation_expire_date.present? && registrar_accreditation_expire_date - 30.days < Time.current
-  end
-
-  def days_until_registrar_accreditation_expiry
-    return nil unless registrar_accreditation_expire_date.present?
-
-    (registrar_accreditation_expire_date.to_date - Time.zone.today).to_i.clamp(0, Float::INFINITY)
   end
 
   def can_take_test?(test)

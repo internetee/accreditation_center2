@@ -1,0 +1,39 @@
+<table>
+  <tr>
+    <td>
+      <%= sanitize pagy_info(@pagy, item_name: t('.items', count: @pagy.count)) %>
+    </td>
+  </tr>
+</table>
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= sort_link(@search, "name", t('admin.registrars.index.name')) %></th>
+      <th><%= sort_link(@search, "email", t('admin.registrars.index.email')) %></th>
+      <th><%= sort_link(@search, "accreditation_expire_date", t('admin.registrars.index.accreditation_status')) %></th>
+      <th><%= sort_link(@search, "accreditation_expire_date", t('admin.registrars.index.accreditation_expires_at')) %></th>
+      <th><%= t('admin.registrars.index.users_count') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @registrars.each do |registrar| %>
+      <tr>
+        <td><%= link_to registrar.name, admin_registrar_path(registrar) %></td>
+        <td><%= registrar.email.presence || '-' %></td>
+        <td>
+          <% if registrar.accreditation_expire_date.blank? %>
+            <span class="badge badge-default"><%= t('admin.registrars.index.no_accreditation') %></span>
+          <% elsif registrar.accreditation_expired? %>
+            <span class="badge badge-danger"><%= t('admin.registrars.index.expired') %></span>
+          <% elsif registrar.accreditation_expires_soon? %>
+            <span class="badge badge-warning"><%= t('admin.registrars.index.expires_soon') %></span>
+          <% else %>
+            <span class="badge badge-success"><%= t('admin.registrars.index.accredited') %></span>
+          <% end %>
+        </td>
+        <td><%= registrar.accreditation_expire_date ? l(registrar.accreditation_expire_date.to_date) : '-' %></td>
+        <td><%= registrar.users.size %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

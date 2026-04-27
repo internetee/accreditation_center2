@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'HomeController', type: :request do
   describe 'GET /' do
     context 'as regular user' do
-      let(:user) { create(:user, registrar_accreditation_expire_date: 10.days.from_now) }
+      let(:user) { create(:user, registrar: create(:registrar, accreditation_expire_date: 10.days.from_now)) }
       let(:test_record) { create(:test, :practical, time_limit_minutes: 60) }
 
       before { sign_in(user, scope: :user) }
@@ -27,9 +27,7 @@ RSpec.describe 'HomeController', type: :request do
         expect(assigns(:completed_tests).first).to eq(completed_newer)
         expect(assigns(:test_statistics)).to eq(user.test_statistics)
 
-        expect(assigns(:accreditation_expiry_date)).to eq(user.registrar_accreditation_expire_date)
-        expect(assigns(:accreditation_expires_soon)).to eq(user.registrar_accreditation_expires_soon?)
-        expect(assigns(:days_until_expiry)).to eq(user.days_until_registrar_accreditation_expiry)
+        expect(assigns(:registrar)).to eq(user.registrar)
       end
 
       it 'limits completed tests to 5 items' do

@@ -80,10 +80,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       user.role ||= 'user'
       user.username = response[:username]
       user.name = user.name || response[:username]
-      user.email = response[:registrar_email].presence || user.email
-      user.registrar_name = response[:registrar_name].presence || user.registrar_name
-      user.registrar_accreditation_date = response[:accreditation_date].presence || user.registrar_accreditation_date
-      user.registrar_accreditation_expire_date = response[:accreditation_expire_date].presence || user.registrar_accreditation_expire_date
+      user.assign_registrar_from_api!(
+        registrar_name: response[:registrar_name],
+        registrar_email: response[:registrar_email],
+        accreditation_date: response[:accreditation_date],
+        accreditation_expire_date: response[:accreditation_expire_date]
+      )
       user.save!
     end
   end

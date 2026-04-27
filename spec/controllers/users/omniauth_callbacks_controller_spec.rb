@@ -50,8 +50,8 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
         username: 'user1',
         registrar_email: 'u@test',
         registrar_name: 'Registrar Ltd',
-        accreditation_date: Date.current,
-        accreditation_expire_date: 1.year.from_now.to_date
+        accreditation_date: Date.new(2026, 1, 1),
+        accreditation_expire_date: Date.new(2027, 1, 1)
       )
       allow(controller).to receive(:sign_in)
       allow(controller).to receive(:assign_test_attempts)
@@ -63,6 +63,11 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
       expect(session[:auth_token]).to eq('registry-token')
       expect(controller).to have_received(:sign_in).with(created_user)
       expect(response).to redirect_to(root_path(locale: I18n.default_locale))
+      expect(created_user.registrar).to be_present
+      expect(created_user.registrar.name).to eq('Registrar Ltd')
+      expect(created_user.registrar.email).to eq('u@test')
+      expect(created_user.registrar.accreditation_date.to_date).to eq(Date.new(2026, 1, 1))
+      expect(created_user.registrar.accreditation_expire_date.to_date).to eq(Date.new(2027, 1, 1))
     end
 
     it 'redirects immediately when callback belongs to current user' do

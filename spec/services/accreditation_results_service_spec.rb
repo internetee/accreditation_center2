@@ -32,172 +32,112 @@ RSpec.describe AccreditationResultsService do
   end
 
   describe '#sync_registrar_accreditation' do
-    let(:registrar_name) { 'Registrar A' }
+    let(:registrar) { create(:registrar, name: 'Registrar A') }
     let(:eligibility) { instance_double(RegistrarAccreditationEligibility) }
     let(:last_theory_test_passed_at) { Time.zone.parse('2026-01-15 10:00:00') }
-    let(:expected_body) do
-      {
-        accreditation_result: {
-          registrar_name: registrar_name,
-          last_theory_test_passed_at: last_theory_test_passed_at
-        }
-      }.to_json
-    end
 
     context 'when registrar is not accredited' do
       before do
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar_name).and_return(eligibility)
+        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
         allow(eligibility).to receive(:accredited?).and_return(false)
       end
 
       it 'returns error response without making API call' do
         expect(service).not_to receive(:update_accreditation)
 
-        result = service.sync_registrar_accreditation(registrar_name)
+        result = service.sync_registrar_accreditation(registrar)
 
         expect(result).to eq({ success: false, message: 'Registrar not accredited' })
       end
     end
 
+    context 'when registrar is invalid' do
+      it 'returns error response' do
+        expect(service.sync_registrar_accreditation('Registrar A')).to eq({ success: false, message: 'Registrar is required' })
+      end
+    end
+
     context 'when registrar is accredited' do
+      let(:accreditation_date) { Time.zone.parse('2026-01-15 10:00:00') }
+      let(:accreditation_expire_date) { Time.zone.parse('2028-01-15 10:00:00') }
+
       before do
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar_name).and_return(eligibility)
+        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
         allow(eligibility).to receive(:accredited?).and_return(true)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(last_theory_test_passed_at)
       end
 
-      it 'posts registrar payload including last theory pass date' do
-        stub_request(:post, api_url)
-          .with(body: expected_body, headers: headers)
-          .to_return(
-            status: 200,
-            body: {
-              code: 1000,
-              message: 'Accreditation info successfully added',
-              data: {
-                registrar_name: registrar_name,
-                accreditation_date: last_theory_test_passed_at,
-                accreditation_expire_date: (last_theory_test_passed_at + 24.months)
-              }
-            }.to_json
-          )
+      it 'updates registrar accreditation dates after successful sync' do
+        allow(service).to receive(:update_accreditation).and_return(
+          {
+            success: true,
+            registrar_name: registrar.name,
+            accreditation_date: accreditation_date,
+            accreditation_expire_date: accreditation_expire_date
+          }
+        )
 
-        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: true, message: 'Accreditation synced successfully' })
-      end
-
-      it 'updates accreditation dates for all users of registrar after successful sync' do
-        user1 = create(:user, registrar_name: registrar_name, registrar_accreditation_date: nil, registrar_accreditation_expire_date: nil)
-        user2 = create(:user, registrar_name: registrar_name, registrar_accreditation_date: nil, registrar_accreditation_expire_date: nil)
-        other_user = create(:user, registrar_name: 'Other Registrar')
-
-        accreditation_date = Time.zone.parse('2026-01-15 10:00:00')
-        accreditation_expire_date = Time.zone.parse('2028-01-15 10:00:00')
-
-        stub_request(:post, api_url)
-          .with(body: expected_body, headers: headers)
-          .to_return(
-            status: 200,
-            body: {
-              code: 1000,
-              message: 'Accreditation info successfully added',
-              data: {
-                registrar_name: registrar_name,
-                accreditation_date: accreditation_date.iso8601,
-                accreditation_expire_date: accreditation_expire_date.iso8601
-              }
-            }.to_json
-          )
-
-        result = service.sync_registrar_accreditation(registrar_name)
-
-        expect(result).to eq({ success: true, message: 'Accreditation synced successfully' })
-        expect(user1.reload.registrar_accreditation_date.to_i).to eq(accreditation_date.to_i)
-        expect(user1.registrar_accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
-        expect(user2.reload.registrar_accreditation_date.to_i).to eq(accreditation_date.to_i)
-        expect(user2.registrar_accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
-        expect(other_user.reload.registrar_accreditation_date).to be_nil
-        expect(other_user.registrar_accreditation_expire_date).to be_nil
+        expect(service.sync_registrar_accreditation(registrar)).to eq({ success: true, message: 'Accreditation synced successfully' })
+        expect(registrar.reload.accreditation_date.to_i).to eq(accreditation_date.to_i)
+        expect(registrar.accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
       end
 
       it 'returns error response if API call fails' do
-        user = create(:user, registrar_name: registrar_name,
-                             registrar_accreditation_date: 1.day.ago,
-                             registrar_accreditation_expire_date: 1.year.from_now)
+        allow(service).to receive(:update_accreditation).and_return({ success: false, message: 'error' })
 
-        stub_request(:post, api_url)
-          .with(body: expected_body, headers: headers)
-          .to_return(status: 404, body: { code: 2303, message: 'Object not found' }.to_json)
-
-        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
-        expect(user.reload.registrar_accreditation_date).to be_present
-        expect(user.registrar_accreditation_expire_date).to be_present
+        expect(service.sync_registrar_accreditation(registrar)).to eq({ success: false, message: 'Failed to update accreditation' })
       end
 
       it 'returns error response if API call returns unexpected response' do
-        user = create(:user, registrar_name: registrar_name,
-                             registrar_accreditation_date: 1.day.ago,
-                             registrar_accreditation_expire_date: 1.year.from_now)
+        allow(service).to receive(:update_accreditation).and_return(nil)
 
-        stub_request(:post, api_url)
-          .with(body: expected_body, headers: headers)
-          .to_return(status: 400, body: { message: 'Registrar name is missing', data: {} }.to_json)
-
-        expect(service.sync_registrar_accreditation(registrar_name)).to eq({ success: false, message: 'Failed to update accreditation' })
-        expect(user.reload.registrar_accreditation_date).to be_present
-        expect(user.registrar_accreditation_expire_date).to be_present
+        expect(service.sync_registrar_accreditation(registrar)).to eq({ success: false, message: 'Failed to update accreditation' })
       end
 
       it 'returns error reponse if StandardError is raised' do
         allow(service).to receive(:update_accreditation).and_raise(StandardError, 'Unexpected error')
-        expect(service.sync_registrar_accreditation(registrar_name))
+        expect(service.sync_registrar_accreditation(registrar))
           .to eq({ success: false, message: "Failed to sync accreditation for registrar 'Registrar A' : Unexpected error" })
       end
     end
   end
 
   describe '#sync_all_accredited_registrars' do
-    let(:registrar_name1) { 'Registrar A' }
-    let(:registrar_name2) { 'Registrar B' }
-    let(:registrar_name3) { 'Registrar C' }
-
-    before do
-      allow(service).to receive(:registrar_names).and_return([registrar_name1, registrar_name2, registrar_name3])
-      allow(service).to receive(:should_sync_registrar?).and_return(true)
-    end
+    let!(:registrar1) { create(:registrar, name: 'Registrar A') }
+    let!(:registrar2) { create(:registrar, name: 'Registrar B') }
+    let!(:registrar3) { create(:registrar, name: 'Registrar C') }
 
     it 'syncs only accredited registrars' do
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name1).and_return(true)
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name2).and_return(false)
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name3).and_return(true)
+      allow(service).to receive(:registrars).and_return(Registrar.where(id: [registrar1.id, registrar2.id, registrar3.id]))
+      allow(service).to receive(:should_sync_registrar?).and_return(true)
 
-      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name1).and_return({ success: true })
-      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: true })
-      expect(service).not_to receive(:sync_registrar_accreditation).with(registrar_name2)
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar1).and_return({ success: true })
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar2).and_return({ success: false })
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar3).and_return({ success: true })
 
       service.sync_all_accredited_registrars
     end
 
     it 'returns the count of successfully synced registrars' do
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).and_return(true)
-      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name1).and_return({ success: true })
-      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name2).and_return({ success: true })
-      allow(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: false })
+      allow(service).to receive(:registrars).and_return(Registrar.where(id: [registrar1.id, registrar2.id, registrar3.id]))
+      allow(service).to receive(:should_sync_registrar?).and_return(true)
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar1).and_return({ success: true })
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar2).and_return({ success: true })
+      allow(service).to receive(:sync_registrar_accreditation).with(registrar3).and_return({ success: false })
 
       count = service.sync_all_accredited_registrars
       expect(count).to eq(2)
     end
 
     it 'skips registrars that should not be synced' do
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name1).and_return(true)
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name2).and_return(true)
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar_name3).and_return(true)
-      allow(service).to receive(:should_sync_registrar?).with(registrar_name1).and_return(false)
-      allow(service).to receive(:should_sync_registrar?).with(registrar_name2).and_return(true)
-      allow(service).to receive(:should_sync_registrar?).with(registrar_name3).and_return(true)
+      allow(service).to receive(:registrars).and_return(Registrar.where(id: [registrar1.id, registrar2.id, registrar3.id]))
+      allow(service).to receive(:should_sync_registrar?).with(registrar1).and_return(false)
+      allow(service).to receive(:should_sync_registrar?).with(registrar2).and_return(true)
+      allow(service).to receive(:should_sync_registrar?).with(registrar3).and_return(true)
 
-      expect(service).not_to receive(:sync_registrar_accreditation).with(registrar_name1)
-      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name2).and_return({ success: true })
-      expect(service).to receive(:sync_registrar_accreditation).with(registrar_name3).and_return({ success: true })
+      expect(service).not_to receive(:sync_registrar_accreditation).with(registrar1)
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar2).and_return({ success: true })
+      expect(service).to receive(:sync_registrar_accreditation).with(registrar3).and_return({ success: true })
 
       count = service.sync_all_accredited_registrars
       expect(count).to eq(2)
