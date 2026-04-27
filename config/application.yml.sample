@@ -11,7 +11,8 @@ registrar_portal_url: "https://registrar.internet.ee"
 email_from_address: "noreply@internet.ee"
 
 # Mailer configuration
-mailer_host: 'https://localhost:9001'
+mailer_host: 'localhost'
+mailer_asset_host: 'http://localhost:3000'
 mailer_address: 'mailcatcher'
 mailer_port: '1025'
 mailer_enable_starttls_auto: false

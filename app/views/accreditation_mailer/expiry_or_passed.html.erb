@@ -1,13 +1,9 @@
 <p><%= t('mailers.accreditation.shared.greeting') %></p>
 
-<p><%= t('mailers.accreditation.expiry_or_passed.intro', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) %></p>
+<p><%= t('mailers.accreditation.expiry_or_passed.intro_html', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) %></p>
 
-<p><%= t('mailers.accreditation.expiry_or_passed.renewal_notice') %></p>
+<p><%= t('mailers.accreditation.expiry_or_passed.renewal_notice_html') %></p>
 
-<p><%= t('mailers.accreditation.expiry_or_passed.test_details') %></p>
+<p><%= t('mailers.accreditation.expiry_or_passed.test_details_html') %></p>
 
-<p><%= t('mailers.accreditation.expiry_or_passed.two_year_rule') %></p>
-
-<p><%= t('mailers.accreditation.shared.support') %> <a href="mailto:support@internet.ee">support@internet.ee</a></p>
-
-<p><%= t('mailers.accreditation.shared.closing') %><br>Eesti Interneti Sihtasutus</p>
+<p><%= t('mailers.accreditation.expiry_or_passed.two_year_rule_html') %></p>

@@ -140,7 +140,7 @@ RSpec.describe AccreditationMailer, type: :mailer do
     end
 
     it 'uses the assignment failed subject' do
-      expect(mail.subject).to eq("Automatic Test Assignment Failed for #{user.username}")
+      expect(mail.subject).to eq("Automatic test assignment failed for user #{user.display_name}")
     end
 
     it 'lists each failure in the body' do

@@ -1,6 +1,6 @@
-Automatic test assignment failed for <%= @user.display_name %> (<%= @user.email %>).
+<%= t('mailers.accreditation.assignment_failed.intro_text', name: @user.display_name) %>
 
-Please review the account and assign the missing tests manually.
+<%= t('mailers.accreditation.assignment_failed.failures_text') %>
 
 <% @failures.each do |failure| %>
 - <%= failure.test_type.to_s.humanize %>: <%= failure.error_message %>

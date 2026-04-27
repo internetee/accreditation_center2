@@ -1,5 +1,4 @@
 class AccreditationMailer < ApplicationMailer
- 
   def test_completion(user, test_attempt)
     @user = user
     @test_attempt = test_attempt
@@ -76,7 +75,7 @@ class AccreditationMailer < ApplicationMailer
 
     mail(
       to: User.admin.pluck(:email),
-      subject: t('mailers.accreditation.assignment_failed.subject', username: user.username)
+      subject: t('mailers.accreditation.assignment_failed.subject', name: user.display_name)
     )
   end
 

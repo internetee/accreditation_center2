@@ -89,6 +89,8 @@ Rails.application.configure do
     host: ENV.fetch('mailer_host', nil)
   }
 
+  config.action_mailer.asset_host = ENV.fetch('mailer_asset_host', nil)
+
   routes.default_url_options[:host] = ENV.fetch('mailer_host', nil)
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
