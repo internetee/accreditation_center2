@@ -1,15 +1,4 @@
 class AccreditationMailer < ApplicationMailer
-  def test_completion(user, test_attempt)
-    @user = user
-    @test_attempt = test_attempt
-    @test = test_attempt.test
-
-    mail(
-      to: user.email,
-      subject: t('mailers.accreditation.test_completion.subject', test: @test.title)
-    )
-  end
-
   def accreditation_granted_or_reaccredited(registrar, reaccreditation: false)
     @registrar = registrar
     @reaccreditation = reaccreditation

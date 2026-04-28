@@ -1,12 +1,10 @@
 et:
   mailers:
     accreditation:
-      test_completion:
-        subject: "Test on lõpetatud - %{test}"
       shared:
         greeting: "Tere!"
-        contact_html: "Küsimuste või probleemide tekkimisel võtke meiega ühendust <a href='mailto:support@internet.ee'>support@internet.ee</a>"
-        contact_text: "Küsimuste või probleemide tekkimisel võtke meiega ühendust support@internet.ee"
+        contact_html: "Küsimuste või probleemide tekkimisel võtke meiega ühendust <a href='mailto:support@internet.ee'>support@internet.ee</a>."
+        contact_text: "Küsimuste või probleemide tekkimisel võtke meiega ühendust support@internet.ee."
         sincerely: "Lugupidamisega,"
         eis_tagline_html: "Eesti Interneti Sihtasutus"
         eis_tagline_text: "Eesti Interneti Sihtasutus"
@@ -30,7 +28,7 @@ et:
         intro_text: "Eesti Interneti SA tuletab meelde, et registripidaja %{registrar} akrediteering aegub %{expiry_date}."
         renewal_notice_html: "Akrediteering tuleb edukalt pikendada enne selle aegumise kuupäeva .ee domeenide registreerimisteenuse osutamiseks."
         renewal_notice_text: "Akrediteering tuleb edukalt pikendada enne selle aegumise kuupäeva .ee domeenide registreerimisteenuse osutamiseks."
-        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://st-accred.infra.tld.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://accreditation.internet.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
         test_details_text: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie akrediteerimiskeskkonnas. Test loetakse edukaks, kui õigete vastuste osakaal on vähemalt 70% ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
         two_year_rule_html: "Teoreetilise testi läbimine on akrediteeringu säilitamiseks kohustuslik iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
         two_year_rule_text: "Teoreetilise testi läbimine on akrediteeringu säilitamiseks kohustuslik iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
@@ -40,7 +38,7 @@ et:
         intro_text: "Eesti Interneti SA annab teada, et registripidaja %{registrar} akrediteering on jõudnud või ületanud aegumise kuupäeva (%{expiry_date})."
         renewal_notice_html: "Akrediteering tuleb edukalt pikendada, et jätkata .ee domeenide registreerimisteenuse osutamist."
         renewal_notice_text: "Akrediteering tuleb edukalt pikendada, et jätkata .ee domeenide registreerimisteenuse osutamist."
-        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://st-accred.infra.tld.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://accreditation.internet.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
         test_details_text: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie akrediteerimiskeskkonnas. Test loetakse edukaks, kui õigete vastuste osakaal on vähemalt 70% ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
         two_year_rule_html: "Vähemalt üks registripidaja töötaja peab teoreetilise testi edukalt läbima iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
         two_year_rule_text: "Vähemalt üks registripidaja töötaja peab teoreetilise testi edukalt läbima iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."

@@ -27,33 +27,19 @@ class AccreditationResultsService < BotAuthService
   def sync_registrar_accreditation(registrar)
     return { success: false, message: 'Registrar is required' } unless registrar.is_a?(Registrar)
 
-    registrar_name = registrar.name
-    previous_accreditation_date = registrar.accreditation_date
-    previous_accreditation_expire_date = registrar.accreditation_expire_date
     eligibility = RegistrarAccreditationEligibility.new(registrar)
     return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
 
-    result = update_accreditation(
-      registrar_name,
-      last_theory_test_passed_at: eligibility.last_theory_passed_at
-    )
+    previous_dates = previous_accreditation_dates(registrar)
+    result = perform_sync(registrar, eligibility)
+    return { success: false, message: 'Failed to update accreditation' } unless sync_successful?(result)
 
-    return { success: false, message: 'Failed to update accreditation' } if result.nil? || result[:success] == false
-
-    registrar.update!(
-      accreditation_date: cast_to_time(result[:accreditation_date]),
-      accreditation_expire_date: cast_to_time(result[:accreditation_expire_date]),
-      updated_at: Time.current
-    )
-    RegistrarAccreditationNotificationsService.new.notify_accreditation_sync(
-      registrar: registrar,
-      previous_accreditation_date: previous_accreditation_date,
-      previous_accreditation_expire_date: previous_accreditation_expire_date
-    )
+    apply_sync_result!(registrar, result)
+    notify_sync(registrar, previous_dates)
 
     { success: true, message: 'Accreditation synced successfully' }
   rescue StandardError => e
-    { success: false, message: "Failed to sync accreditation for registrar '#{registrar_name}' : #{e.message}" }
+    { success: false, message: "Failed to sync accreditation for registrar '#{registrar.name}' : #{e.message}" }
   end
 
   # Sync all accredited registrars
@@ -99,6 +85,40 @@ class AccreditationResultsService < BotAuthService
   def should_sync_registrar?(_registrar)
     # Placeholder for deduping/rate-limit logic if needed later.
     true
+  end
+
+  def previous_accreditation_dates(registrar)
+    {
+      accreditation_date: registrar.accreditation_date,
+      accreditation_expire_date: registrar.accreditation_expire_date
+    }
+  end
+
+  def perform_sync(registrar, eligibility)
+    update_accreditation(
+      registrar.name,
+      last_theory_test_passed_at: eligibility.last_theory_passed_at
+    )
+  end
+
+  def sync_successful?(result)
+    result.present? && result[:success] != false
+  end
+
+  def apply_sync_result!(registrar, result)
+    registrar.update!(
+      accreditation_date: cast_to_time(result[:accreditation_date]),
+      accreditation_expire_date: cast_to_time(result[:accreditation_expire_date]),
+      updated_at: Time.current
+    )
+  end
+
+  def notify_sync(registrar, previous_dates)
+    RegistrarAccreditationNotificationsService.new.notify_accreditation_sync(
+      registrar: registrar,
+      previous_accreditation_date: previous_dates[:accreditation_date],
+      previous_accreditation_expire_date: previous_dates[:accreditation_expire_date]
+    )
   end
 
   def cast_to_time(value)

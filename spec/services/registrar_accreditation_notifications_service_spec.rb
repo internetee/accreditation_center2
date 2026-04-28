@@ -51,14 +51,7 @@ RSpec.describe RegistrarAccreditationNotificationsService do
           previous_accreditation_expire_date: nil
         )
       }.to have_enqueued_mail(AccreditationMailer, :accreditation_granted_or_reaccredited)
-
-      expect {
-        service.notify_accreditation_sync(
-          registrar: registrar,
-          previous_accreditation_date: nil,
-          previous_accreditation_expire_date: nil
-        )
-      }.not_to have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
+        .and have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
 
       expect {
         service.notify_accreditation_sync(
@@ -67,6 +60,14 @@ RSpec.describe RegistrarAccreditationNotificationsService do
           previous_accreditation_expire_date: nil
         )
       }.not_to have_enqueued_mail(AccreditationMailer, :accreditation_granted_or_reaccredited)
+
+      expect {
+        service.notify_accreditation_sync(
+          registrar: registrar,
+          previous_accreditation_date: nil,
+          previous_accreditation_expire_date: nil
+        )
+      }.not_to have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
     end
 
     it 'sends reaccreditation confirmation and admin notice in window, once per cycle' do
@@ -98,7 +99,7 @@ RSpec.describe RegistrarAccreditationNotificationsService do
       expect {
         service.notify_accreditation_sync(
           registrar: registrar,
-          previous_accreditation_date: Time.zone.parse("2024-04-20 00:00:00"),
+          previous_accreditation_date: Time.zone.parse('2024-04-20 00:00:00'),
           previous_accreditation_expire_date: previous_expiry
         )
       }.not_to have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
@@ -106,10 +107,38 @@ RSpec.describe RegistrarAccreditationNotificationsService do
       expect {
         service.notify_accreditation_sync(
           registrar: registrar,
-          previous_accreditation_date: Time.zone.parse("2024-04-20 00:00:00"),
+          previous_accreditation_date: Time.zone.parse('2024-04-20 00:00:00'),
           previous_accreditation_expire_date: previous_expiry
         )
       }.not_to have_enqueued_mail(AccreditationMailer, :accreditation_granted_or_reaccredited)
+    end
+
+    it 'does not raise when previous expiry date is nil' do
+      registrar.update!(accreditation_date: Time.zone.parse('2026-04-10 10:00:00'))
+
+      expect {
+        service.notify_accreditation_sync(
+          registrar: registrar,
+          previous_accreditation_date: Time.zone.parse('2024-04-20 00:00:00'),
+          previous_accreditation_expire_date: nil
+        )
+      }.not_to raise_error
+
+      expect {
+        service.notify_accreditation_sync(
+          registrar: registrar,
+          previous_accreditation_date: Time.zone.parse('2024-04-20 00:00:00'),
+          previous_accreditation_expire_date: nil
+        )
+      }.not_to have_enqueued_mail(AccreditationMailer, :accreditation_granted_or_reaccredited)
+
+      expect {
+        service.notify_accreditation_sync(
+          registrar: registrar,
+          previous_accreditation_date: Time.zone.parse('2024-04-20 00:00:00'),
+          previous_accreditation_expire_date: nil
+        )
+      }.not_to have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
     end
   end
 

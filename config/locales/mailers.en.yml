@@ -1,8 +1,6 @@
 en:
   mailers:
     accreditation:
-      test_completion:
-        subject: "Test Completed - %{test}"
       shared:
         greeting: "Hello!"
         contact_html: "If you have any questions or issues, contact us at <a href='mailto:support@internet.ee'>support@internet.ee</a>"
@@ -30,7 +28,7 @@ en:
         intro_text: "Estonian Internet Foundation reminds you that the accreditation of registrar %{registrar} will expire on %{expiry_date}."
         renewal_notice_html: "The accreditation must be successfully renewed before its expiration date in order to provide .ee domain name registration services."
         renewal_notice_text: "The accreditation must be successfully renewed before its expiration date in order to provide .ee domain name registration services."
-        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://st-accred.infra.tld.ee/et'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://accreditation.internet.ee/en'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
         test_details_text: "To renew the accreditation, you must take the theory test in our accreditation environment. The test is considered passed if the percentage of correct answers is at least 70%, and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
         two_year_rule_html: "Passing the theoretical test is mandatory every two years to maintain accreditation. Each time the test is passed, the deadline is automatically updated based on the time of passing."
         two_year_rule_text: "Passing the theoretical test is mandatory every two years to maintain accreditation. Each time the test is passed, the deadline is automatically updated based on the time of passing."
@@ -40,7 +38,7 @@ en:
         intro_text: "Estonian Internet Foundation notifies you that the accreditation of registrar %{registrar} has reached or passed the expiration date (%{expiry_date})."
         renewal_notice_html: "The accreditation must be successfully renewed to continue providing .ee domain name registration services."
         renewal_notice_text: "The accreditation must be successfully renewed to continue providing .ee domain name registration services."
-        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://st-accred.infra.tld.ee/et'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://accreditation.internet.ee/en'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
         test_details_text: "To renew the accreditation, you must take the theory test in our accreditation environment. The test is considered passed if the percentage of correct answers is at least 70%, and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
         two_year_rule_html: "At least one employee of the registrar must pass the theoretical test every two years. Each time the test is passed, the deadline is automatically updated based on the time of passing."
         two_year_rule_text: "At least one employee of the registrar must pass the theoretical test every two years. Each time the test is passed, the deadline is automatically updated based on the time of passing."

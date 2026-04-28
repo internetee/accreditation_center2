@@ -39,6 +39,7 @@ class RegistrarAccreditationNotificationsService
 
     if previous_accreditation_date.blank?
       send_accreditation_granted(registrar)
+      send_admin_window_notice(registrar, registrar.accreditation_expire_date || registrar.accreditation_date)
       return
     end
 
@@ -101,6 +102,8 @@ class RegistrarAccreditationNotificationsService
   end
 
   def reaccredited_within_window?(registrar, previous_expire_date)
+    return false if registrar.accreditation_date.blank? || previous_expire_date.blank?
+
     renewed_on = registrar.accreditation_date.to_date
     expires_on = previous_expire_date.to_date
 

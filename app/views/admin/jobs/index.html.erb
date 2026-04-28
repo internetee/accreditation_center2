@@ -42,7 +42,6 @@
             <h3 style="margin-bottom: 12px;"><%= t('.expiry_check.title', default: 'Accreditation expiry check job') %></h3>
             <%= form_with url: { action: :expiry_check }, method: :post, local: true, class: 'form' do %>
               <div class="form--row">
-                <%= label_tag :reference_date, t('.expiry_check.reference_date', default: 'Reference date'), class: 'form--label' %>
                 <p class="form--hint" style="margin-bottom: 8px;">
                   <%= t(
                         '.expiry_check.reference_date_hint',
@@ -50,6 +49,7 @@
                         default: "Used as the \"today\" baseline for expiry evaluation: sends 'expiry_30_days' when expiry date equals reference date + REACCREDITATION_WINDOW_DAYS (%{window_days} days), and sends 'expiry_or_passed' when expiry date is on or before the reference date."
                       ) %>
                 </p>
+                <%= label_tag :reference_date, t('.expiry_check.reference_date', default: 'Reference date'), class: 'form--label' %>
                 <div class="form--field">
                   <div class="form--input">
                     <%= date_field_tag :reference_date, Time.zone.today, class: 'input' %>

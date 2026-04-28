@@ -3,5 +3,5 @@ class RegistrarNotificationEvent < ApplicationRecord
 
   validates :event_type, :cycle_key, :sent_at, presence: true
   validates :cycle_key,
-            uniqueness: { scope: [:registrar_id, :event_type] }
+            uniqueness: { scope: %i[registrar_id event_type] }
 end
