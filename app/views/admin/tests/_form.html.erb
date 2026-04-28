@@ -99,7 +99,7 @@
         <div class="col-md-12 col-xs-12">
           <div class="form--row">
             <div class="form--field">
-              <div class="form--input small">
+              <div class="form--input test-categories-select">
                 <%= simple_select_tag 'test[test_category_ids]',
                     options_for_select(TestCategory.active.map { |category| [category.name_with_rule, category.id] }, @test.test_categories.pluck(:id)),
                     multiple: true, required: false %>

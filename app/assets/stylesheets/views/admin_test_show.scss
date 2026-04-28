@@ -114,12 +114,23 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
   margin-bottom: 15px;
 }
 
 .category-header h4 {
   margin: 0;
   color: #333;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.category-header h4 a {
+  display: inline;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .category-actions {

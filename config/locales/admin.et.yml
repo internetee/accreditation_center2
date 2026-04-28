@@ -89,6 +89,7 @@ et:
         confirm_delete: "Kas oled kindel, et soovid selle kategooria kustutada?"
         test_category_information: "Kategooria teave"
         questions: "Küsimused"
+        no_questions: "Küsimusi pole veel lisatud."
         question_dialog_title: "Küsimuse vorm"
         answer_dialog_title: "Vastuse vorm"
         practical_tasks: "Praktilised ülesanded"

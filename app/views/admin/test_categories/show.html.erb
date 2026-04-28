@@ -83,7 +83,11 @@
   <div class="wrapper">
     <div class="row">
       <div class="col-xs-12">
-        <%= render 'admin/test_categories/questions_table' %>
+        <% if @questions.any? %>
+          <%= render 'admin/test_categories/questions_table' %>
+        <% else %>
+          <p><%= t('.no_questions', default: 'No questions added yet.') %></p>
+        <% end %>
       </div>
     </div>
   </div>

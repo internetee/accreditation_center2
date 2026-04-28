@@ -109,4 +109,32 @@ div.choices {
             }
         }
     }
+
+    .form--input.test-categories-select & {
+        &__inner {
+            min-height: 120px;
+            padding: 10px 12px;
+            border-color: variables.$grey2;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        &.is-focused {
+            .choices__inner {
+                border-color: variables.$blue;
+                box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.12);
+            }
+        }
+
+        &__list {
+            &--multiple {
+                .choices__item {
+                    margin: 4px 6px 4px 0;
+                    padding: 6px 10px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    line-height: 16px;
+                }
+            }
+        }
+    }
 }

@@ -89,6 +89,7 @@ en:
         confirm_delete: "Are you sure you want to delete this category?"
         test_category_information: "Category Information"
         questions: "Questions"
+        no_questions: "No questions added yet."
         question_dialog_title: "Question Form"
         answer_dialog_title: "Answer Form"
         practical_tasks: "Practical Tasks"
