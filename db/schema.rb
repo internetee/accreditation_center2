@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_24_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_27_082000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_110000) do
     t.index ["question_type"], name: "index_questions_on_question_type"
     t.index ["test_category_id", "display_order"], name: "index_questions_on_test_category_id_and_display_order", unique: true
     t.index ["test_category_id"], name: "index_questions_on_test_category_id"
+  end
+
+  create_table "registrar_notification_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "cycle_key", null: false
+    t.string "event_type", null: false
+    t.bigint "registrar_id", null: false
+    t.datetime "sent_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["registrar_id", "event_type", "cycle_key"], name: "index_registrar_notification_events_on_dedupe_key", unique: true
+    t.index ["registrar_id"], name: "index_registrar_notification_events_on_registrar_id"
   end
 
   create_table "registrars", force: :cascade do |t|
@@ -190,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_110000) do
   add_foreign_key "practical_tasks", "tests"
   add_foreign_key "question_responses", "test_attempts"
   add_foreign_key "questions", "test_categories"
+  add_foreign_key "registrar_notification_events", "registrars"
   add_foreign_key "test_attempts", "tests"
   add_foreign_key "test_attempts", "users"
   add_foreign_key "test_categories_tests", "test_categories"

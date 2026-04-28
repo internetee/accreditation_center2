@@ -29,6 +29,8 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  config.active_storage.variant_processor = :disabled
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch('RAILS_ASSUME_SSL', true))
 
@@ -83,25 +85,7 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates.
-  # config.action_mailer.default_url_options = { host: "example.com" }
-  config.action_mailer.default_url_options = {
-    host: ENV.fetch('mailer_host', nil)
-  }
-
   routes.default_url_options[:host] = ENV.fetch('mailer_host', nil)
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  config.action_mailer.smtp_settings = {
-    user_name: ENV.fetch('mailer_user_name', nil),
-    password: ENV.fetch('mailer_password', nil),
-    address: ENV.fetch('mailer_address', nil),
-    port: ENV.fetch('mailer_port', nil),
-    authentication: ENV.fetch('mailer_authentication', nil),
-    enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', false).to_s == 'true',
-    domain: ENV.fetch('mailer_domain', nil),
-    openssl_verify_mode: ENV.fetch('mailer_openssl_verify_mode', nil)
-  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

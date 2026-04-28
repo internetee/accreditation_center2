@@ -77,8 +77,7 @@ class TestAttempt < ApplicationRecord
     self.passed = score_passed?
     save!
 
-    # Send completion email notification
-    # AccreditationMailer.test_completion(user, self).deliver_now
+    notify_registrar_for_test_completion
 
     # Sync accreditation to REPP if registrar is fully accredited
     sync_accreditation_if_complete
@@ -274,6 +273,10 @@ class TestAttempt < ApplicationRecord
   end
 
   private
+
+  def notify_registrar_for_test_completion
+    RegistrarAccreditationNotificationsService.new.notify_test_completion(self)
+  end
 
   def sync_accreditation_if_complete
     return unless passed?

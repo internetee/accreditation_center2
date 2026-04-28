@@ -41,6 +41,7 @@ en:
     test_categories: "Categories"
     users: "Users"
     registrars: "Registrars"
+    jobs: "Jobs"
   users:
     sessions:
       assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
@@ -168,18 +169,6 @@ en:
       title: "Test results"
       view_test: "View test"
       view_test_unavailable: "Review unavailable"
-  mailers:
-    accreditation:
-      test_completion:
-        subject: "Test Completed - %{test}"
-      expiry_warning:
-        subject: "Accreditation Expires in %{days} Days"
-      expiry_notification:
-        subject: "Accreditation Expired - Action Required"
-      coordinator_notification:
-        subject: "Accreditation Expiry Alert - %{count} Users"
-      assignment_failed:
-        subject: "Automatic Test Assignment Failed for %{username}"
   validators:
     change_registrant:
       source_domain_not_found: "Source domain not found: %{domain}"

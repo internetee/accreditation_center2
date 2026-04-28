@@ -1,0 +1,9 @@
+<p><%= t('mailers.accreditation.shared.greeting') %></p>
+
+<p><%= t('mailers.accreditation.expiry_or_passed.intro_html', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) %></p>
+
+<p><%= t('mailers.accreditation.expiry_or_passed.renewal_notice_html') %></p>
+
+<p><%= t('mailers.accreditation.expiry_or_passed.test_details_html') %></p>
+
+<p><%= t('mailers.accreditation.expiry_or_passed.two_year_rule_html') %></p>

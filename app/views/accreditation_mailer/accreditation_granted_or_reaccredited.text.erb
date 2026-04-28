@@ -1,0 +1,7 @@
+<%= t('mailers.accreditation.shared.greeting') %>
+
+<%= t('mailers.accreditation.accreditation_granted_or_reaccredited.intro_text', registrar: @registrar.name) %>
+
+<%= t('mailers.accreditation.accreditation_granted_or_reaccredited.valid_until_text', expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) if @registrar.accreditation_expire_date.present? %>
+
+<%= t('mailers.accreditation.accreditation_granted_or_reaccredited.follow_up') %>

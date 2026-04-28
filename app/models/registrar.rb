@@ -1,6 +1,7 @@
 class Registrar < ApplicationRecord
   has_many :users, dependent: :restrict_with_exception
   has_many :test_attempts, through: :users
+  has_many :registrar_notification_events, dependent: :destroy
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
@@ -11,7 +12,7 @@ class Registrar < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[test_attempts users]
+    %w[registrar_notification_events test_attempts users]
   end
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }

@@ -1,0 +1,9 @@
+<%= t('mailers.accreditation.shared.greeting') %>
+
+<%= t('mailers.accreditation.expiry_30_days.intro_text', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) %>
+
+<%= t('mailers.accreditation.expiry_30_days.renewal_notice_text') %>
+
+<%= t('mailers.accreditation.expiry_30_days.test_details_text') %>
+
+<%= t('mailers.accreditation.expiry_30_days.two_year_rule_text') %>

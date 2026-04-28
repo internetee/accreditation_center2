@@ -1,0 +1,82 @@
+en:
+  mailers:
+    accreditation:
+      shared:
+        greeting: "Hello!"
+        contact_html: "If you have any questions or issues, contact us at <a href='mailto:support@internet.ee'>support@internet.ee</a>"
+        contact_text: "If you have any questions or issues, contact us at support@internet.ee"
+        sincerely: "Sincerely,"
+        eis_tagline_html: "Estonian Internet Foundation"
+        eis_tagline_text: "Estonian Internet Foundation"
+        eis_contact_html: |
+          <a href='mailto:info@internet.ee'>info@internet.ee</a><br>
+          <a href='https://internet.ee/en'>Internet.ee/en</a><br>
+          Tel +372 727 100<br>
+          Paldiski mnt. 80, 10617 Tallinn
+        eis_contact_text: |
+          info@internet.ee
+          Internet.ee/en
+          Tel +372 727 100
+          Paldiski mnt. 80, 10617 Tallinn
+        eis_org_name_html: "<strong>.ee is the gateway to Estonia</strong>"
+        eis_org_name_text: ".ee is the gateway to Estonia"
+        eis_social_html: "Follow us on <a href='https://www.facebook.com/internet.ee'>Facebook</a> and <a href='https://www.linkedin.com/company/internet-ee'>LinkedIn</a> and subscribe to our monthly <a href='https://internet.ee/uudiskiri'>newsletter</a>!"
+        eis_social_text: "Follow us on Facebook (https://www.facebook.com/internet.ee) and LinkedIn (https://www.linkedin.com/company/internet-ee) and subscribe to our monthly newsletter (https://internet.ee/uudiskiri)!"
+      expiry_30_days:
+        subject: "%{registrar} accreditation expires on %{expiry_date}"
+        intro_html: "Estonian Internet Foundation reminds you that the accreditation of registrar %{registrar} will expire on <strong>%{expiry_date}</strong>."
+        intro_text: "Estonian Internet Foundation reminds you that the accreditation of registrar %{registrar} will expire on %{expiry_date}."
+        renewal_notice_html: "The accreditation must be successfully renewed before its expiration date in order to provide .ee domain name registration services."
+        renewal_notice_text: "The accreditation must be successfully renewed before its expiration date in order to provide .ee domain name registration services."
+        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://accreditation.internet.ee/en'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        test_details_text: "To renew the accreditation, you must take the theory test in our accreditation environment. The test is considered passed if the percentage of correct answers is at least 70%, and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        two_year_rule_html: "Passing the theoretical test is mandatory every two years to maintain accreditation. Each time the test is passed, the deadline is automatically updated based on the time of passing."
+        two_year_rule_text: "Passing the theoretical test is mandatory every two years to maintain accreditation. Each time the test is passed, the deadline is automatically updated based on the time of passing."
+      expiry_or_passed:
+        subject: "Reminder: %{registrar} accreditation deadline"
+        intro_html: "Estonian Internet Foundation notifies you that the accreditation of registrar %{registrar} has reached or passed the expiration date (<strong>%{expiry_date}</strong>)."
+        intro_text: "Estonian Internet Foundation notifies you that the accreditation of registrar %{registrar} has reached or passed the expiration date (%{expiry_date})."
+        renewal_notice_html: "The accreditation must be successfully renewed to continue providing .ee domain name registration services."
+        renewal_notice_text: "The accreditation must be successfully renewed to continue providing .ee domain name registration services."
+        test_details_html: "To renew the accreditation, you must take the theory test in our <a href='https://accreditation.internet.ee/en'>accreditation environment</a>. The test is considered passed if the <strong>percentage of correct answers is at least 70%</strong> and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        test_details_text: "To renew the accreditation, you must take the theory test in our accreditation environment. The test is considered passed if the percentage of correct answers is at least 70%, and you have 40 minutes to complete it. After taking the test, you can review the correct answers for 10 minutes."
+        two_year_rule_html: "At least one employee of the registrar must pass the theoretical test every two years. Each time the test is passed, the deadline is automatically updated based on the time of passing."
+        two_year_rule_text: "At least one employee of the registrar must pass the theoretical test every two years. Each time the test is passed, the deadline is automatically updated based on the time of passing."
+      accreditation_granted:
+        subject: "%{registrar} accreditation has been successfully granted"
+      reaccreditation_granted:
+        subject: "%{registrar} accreditation has been successfully renewed"
+      accreditation_granted_or_reaccredited:
+        intro_html: "Estonian Internet Foundation notifies you that <strong>%{registrar} accreditation has been successfully renewed!</strong>"
+        intro_text: "Estonian Internet Foundation notifies you that %{registrar} accreditation has been successfully renewed!"
+        valid_until_html: "The accreditation is valid until <strong>%{expiry_date}</strong>."
+        valid_until_text: "The accreditation is valid until %{expiry_date}."
+        follow_up: "In the meantime, you can use the accreditation environment to assess the knowledge of your current or new employees. When the theoretical test is successfully completed, the validity date of the accreditation is automatically extended."
+      practical_passed_not_accredited:
+        subject: "%{registrar} practical test successfully passed"
+        intro_html: "Estonian Internet Foundation notifies you that <strong>%{registrar} practical test was successfully passed!</strong>"
+        intro_text: "Estonian Internet Foundation notifies you that %{registrar} practical test was successfully passed."
+        requirement_html: "In order to obtain accreditation, both the practical and the theoretical test must be passed."
+        requirement_text: "In order to obtain accreditation, both the practical and the theoretical test must be passed."
+        theory_details_html: "If you have not yet passed the theoretical test, you can do so <strong>at a convenient time in the accreditation environment</strong>. You have 40 minutes to complete the test and need <strong>at least 70% correct answers</strong> to pass. The tests can be taken by different employees."
+        theory_details_text: "If you have not yet passed the theoretical test, you can do so at a convenient time in the accreditation environment. You have 40 minutes to complete the test and need at least 70% correct answers to pass. The tests can be taken by different employees."
+      theoretical_passed_not_accredited:
+        subject: "%{registrar} theoretical test successfully passed"
+        intro_html: "Estonian Internet Foundation notifies you that <strong>%{registrar} theoretical test was successfully passed!</strong>"
+        intro_text: "Estonian Internet Foundation notifies you that %{registrar} theoretical test was successfully passed."
+        requirement_html: "In order to obtain accreditation, both the practical and the theoretical test must be passed."
+        requirement_text: "In order to obtain accreditation, both the practical and the theoretical test must be passed."
+        practical_details_html: "If you have not yet passed the practical test, you can do so <strong>at a convenient time in the accreditation environment</strong>. You have 90 minutes to complete the test and <strong>all answers must be correct</strong> to pass."
+        practical_details_text: "If you have not yet passed the practical test, you can do so at a convenient time in the accreditation environment. You have 90 minutes to complete the test and all answers must be correct to pass."
+      admin_accreditation_window_notice:
+        subject: "Registrar %{registrar} was accredited in the 30-day extension window"
+        intro: "Registrar %{registrar} was accredited/re-accredited in the 30-day extension window."
+        accreditation_date: "Accreditation date: %{accreditation_date}"
+        expiry_date: "Accreditation expiry date: %{expiry_date}"
+      assignment_failed:
+        subject: "Automatic test assignment failed for user %{name}"
+        intro_html: "Automatic test assignment failed for user <strong>%{name}</strong>."
+        intro_text: "Automatic test assignment failed for user %{name}."
+        failures_html: "Please check the account and manually assign any missing tests."
+        failures_text: "Please check the account and manually assign any missing tests."
+   

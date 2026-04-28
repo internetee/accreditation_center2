@@ -39,6 +39,22 @@ module AccreditationCenter
     # Application configuration can be added here if needed
     # config.customization = config_for(:application)
 
+    config.action_mailer.default_url_options = {
+      host: ENV.fetch('mailer_host', nil)
+    }
+    config.action_mailer.asset_host = ENV.fetch('mailer_asset_host', nil)
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      user_name: ENV.fetch('mailer_user_name', nil),
+      password: ENV.fetch('mailer_password', nil),
+      address: ENV.fetch('mailer_address', nil),
+      port: ENV.fetch('mailer_port', nil),
+      authentication: ENV.fetch('mailer_authentication', nil),
+      enable_starttls_auto: ENV.fetch('mailer_enable_starttls_auto', false).to_s == 'true',
+      domain: ENV.fetch('mailer_domain', nil),
+      openssl_verify_mode: ENV.fetch('mailer_openssl_verify_mode', nil)
+    }
+
     config.i18n.available_locales = %i[en et]
     config.i18n.default_locale = ENV['locale'] || 'en'
     config.i18n.fallbacks = true

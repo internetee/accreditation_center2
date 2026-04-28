@@ -1,1 +1,14 @@
 <%= yield %>
+
+<% if content_for?(:footer) %>
+<%= yield(:footer) %>
+<% else %>
+<%= t('mailers.accreditation.shared.contact_text') %>
+
+<%= t('mailers.accreditation.shared.sincerely') %>
+
+<%= t('mailers.accreditation.shared.eis_tagline_text') %>
+<%= t('mailers.accreditation.shared.eis_contact_text') %>
+<%= t('mailers.accreditation.shared.eis_org_name_text') %>
+<%= t('mailers.accreditation.shared.eis_social_text') %>
+<% end %>

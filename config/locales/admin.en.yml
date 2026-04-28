@@ -19,6 +19,27 @@ en:
       score: "Score"
       activity: "Activity"
       no_expiring_accreditations: "No expiring accreditations found"
+    jobs:
+      index:
+        title: "Jobs"
+        dedupe_note: "Email deduplication is still handled by RegistrarAccreditationNotificationsService."
+        accreditation_sync:
+          title: "Accreditation sync job"
+          description: "Runs REPP accreditation sync for the selected registrar, updates local accreditation dates from the API response, and sends accreditation/reaccreditation notifications when changes are detected."
+          registrar: "Registrar"
+          select_registrar: "Select a registrar"
+          submit: "Run accreditation sync"
+        expiry_check:
+          title: "Accreditation expiry check job"
+          reference_date: "Reference date"
+          reference_date_hint: "Runs for all registrars and uses this as the \"today\" baseline for expiry evaluation: sends 'expiry_30_days' when expiry date equals reference date + REACCREDITATION_WINDOW_DAYS (%{window_days} days), and sends 'expiry_or_passed' when expiry date is on or before the reference date."
+          submit: "Run expiry check"
+      accreditation_sync:
+        invalid_registrar: "Please choose a valid registrar."
+        enqueued: "Accreditation sync job was enqueued."
+      expiry_check:
+        invalid_date: "Please enter a valid date."
+        enqueued: "Expiry check job was enqueued."
     test_categories:
       updated: "Category updated"
       created: "Category created"
@@ -323,6 +344,7 @@ en:
     users:
       index:
         title: "Users"
+        new_user: "New User"
         search: "Search"
         search_placeholder: "Search by name or email"
         no_results: "No users found"
@@ -340,13 +362,26 @@ en:
       show:
         title: "User Details"
         back_to_users: "Back to Users"
+        delete: "Delete User"
+        confirm_delete: "Are you sure you want to delete this user? This will also permanently delete all of their test attempts, question responses, and practical task results. This action cannot be undone."
         user_information: "User Information"
+        login_information: "Login Information"
+        other_information: "Other Information"
         statistics: "Test Statistics"
         username: "Username"
         name: "Name"
         email: "Email"
         registrar_name: "Registrar"
+        provider: "Provider"
+        uid: "UID"
         role: "Role"
+        sign_in_count: "Sign-in Count"
+        current_sign_in_at: "Current Sign In At"
+        last_sign_in_at: "Last Sign In At"
+        current_sign_in_ip: "Current Sign In IP"
+        last_sign_in_ip: "Last Sign In IP"
+        never_signed_in: "Never signed in"
+        not_available: "Not available"
         accreditation_status: "Accreditation Status"
         accreditation_expires_at: "Accreditation Expires At"
         total_attempts: "Total Attempts"
@@ -360,6 +395,31 @@ en:
         completed_at: "Completed At"
         score: "Score"
         status: "Status"
+      new:
+        title: "Create User"
+        back_to_users: "Back to Users"
+      form:
+        user_information: "User Information"
+        role: "Role"
+        roles:
+          user: "User"
+          admin: "Admin"
+        name: "Name"
+        email: "Email"
+        username: "Username"
+        registrar: "Registrar"
+        no_registrar: "No registrar"
+        provider: "Provider"
+        uid: "UID"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        password_hint: "Password is required only when role is Admin."
+        create_user: "Create User"
+      create:
+        success: "User was created successfully."
+      destroy:
+        success: "User was deleted successfully."
+        self_deletion_forbidden: "You cannot delete your own account."
       test_attempts_table:
         test: "Test"
         started_at: "Started At"
@@ -394,7 +454,13 @@ en:
         users: "Users"
         user_name: "Name"
         user_email: "Email"
+        user_role: "Role"
         no_users: "No users linked to this registrar"
+        notification_events: "Notifications"
+        event_type: "Event Type"
+        cycle_key: "Cycle Key"
+        sent_at: "Sent At"
+        no_notification_events: "No notification events for this registrar"
     practical_tasks:
       updated: "Practical task updated"
       created: "Practical task created"

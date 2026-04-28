@@ -1,0 +1,69 @@
+<% content_for(:title) { "EIS | #{t('.title', default: 'Manual notification jobs')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title', default: 'Manual notification jobs') %></h1>
+  </div>
+<% end %>
+
+<div class="page page--admin-notification-jobs">
+  <div class="page--header">
+  </div>
+
+  <div class="wrapper">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2 col-xs-12">
+        <div class="paper">
+          <div class="paper--content">
+            <div style="padding-bottom: 22px; border-bottom: 1px solid #e5e7eb; margin-bottom: 22px;">
+              <h3 style="margin-bottom: 12px;"><%= t('.accreditation_sync.title', default: 'Accreditation sync job') %></h3>
+              <p class="form--hint" style="margin-bottom: 8px;">
+                <%= t('.accreditation_sync.description', default: 'Fetches latest accreditation dates from the external source for the selected registrar and triggers related accreditation/reaccreditation notifications when changes are detected.') %>
+              </p>
+              <%= form_with url: { action: :accreditation_sync }, method: :post, local: true, class: 'form' do %>
+                <div class="form--row">
+                  <label class="form--label" for="registrar_id"><%= t('.accreditation_sync.registrar', default: 'Registrar') %></label>
+                  <div class="form--field">
+                    <div class="form--input">
+                      <%= simple_select_tag 'registrar_id',
+                          options_from_collection_for_select(@registrars, :id, :name),
+                          prompt: t('.accreditation_sync.select_registrar', default: 'Select a registrar'),
+                          required: true,
+                          id: 'registrar_id' %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form--actions">
+                  <%= submit_tag t('.accreditation_sync.submit', default: 'Run accreditation sync'), class: 'button button--primary' %>
+                </div>
+              <% end %>
+            </div>
+
+            <h3 style="margin-bottom: 12px;"><%= t('.expiry_check.title', default: 'Accreditation expiry check job') %></h3>
+            <%= form_with url: { action: :expiry_check }, method: :post, local: true, class: 'form' do %>
+              <div class="form--row">
+                <p class="form--hint" style="margin-bottom: 8px;">
+                  <%= t(
+                        '.expiry_check.reference_date_hint',
+                        window_days: RegistrarAccreditationNotificationsService::REACCREDITATION_WINDOW_DAYS,
+                        default: "Used as the \"today\" baseline for expiry evaluation: sends 'expiry_30_days' when expiry date equals reference date + REACCREDITATION_WINDOW_DAYS (%{window_days} days), and sends 'expiry_or_passed' when expiry date is on or before the reference date."
+                      ) %>
+                </p>
+                <%= label_tag :reference_date, t('.expiry_check.reference_date', default: 'Reference date'), class: 'form--label' %>
+                <div class="form--field">
+                  <div class="form--input">
+                    <%= date_field_tag :reference_date, Time.zone.today, class: 'input' %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form--actions">
+                <%= submit_tag t('.expiry_check.submit', default: 'Run expiry check'), class: 'button button--primary' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

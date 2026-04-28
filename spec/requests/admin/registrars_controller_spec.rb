@@ -37,6 +37,8 @@ RSpec.describe 'Admin::RegistrarsController', type: :request do
     it 'renders show for registrar' do
       registrar = create(:registrar, name: 'Registrar Detail', email: 'detail@example.test', accreditation_expire_date: 10.days.from_now)
       user = create(:user, registrar: registrar)
+      admin_user = create(:user, :admin, registrar: registrar)
+      event = create(:registrar_notification_event, registrar: registrar, event_type: 'expiry_30_days', cycle_key: '2026-05-01')
 
       get admin_registrar_path(registrar)
 
@@ -45,6 +47,10 @@ RSpec.describe 'Admin::RegistrarsController', type: :request do
       expect(response.body).to include('Registrar Detail')
       expect(response.body).to include('detail@example.test')
       expect(response.body).to include(user.display_name)
+      expect(response.body).to include(admin_user.display_name)
+      expect(response.body).to include('Admin')
+      expect(response.body).to include(event.event_type)
+      expect(response.body).to include(event.cycle_key)
     end
 
     it 'redirects to index when registrar does not exist' do

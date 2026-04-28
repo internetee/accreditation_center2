@@ -1,6 +1,6 @@
-<p>Automatic test assignment failed for <strong><%= @user.display_name %></strong> (<%= @user.email %>).</p>
+<p><%= t('mailers.accreditation.assignment_failed.intro_html', name: @user.display_name) %></p>
 
-<p>Please review the account and assign the missing tests manually.</p>
+<p><%= t('mailers.accreditation.assignment_failed.failures_html') %></p>
 
 <ul>
   <% @failures.each do |failure| %>

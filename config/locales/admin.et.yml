@@ -19,6 +19,27 @@ et:
       score: "Tulemus"
       activity: "Tegevus"
       no_expiring_accreditations: "Aeguvate akrediteeringute ei leitud"
+    jobs:
+      index:
+        title: "Tegevused"
+        dedupe_note: "E-kirjade duplikaatide vältimine toimub endiselt RegistrarAccreditationNotificationsService teenuses."
+        accreditation_sync:
+          title: "Akrediteerimise sünkroonimise töö"
+          description: "Käivitab valitud registripidaja REPP akrediteeringu sünkroonimise, uuendab API vastuse põhjal kohalikke akrediteeringu kuupäevi ning saadab muudatuste korral akrediteerimise/taasakrediteerimise teavitused."
+          registrar: "Registripidaja"
+          select_registrar: "Vali registripidaja"
+          submit: "Käivita akrediteerimise sünkroonimine"
+        expiry_check:
+          title: "Akrediteerimise aegumise kontrolli töö"
+          reference_date: "Võrdluskuupäev"
+          reference_date_hint: "Rakendub kõigile registripidajatele ja kasutab seda aegumise hindamisel \"tänase\" baasina: saadab 'expiry_30_days', kui aegumiskuupäev võrdub võrdluskuupäev + REACCREDITATION_WINDOW_DAYS (%{window_days} päeva), ning saadab 'expiry_or_passed', kui aegumiskuupäev on võrdluskuupäeval või varem."
+          submit: "Käivita aegumise kontroll"
+      accreditation_sync:
+        invalid_registrar: "Palun vali korrektne registripidaja."
+        enqueued: "Akrediteerimise sünkroonimise töö lisati järjekorda."
+      expiry_check:
+        invalid_date: "Palun sisesta korrektne kuupäev."
+        enqueued: "Aegumise kontrolli töö lisati järjekorda."
     test_categories:
       updated: "Kategooria salvestatud"
       created: "Kategooria loodud"
@@ -340,6 +361,7 @@ et:
     users:
       index:
         title: "Kasutajad"
+        new_user: "Uus kasutaja"
         search: "Otsi"
         search_placeholder: "Otsi nime või e-posti aadressi järgi"
         no_results: "Kasutajaid ei leitud"
@@ -357,13 +379,26 @@ et:
       show:
         title: "Kasutaja andmed"
         back_to_users: "Tagasi kasutajate juurde"
+        delete: "Kustuta kasutaja"
+        confirm_delete: "Kas oled kindel, et soovid selle kasutaja kustutada? Sellega kustutatakse jäädavalt ka kõik tema testikatsed, küsimuste vastused ja praktiliste ülesannete tulemused. Seda tegevust ei saa tagasi võtta."
         user_information: "Kasutaja teave"
+        login_information: "Sisselogimise teave"
+        other_information: "Muu teave"
         statistics: "Testi statistika"
         username: "Kasutajanimi"
         name: "Nimi"
         email: "E-post"
         registrar_name: "Registripidaja"
+        provider: "Pakkuja"
+        uid: "UID"
         role: "Roll"
+        sign_in_count: "Sisselogimiste arv"
+        current_sign_in_at: "Praeguse sisselogimise aeg"
+        last_sign_in_at: "Viimase sisselogimise aeg"
+        current_sign_in_ip: "Praeguse sisselogimise IP"
+        last_sign_in_ip: "Viimase sisselogimise IP"
+        never_signed_in: "Pole kunagi sisse loginud"
+        not_available: "Pole saadaval"
         accreditation_status: "Akrediteeringu olek"
         accreditation_expires_at: "Akrediteering aegub"
         total_attempts: "Kokku proove"
@@ -377,6 +412,31 @@ et:
         completed_at: "Lõpetatud"
         score: "Tulemus"
         status: "Olek"
+      new:
+        title: "Loo kasutaja"
+        back_to_users: "Tagasi kasutajate juurde"
+      form:
+        user_information: "Kasutaja teave"
+        role: "Roll"
+        roles:
+          user: "Kasutaja"
+          admin: "Admin"
+        name: "Nimi"
+        email: "E-post"
+        username: "Kasutajanimi"
+        registrar: "Registripidaja"
+        no_registrar: "Registripidaja puudub"
+        provider: "Pakkuja"
+        uid: "UID"
+        password: "Parool"
+        password_confirmation: "Parooli kinnitus"
+        password_hint: "Parool on kohustuslik ainult admin rolli puhul."
+        create_user: "Loo kasutaja"
+      create:
+        success: "Kasutaja loodi edukalt."
+      destroy:
+        success: "Kasutaja kustutati edukalt."
+        self_deletion_forbidden: "Sa ei saa oma kontot kustutada."
       test_attempts_table:
         test: "Test"
         started_at: "Alustatud"
@@ -411,7 +471,13 @@ et:
         users: "Kasutajad"
         user_name: "Nimi"
         user_email: "E-post"
+        user_role: "Roll"
         no_users: "Selle registripidajaga seotud kasutajaid pole"
+        notification_events: "Teavitused"
+        event_type: "Sündmuse tüüp"
+        cycle_key: "Tsükli võti"
+        sent_at: "Saadetud"
+        no_notification_events: "Sellel registripidajal pole teavituste sündmusi"
     practical_tasks:
       updated: "Praktiline ülesanne salvestatud"
       created: "Praktiline ülesanne loodud"

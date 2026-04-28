@@ -34,6 +34,7 @@ RSpec.describe AccreditationResultsService do
   describe '#sync_registrar_accreditation' do
     let(:registrar) { create(:registrar, name: 'Registrar A') }
     let(:eligibility) { instance_double(RegistrarAccreditationEligibility) }
+    let(:notifications_service) { instance_double(RegistrarAccreditationNotificationsService, notify_accreditation_sync: true) }
     let(:last_theory_test_passed_at) { Time.zone.parse('2026-01-15 10:00:00') }
 
     context 'when registrar is not accredited' do
@@ -65,6 +66,7 @@ RSpec.describe AccreditationResultsService do
         allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
         allow(eligibility).to receive(:accredited?).and_return(true)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(last_theory_test_passed_at)
+        allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
       end
 
       it 'updates registrar accreditation dates after successful sync' do
@@ -80,6 +82,11 @@ RSpec.describe AccreditationResultsService do
         expect(service.sync_registrar_accreditation(registrar)).to eq({ success: true, message: 'Accreditation synced successfully' })
         expect(registrar.reload.accreditation_date.to_i).to eq(accreditation_date.to_i)
         expect(registrar.accreditation_expire_date.to_i).to eq(accreditation_expire_date.to_i)
+        expect(notifications_service).to have_received(:notify_accreditation_sync).with(
+          registrar: registrar,
+          previous_accreditation_date: nil,
+          previous_accreditation_expire_date: nil
+        )
       end
 
       it 'returns error response if API call fails' do

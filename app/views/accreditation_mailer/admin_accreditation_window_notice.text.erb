@@ -1,0 +1,3 @@
+<%= t('mailers.accreditation.admin_accreditation_window_notice.intro', registrar: @registrar.name) %>
+<%= t('mailers.accreditation.admin_accreditation_window_notice.accreditation_date', accreditation_date: l(@registrar.accreditation_date.to_date, format: :default)) if @registrar.accreditation_date.present? %>
+<%= t('mailers.accreditation.admin_accreditation_window_notice.expiry_date', expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) if @registrar.accreditation_expire_date.present? %>

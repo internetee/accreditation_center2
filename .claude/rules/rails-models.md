@@ -3,7 +3,7 @@ paths:
   - "app/models/**/*.rb"
 ---
 
-# ActiveRecord Models (11)
+# ActiveRecord Models (12)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
@@ -23,9 +23,11 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - QuestionResponse (table: question_responses) — 2 assocs, 2 validations
   scopes: answered
   methods: selected_answers, correct?, partially_correct?, answered?, status, question, test_attempt
-- Registrar (table: registrars) — 2 assocs, 2 validations
+- Registrar (table: registrars) — 3 assocs, 4 validations
   scopes: with_non_admin_users
-  methods: accreditation_expired?, accreditation_expires_soon?, days_until_accreditation_expiry, test_attempts, users
+  methods: accreditation_expired?, accreditation_expires_soon?, days_until_accreditation_expiry, registrar_notification_events, test_attempts, users
+- RegistrarNotificationEvent (table: registrar_notification_events) — 1 assocs, 3 validations
+  methods: registrar
 - Test (table: tests) — 5 assocs, 8 validations
   scopes: active, auto_assignable
   methods: auto_assign_check, active_ordered_test_categories_with_join_id, total_questions, estimated_duration, theoretical_questions_count, practical_tasks_count, total_components, build_duplicate, description, description?, friendly_id, friendly_id_config, normalize_friendly_id, practical!, practical?, practical_tasks, questions, resolve_friendly_id_conflict, should_generate_new_friendly_id?, test_attempts

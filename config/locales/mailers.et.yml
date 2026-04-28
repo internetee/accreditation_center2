@@ -1,0 +1,81 @@
+et:
+  mailers:
+    accreditation:
+      shared:
+        greeting: "Tere!"
+        contact_html: "Küsimuste või probleemide tekkimisel võtke meiega ühendust <a href='mailto:support@internet.ee'>support@internet.ee</a>."
+        contact_text: "Küsimuste või probleemide tekkimisel võtke meiega ühendust support@internet.ee."
+        sincerely: "Lugupidamisega,"
+        eis_tagline_html: "Eesti Interneti Sihtasutus"
+        eis_tagline_text: "Eesti Interneti Sihtasutus"
+        eis_contact_html: |
+          <a href='mailto:info@internet.ee'>info@internet.ee</a><br>
+          <a href='https://internet.ee/en'>Internet.ee/en</a><br>
+          Tel +372 727 100<br>
+          Paldiski mnt. 80, 10617 Tallinn
+        eis_contact_text: |
+          info@internet.ee
+          Internet.ee
+          Tel +372 727 100
+          Paldiski mnt. 80, 10617 Tallinn
+        eis_org_name_html: "<strong>.ee on värav eestimaalasteni</strong>"
+        eis_org_name_text: ".ee on värav eestimaalasteni."
+        eis_social_html: "Jälgi meid <a href='https://www.facebook.com/internet.ee'>Facebookis</a> ja <a href='https://www.linkedin.com/company/internet-ee'>LinkedInis</a> ning telli igakuine <a href='https://internet.ee/uudiskiri'>uudiskiri</a>!"
+        eis_social_text: "Jälgi meid Facebookis (https://www.facebook.com/internet.ee) ja LinkedInis (https://www.linkedin.com/company/internet-ee) ning telli igakuine uudiskiri (https://internet.ee/uudiskiri)!"
+      expiry_30_days:
+        subject: "%{registrar} akrediteering aegub %{expiry_date}"
+        intro_html: "Eesti Interneti SA tuletab meelde, et registripidaja %{registrar} akrediteering aegub <strong>%{expiry_date}</strong>."
+        intro_text: "Eesti Interneti SA tuletab meelde, et registripidaja %{registrar} akrediteering aegub %{expiry_date}."
+        renewal_notice_html: "Akrediteering tuleb edukalt pikendada enne selle aegumise kuupäeva .ee domeenide registreerimisteenuse osutamiseks."
+        renewal_notice_text: "Akrediteering tuleb edukalt pikendada enne selle aegumise kuupäeva .ee domeenide registreerimisteenuse osutamiseks."
+        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://accreditation.internet.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        test_details_text: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie akrediteerimiskeskkonnas. Test loetakse edukaks, kui õigete vastuste osakaal on vähemalt 70% ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        two_year_rule_html: "Teoreetilise testi läbimine on akrediteeringu säilitamiseks kohustuslik iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
+        two_year_rule_text: "Teoreetilise testi läbimine on akrediteeringu säilitamiseks kohustuslik iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
+      expiry_or_passed:
+        subject: "Meeldetuletus: %{registrar} akrediteeringu tähtaeg"
+        intro_html: "Eesti Interneti SA annab teada, et registripidaja %{registrar} akrediteering on jõudnud või ületanud aegumise kuupäeva (<strong>%{expiry_date}</strong>)."
+        intro_text: "Eesti Interneti SA annab teada, et registripidaja %{registrar} akrediteering on jõudnud või ületanud aegumise kuupäeva (%{expiry_date})."
+        renewal_notice_html: "Akrediteering tuleb edukalt pikendada, et jätkata .ee domeenide registreerimisteenuse osutamist."
+        renewal_notice_text: "Akrediteering tuleb edukalt pikendada, et jätkata .ee domeenide registreerimisteenuse osutamist."
+        test_details_html: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie <a href='https://accreditation.internet.ee/et'>akrediteerimiskeskkonnas</a>. Test loetakse edukaks, kui <strong>õigete vastuste osakaal on vähemalt 70%</strong> ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        test_details_text: "Akrediteeringu pikendamiseks tuleb läbida teooria test meie akrediteerimiskeskkonnas. Test loetakse edukaks, kui õigete vastuste osakaal on vähemalt 70% ning testi tegemiseks on aega 40 minutit. Peale testi tegemist on võimalik tutvuda ka õigete vastustega 10 minutit jooksul peale testi sooritamist."
+        two_year_rule_html: "Vähemalt üks registripidaja töötaja peab teoreetilise testi edukalt läbima iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
+        two_year_rule_text: "Vähemalt üks registripidaja töötaja peab teoreetilise testi edukalt läbima iga kahe aasta tagant. Iga testi edukal läbimisel uuendatakse automaatselt tähtaega vastavalt testi sooritamise ajale."
+      accreditation_granted:
+        subject: "%{registrar} akrediteering on edukalt antud"
+      reaccreditation_granted:
+        subject: "%{registrar} akrediteering on edukalt pikendatud"
+      accreditation_granted_or_reaccredited:
+        intro_html: "Eesti Interneti SA annab teada, et <strong>%{registrar} akrediteering on edukalt pikendatud!</strong>"
+        intro_text: "Eesti Interneti SA annab teada, et %{registrar} akrediteering on edukalt pikendatud!"
+        valid_until_html: "Akrediteering kehtib kuni <strong>%{expiry_date}</strong>."
+        valid_until_text: "Akrediteering kehtib kuni %{expiry_date}."
+        follow_up: "Seniks on võimalik akrediteerimiskeskkonda kasutada enda praeguste või uute töötajate teadmiste kontrollimiseks. Teoreetilise testi edukal läbimisel pikendatakse automaatselt akrediteeringu kehtivuse kuupäeva."
+      practical_passed_not_accredited:
+        subject: "%{registrar} praktiline test on edukalt läbitud"
+        intro_html: "Eesti Interneti SA annab teada, et <strong>%{registrar} praktiline test on edukalt läbitud!</strong>"
+        intro_text: "Eesti Interneti SA annab teada, et %{registrar} praktiline test on edukalt läbitud."
+        requirement_html: "Akrediteeringu saamiseks on vaja läbida nii praktiline kui teoreetiline test."
+        requirement_text: "Akrediteeringu saamiseks on vaja läbida nii praktiline kui teoreetiline test."
+        theory_details_html: "Juhul, kui te pole teoreetilist testi veel läbinud, saate seda teha <strong>endale sobival ajal akrediteerimiskeskkonnas</strong>. Testi sooritamiseks on aega 40 minutit ning selle edukaks läbimiseks peavad olema õiged <strong>vähemalt 70% vastustest</strong>. Testid võivad olla läbitud erinevate töötajate poolt."
+        theory_details_text: "Juhul, kui te pole teoreetilist testi veel läbinud, saate seda teha endale sobival ajal akrediteerimiskeskkonnas. Testi sooritamiseks on aega 40 minutit ning edukaks läbimiseks peavad olema õiged vähemalt 70% vastustest. Testid võivad olla läbitud erinevate töötajate poolt."
+      theoretical_passed_not_accredited:
+        subject: "%{registrar} teoreetiline test on edukalt läbitud"
+        intro_html: "Eesti Interneti SA annab teada, et <strong>%{registrar} teoreetiline test on edukalt läbitud!</strong>"
+        intro_text: "Eesti Interneti SA annab teada, et %{registrar} teoreetiline test on edukalt läbitud."
+        requirement_html: "Akrediteeringu saamiseks on vaja läbida nii praktiline kui teoreetiline test."
+        requirement_text: "Akrediteeringu saamiseks on vaja läbida nii praktiline kui teoreetiline test."
+        practical_details_html: "Juhul, kui te pole praktilist testi veel läbinud, saate seda teha <strong>endale sobival ajal akrediteerimiskeskkonnas</strong>. Testi sooritamiseks on aega 90 minutit ning selle edukaks läbimiseks peavad olema <strong>kõik vastused korrektsed</strong>."
+        practical_details_text: "Juhul, kui te pole praktilist testi veel läbinud, saate seda teha endale sobival ajal akrediteerimiskeskkonnas. Testi sooritamiseks on aega 90 minutit ning selle edukaks läbimiseks peavad olema kõik vastused korrektsed."
+      admin_accreditation_window_notice:
+        subject: "Registripidaja %{registrar} akrediteeriti 30 päeva pikendusaknas"
+        intro: "Registripidaja %{registrar} akrediteeriti/reakrediteeriti 30 päeva pikendusaknas."
+        accreditation_date: "Akrediteerimise kuupäev: %{accreditation_date}"
+        expiry_date: "Akrediteeringu aegumise kuupäev: %{expiry_date}"
+      assignment_failed:
+        subject: "Automaatne testide määramine ebaõnnestus kasutajal %{name}"
+        intro_html: "Automaatne testide määramine ebaõnnestus kasutajal <strong>%{name}</strong>."
+        intro_text: "Automaatne testide määramine ebaõnnestus kasutajal %{name}."
+        failures_html: "Palun vaadake konto ja määrake puuduvaid teste käsitsi."
+        failures_text: "Palun vaadake konto ja määrake puuduvaid teste käsitsi."

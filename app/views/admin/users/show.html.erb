@@ -13,6 +13,13 @@
   <div class="page--header">
     <div class="wrapper">
       <div class="row center-xs">
+        <% unless @user == current_user %>
+          <div class="col-xs-auto">
+            <%= link_to t('.delete'), admin_user_path(@user),
+                        class: 'button button--danger',
+                        data: { turbo: true, turbo_method: :delete, turbo_confirm: t('.confirm_delete') } %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -35,10 +42,12 @@
                 <span class="stat-label"><%= t('.email') %></span>
                 <span class="stat-value" style="word-break: break-all;"><%= mail_to @user.email %></span>
               </div>
-              <div class="stat-item">
-                <span class="stat-label"><%= t('.registrar_name') %></span>
-                <span class="stat-value"><%= link_to @user.registrar_name, admin_registrar_path(@user.registrar) if @user.registrar %></span>
-              </div>
+              <% unless @user.admin? %>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.registrar_name') %></span>
+                  <span class="stat-value"><%= link_to @user.registrar_name, admin_registrar_path(@user.registrar) if @user.registrar %></span>
+                </div>
+              <% end %>
               <div class="stat-item">
                 <span class="stat-label"><%= t('.role') %></span>
                 <span class="stat-value"><%= @user.role %></span>
@@ -48,51 +57,119 @@
         </div>
       </div>
 
+      <% unless @user.admin? %>
+        <div class="col-md-6 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.statistics') %></h3>
+            </div>
+
+            <div class="paper--content">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.total_attempts') %></span>
+                  <span class="stat-value"><%= @statistics[:total] %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.passed_attempts') %></span>
+                  <span class="stat-value"><%= @statistics[:passed] %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.failed_attempts') %></span>
+                  <span class="stat-value"><%= @statistics[:failed] %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.success_rate') %></span>
+                  <span class="stat-value"><%= number_to_percentage(@statistics[:success_rate], precision: 1) %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
       <div class="col-md-6 col-xs-12">
         <div class="paper">
           <div class="paper--header">
-            <h3><%= t('.statistics') %></h3>
+            <h3><%= t('.login_information') %></h3>
           </div>
 
           <div class="paper--content">
             <div class="summary-stats">
               <div class="stat-item">
-                <span class="stat-label"><%= t('.total_attempts') %></span>
-                <span class="stat-value"><%= @statistics[:total] %></span>
+                <span class="stat-label"><%= t('.sign_in_count') %></span>
+                <span class="stat-value"><%= @user.sign_in_count || 0 %></span>
               </div>
               <div class="stat-item">
-                <span class="stat-label"><%= t('.passed_attempts') %></span>
-                <span class="stat-value"><%= @statistics[:passed] %></span>
+                <span class="stat-label"><%= t('.current_sign_in_at') %></span>
+                <span class="stat-value">
+                  <%= @user.current_sign_in_at ? l(@user.current_sign_in_at, format: :long) : t('.never_signed_in') %>
+                </span>
               </div>
               <div class="stat-item">
-                <span class="stat-label"><%= t('.failed_attempts') %></span>
-                <span class="stat-value"><%= @statistics[:failed] %></span>
+                <span class="stat-label"><%= t('.last_sign_in_at') %></span>
+                <span class="stat-value">
+                  <%= @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :long) : t('.never_signed_in') %>
+                </span>
               </div>
               <div class="stat-item">
-                <span class="stat-label"><%= t('.success_rate') %></span>
-                <span class="stat-value"><%= number_to_percentage(@statistics[:success_rate], precision: 1) %></span>
+                <span class="stat-label"><%= t('.current_sign_in_ip') %></span>
+                <span class="stat-value"><%= @user.current_sign_in_ip.presence || t('.not_available') %></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label"><%= t('.last_sign_in_ip') %></span>
+                <span class="stat-value"><%= @user.last_sign_in_ip.presence || t('.not_available') %></span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col-md-12 col-xs-12">
-        <div class="paper">
-          <div class="paper--header">
-            <h3><%= t('.attempts') %></h3>
-          </div>
+      <% unless @user.admin? %>
+        <div class="col-md-6 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.other_information') %></h3>
+            </div>
 
-          <div class="paper--content">
-            <% if @test_attempts.any? %>
-              <%= render 'admin/users/test_attempts_table' %>
-              <%= render partial: 'common/pagination', locals: { pagy: @pagy } if @test_attempts.count.positive? %>
-            <% else %>
-              <p><%= t('.no_attempts') %></p>
-            <% end %>
+            <div class="paper--content">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.username') %></span>
+                  <span class="stat-value"><%= @user.username.presence || t('.not_available') %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.provider') %></span>
+                  <span class="stat-value"><%= @user.provider.presence || t('.not_available') %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.uid') %></span>
+                  <span class="stat-value"><%= @user.uid.presence || t('.not_available') %></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      <% end %>
+
+      <% unless @user.admin? %>
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.attempts') %></h3>
+            </div>
+
+            <div class="paper--content">
+              <% if @test_attempts.any? %>
+                <%= render 'admin/users/test_attempts_table' %>
+                <%= render partial: 'common/pagination', locals: { pagy: @pagy } if @test_attempts.count.positive? %>
+              <% else %>
+                <p><%= t('.no_attempts') %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
