@@ -25,12 +25,14 @@ et:
         dedupe_note: "E-kirjade duplikaatide vältimine toimub endiselt RegistrarAccreditationNotificationsService teenuses."
         accreditation_sync:
           title: "Akrediteerimise sünkroonimise töö"
+          description: "Käivitab valitud registripidaja REPP akrediteeringu sünkroonimise, uuendab API vastuse põhjal kohalikke akrediteeringu kuupäevi ning saadab muudatuste korral akrediteerimise/taasakrediteerimise teavitused."
           registrar: "Registripidaja"
           select_registrar: "Vali registripidaja"
           submit: "Käivita akrediteerimise sünkroonimine"
         expiry_check:
           title: "Akrediteerimise aegumise kontrolli töö"
           reference_date: "Võrdluskuupäev"
+          reference_date_hint: "Rakendub kõigile registripidajatele ja kasutab seda aegumise hindamisel \"tänase\" baasina: saadab 'expiry_30_days', kui aegumiskuupäev võrdub võrdluskuupäev + REACCREDITATION_WINDOW_DAYS (%{window_days} päeva), ning saadab 'expiry_or_passed', kui aegumiskuupäev on võrdluskuupäeval või varem."
           submit: "Käivita aegumise kontroll"
       accreditation_sync:
         invalid_registrar: "Palun vali korrektne registripidaja."

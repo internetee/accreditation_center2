@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-# Background job to sync accreditation results to REPP API
+# Background job to sync one registrar accreditation via REPP API
 class AccreditationSyncJob < ApplicationJob
   queue_as :default
 
-  # Sync accreditation for a specific registrar
+  # Sync accreditation for a specific registrar and update local dates.
   # @param registrar [Registrar]
   def perform(registrar)
     unless registrar.is_a?(Registrar)

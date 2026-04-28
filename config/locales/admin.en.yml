@@ -25,12 +25,14 @@ en:
         dedupe_note: "Email deduplication is still handled by RegistrarAccreditationNotificationsService."
         accreditation_sync:
           title: "Accreditation sync job"
+          description: "Runs REPP accreditation sync for the selected registrar, updates local accreditation dates from the API response, and sends accreditation/reaccreditation notifications when changes are detected."
           registrar: "Registrar"
           select_registrar: "Select a registrar"
           submit: "Run accreditation sync"
         expiry_check:
           title: "Accreditation expiry check job"
           reference_date: "Reference date"
+          reference_date_hint: "Runs for all registrars and uses this as the \"today\" baseline for expiry evaluation: sends 'expiry_30_days' when expiry date equals reference date + REACCREDITATION_WINDOW_DAYS (%{window_days} days), and sends 'expiry_or_passed' when expiry date is on or before the reference date."
           submit: "Run expiry check"
       accreditation_sync:
         invalid_registrar: "Please choose a valid registrar."
