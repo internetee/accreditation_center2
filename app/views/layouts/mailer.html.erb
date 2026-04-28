@@ -1,74 +1,73 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-    <head>
-        <title><%= t('.title') %></title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style type="text/css">
-            /* Basic reset styles retained for clients that support <style> */
-            #outlook a { padding: 0; }
-            .ReadMsgBody { width: 100%; }
-            .ExternalClass { width: 100%; }
-            .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
-            p { display: block; margin: 13px 0; }
-        </style>
-        <!--[if mso]>
-        <xml>
-            <o:OfficeDocumentSettings>
-                <o:AllowPNG/>
-                <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-        </xml>
-        <![endif]-->
-    </head>
+  <head>
+    <title><%= t('.title') %></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+      /* Basic reset styles retained for clients that support <style> */
+      #outlook a { padding: 0; }
+      .ReadMsgBody { width: 100%; }
+      .ExternalClass { width: 100%; }
+      .ExternalClass * { line-height: 100%; }
+      body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+      table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+      img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+      p { display: block; margin: 13px 0; }
+    </style>
+    <!--[if mso]>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+  </head>
 
-    <body style="margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-family: Arial, sans-serif;">
-        <!-- Main Content -->
-        <div class="content-wrapper" style="background:#fff;padding:20px 10px;font-family: Arial, sans-serif;">
-            <%= yield %>
+  <body style="margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-family: Arial, sans-serif;">
+    <!-- Main Content -->
+    <div class="content-wrapper" style="background:#fff;padding:20px 10px;font-family: Arial, sans-serif;">
+      <%= yield %>
 
-            <div class="footer-text" style="margin-top:40px;">
-                <p><%= t('mailers.accreditation.shared.contact_html') %></p>
-                <p><%= t('mailers.accreditation.shared.sincerely') %></p>
-                <br>
-            </div>
-            
-            <!-- EIS Footer -->
-            <div class="eis-footer" style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e0e0;">
-                <% if content_for?(:footer) %>
-                    <%= yield(:footer) %>
-                <% else %>
-                    <table class="eis-footer-container" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:800px;">
-                        <tr>
-                            <td class="eis-logo-cell" style="width:120px;padding-right:20px;vertical-align:top;">
-                                <%= image_tag asset_url("eis_logo_#{I18n.locale}.png"),
-                                              alt: 'Estonian Internet Foundation',
-                                              class: 'eis-logo',
-                                              style: 'width:180px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none;' %>
-                            </td>
-                            <td class="eis-content-cell" style="padding-left:20px;padding-top:10px;border-left:2px solid #2F67F6;vertical-align:top;">
-                                <div class="eis-tagline" style="line-height:16px;color:#525252;margin-bottom:8px;">
-                                    <%= t('mailers.accreditation.shared.eis_tagline_html') %>
-                                </div>
-                                <div class="eis-contact" style="font-size:11px;line-height:18px;color:#8a8a8a;">
-                                    <%= t('mailers.accreditation.shared.eis_contact_html') %>
-                                </div>
-                                <div class="eis-org-name" style="font-size:14px;font-weight:600;color:#8a8a8a;margin-top:8px;margin-bottom:8px;">
-                                    <%= t('mailers.accreditation.shared.eis_org_name_html') %>
-                                </div>
-                                <div class="eis-social" style="font-size:12px;line-height:16px;color:#8a8a8a;margin-top:8px;">
-                                    <%= t('mailers.accreditation.shared.eis_social_html') %>
-                                </div>
-               
-                            </td>
-                        </tr>
-                    </table>
-                <% end %>
-            </div>
-        </div>
-    </body>
+      <div class="footer-text" style="margin-top:40px;">
+        <p><%= t('mailers.accreditation.shared.contact_html') %></p>
+        <p><%= t('mailers.accreditation.shared.sincerely') %></p>
+        <br>
+      </div>
+      
+      <!-- EIS Footer -->
+      <div class="eis-footer" style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e0e0;">
+        <% if content_for?(:footer) %>
+          <%= yield(:footer) %>
+        <% else %>
+          <table class="eis-footer-container" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:800px;">
+            <tr>
+              <td class="eis-logo-cell" style="width:120px;padding-right:20px;vertical-align:top;">
+                <%= image_tag "https://accreditation.internet.ee/eis_logo_#{I18n.locale}.png",
+                              alt: 'Estonian Internet Foundation',
+                              class: 'eis-logo',
+                              style: 'width:180px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none;' %>
+              </td>
+              <td class="eis-content-cell" style="padding-left:20px;padding-top:10px;border-left:2px solid #2F67F6;vertical-align:top;">
+                <div class="eis-tagline" style="line-height:16px;color:#525252;margin-bottom:8px;">
+                    <%= t('mailers.accreditation.shared.eis_tagline_html') %>
+                </div>
+                <div class="eis-contact" style="font-size:11px;line-height:18px;color:#8a8a8a;">
+                    <%= t('mailers.accreditation.shared.eis_contact_html') %>
+                </div>
+                <div class="eis-org-name" style="font-size:14px;font-weight:600;color:#8a8a8a;margin-top:8px;margin-bottom:8px;">
+                    <%= t('mailers.accreditation.shared.eis_org_name_html') %>
+                </div>
+                <div class="eis-social" style="font-size:12px;line-height:16px;color:#8a8a8a;margin-top:8px;">
+                    <%= t('mailers.accreditation.shared.eis_social_html') %>
+                </div>
+              </td>
+            </tr>
+          </table>
+        <% end %>
+      </div>
+    </div>
+  </body>
 </html>
