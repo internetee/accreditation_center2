@@ -50,18 +50,11 @@ Rails.application.configure do
     config.log_formatter = ::Logger::Formatter.new
   end
 
-  # Configure logging to use both file and STDOUT
-  if ENV['RAILS_LOG_TO_STDOUT'].present?
-    # Containerized environments - log to STDOUT
-    logger = ActiveSupport::Logger.new($stdout)
-    logger.formatter = config.log_formatter
-    config.logger = ActiveSupport::TaggedLogging.new(logger)
-  else
-    # File-based logging for traditional deployments
-    config.logger = ActiveSupport::TaggedLogging.new(
-      ActiveSupport::Logger.new(Rails.root.join('log', "#{ENV['RAILS_ENV']}.log"))
-    )
-  end
+  # Use syslog as the primary production logger.
+  require 'syslog/logger'
+  syslog_logger = Syslog::Logger.new('accreditation')
+  syslog_logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(syslog_logger)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
