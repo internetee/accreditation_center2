@@ -22,6 +22,7 @@ et:
     jobs:
       index:
         title: "Tegevused"
+        open_mission_control_jobs: "Ava Mission Control"
         dedupe_note: "E-kirjade duplikaatide vältimine toimub endiselt RegistrarAccreditationNotificationsService teenuses."
         accreditation_sync:
           title: "Akrediteerimise sünkroonimise töö"

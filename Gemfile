@@ -17,6 +17,7 @@ gem 'jbuilder'
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem 'kamal', require: false
 gem 'kramdown'
+gem 'mission_control-jobs'
 gem 'mustache', '~> 1.0'
 gem 'omniauth', '>=2.0.0'
 gem 'omniauth_openid_connect'

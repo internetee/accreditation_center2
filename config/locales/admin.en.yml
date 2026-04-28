@@ -22,6 +22,7 @@ en:
     jobs:
       index:
         title: "Jobs"
+        open_mission_control_jobs: "Open Mission Control"
         dedupe_note: "Email deduplication is still handled by RegistrarAccreditationNotificationsService."
         accreditation_sync:
           title: "Accreditation sync job"

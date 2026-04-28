@@ -45,6 +45,7 @@ Rails.application.routes.draw do
 
     # Admin routes
     namespace :admin do
+      mount MissionControl::Jobs::Engine, at: '/mission_control_jobs'
       get 'dashboard', to: 'dashboard#index'
       resources :jobs, only: %i[index], controller: :jobs do
         collection do
