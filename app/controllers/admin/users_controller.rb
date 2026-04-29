@@ -18,7 +18,7 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def new
-    @user = User.new(role: :user, provider: 'oidc')
+    @user = User.new(role: :user)
   end
 
   def create
@@ -58,7 +58,13 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def normalize_user_creation_params
-    return unless @user.user?
+    @user.username = nil if @user.username.blank?
+
+    if @user.admin?
+      @user.provider = nil if @user.provider.blank?
+      @user.uid = nil if @user.uid.blank?
+      return
+    end
 
     @user.provider = @user.provider.presence || 'oidc'
     @user.uid = @user.uid.presence || generated_user_uid

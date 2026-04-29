@@ -40,7 +40,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - TestCategory (table: test_categories) — 3 assocs, 4 validations
   scopes: active
   methods: name_with_rule, description, description?, name, name?, questions, test_categories_tests, tests, translatable_attributes, translatable_attributes?
-- User (table: users) — 3 assocs, 5 validations
+- User (table: users) — 3 assocs, 6 validations
   scopes: not_admin, admin
   methods: admin_password_required?, assign_registrar_from_api!, set_default_role, first_sign_in?, last_sign_in_ip_address, current_sign_in_ip_address, passed_tests, failed_tests, completed_tests, in_progress_tests, can_take_test?, test_history, test_statistics, display_name, admin?, user?, admin!, devise_saved_change_to_email?, devise_saved_change_to_encrypted_password?, devise_unconfirmed_email_will_change!
   role: user, admin

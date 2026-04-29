@@ -11,7 +11,7 @@ Rails 8.1.3 | Ruby 3.4.4
 - Models: 12
 - Routes: 122
 - auth: devise, omniauth
-- jobs: solid_queue
+- jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, propshaft
 - api: jbuilder
 - database: pg, solid_cache, solid_cable
@@ -30,6 +30,7 @@ Rails 8.1.3 | Ruby 3.4.4
 - Auth: Devise + Pundit
 - I18n: 2 locales (en, et)
 - Assets: propshaft, importmap
+- Databases: 2 (primary, queue)
 - Performance: 22 issues detected
 - Services: AccreditationResultsService, ApiConnector, ApiTokenService, AuthenticationService, BotAuthService, ContactService, DomainService, InvoiceService, OidcAuthenticationService, RegistrarAccreditationEligibility, RegistrarAccreditationNotificationsService, ReppDomainService
 - Jobs: AccreditationSyncJob, ExpiryCheckJob

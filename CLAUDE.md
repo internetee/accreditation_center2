@@ -13,6 +13,7 @@
 - Auth: Devise + Pundit
 - I18n: 2 locales (en, et)
 - Assets: propshaft, importmap
+- Databases: 2 (primary, queue)
 - Performance: 22 issues detected
 
 ## Key models (12 total)
@@ -35,12 +36,12 @@
 - **TestCategoriesTest** (2a, 3v) — belongs_to :test, belongs_to :test_category
 - **TestCategory** (3a, 4v) — has_many :test_categories_tests, has_many :tests, has_many :questions
   scopes: active
-- **User** (3a, 5v) — belongs_to :registrar, has_many :test_attempts, has_many :tests
+- **User** (3a, 6v) — belongs_to :registrar, has_many :test_attempts, has_many :tests
   scopes: not_admin, admin
 
 ## Gems
 - **auth**: devise, omniauth
-- **jobs**: solid_queue
+- **jobs**: solid_queue, mission_control-jobs
 - **frontend**: turbo-rails, stimulus-rails, importmap-rails, propshaft
 - **api**: jbuilder
 - **database**: pg, solid_cache, solid_cable
@@ -152,7 +153,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 **Trace a method:**
 → MCP: `rails_search_code(pattern:"publishable?", match_type:"trace")`
 → CLI: `rails 'ai:tool[search_code]' pattern="publishable?" match_type=trace`
-
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->

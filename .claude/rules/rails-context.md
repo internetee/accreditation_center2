@@ -8,6 +8,7 @@ Rails 8.1.3 | Ruby 3.4.4
 - Auth: Devise + Pundit
 - I18n: 2 locales (en, et)
 - Assets: propshaft, importmap
+- Databases: 2 (primary, queue)
 - Performance: 22 issues detected
 
 **Global before_actions:** authenticate_user!, configure_permitted_parameters

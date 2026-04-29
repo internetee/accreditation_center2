@@ -109,6 +109,71 @@ RSpec.describe 'Admin::UsersController', type: :request do
       created_user = User.order(:id).last
       expect(response).to redirect_to(admin_user_path(created_user))
       expect(created_user.role).to eq('admin')
+      expect(created_user.username).to be_nil
+    end
+
+    it 'creates an admin user when provider and uid are blank' do
+      expect do
+        post admin_users_path, params: {
+          user: {
+            role: 'admin',
+            name: 'Manual Admin 2',
+            email: 'manual-admin-2@example.test',
+            provider: '',
+            uid: '',
+            password: 'AdminPass123!',
+            password_confirmation: 'AdminPass123!'
+          }
+        }
+      end.to change(User, :count).by(1)
+
+      created_user = User.order(:id).last
+      expect(response).to redirect_to(admin_user_path(created_user))
+      expect(created_user.role).to eq('admin')
+      expect(created_user.provider).to be_nil
+      expect(created_user.uid).to be_nil
+    end
+
+    it 'creates multiple admin users with blank username values' do
+      create(:user, :admin, username: nil, email: 'existing-admin@example.test')
+
+      expect do
+        post admin_users_path, params: {
+          user: {
+            role: 'admin',
+            name: 'Manual Admin 3',
+            email: 'manual-admin-3@example.test',
+            username: '',
+            password: 'AdminPass123!',
+            password_confirmation: 'AdminPass123!'
+          }
+        }
+      end.to change(User, :count).by(1)
+
+      created_user = User.order(:id).last
+      expect(response).to redirect_to(admin_user_path(created_user))
+      expect(created_user.username).to be_nil
+    end
+
+    it 'returns validation error when username is already taken' do
+      create(:user, username: 'maricavor')
+
+      expect do
+        post admin_users_path, params: {
+          user: {
+            role: 'user',
+            name: 'Manual User Duplicate Username',
+            provider: 'oidc',
+            uid: '111',
+            username: 'maricavor',
+            email: 'duplicate-username@example.test'
+          }
+        }
+      end.not_to change(User, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to render_template(:new)
+      expect(flash.now[:alert]).to include('Username has already been taken')
     end
   end
 

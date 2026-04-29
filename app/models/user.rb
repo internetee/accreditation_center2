@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   validates :provider, :uid, :name, presence: true, unless: :admin?
   validates :email, presence: true, uniqueness: { case_sensitive: false }, if: :admin?
+  validates :username, uniqueness: { case_sensitive: false }, allow_blank: true
   validates :password, presence: true, if: :admin_password_required?
   validates :password, confirmation: true, if: :admin_password_required?
 
