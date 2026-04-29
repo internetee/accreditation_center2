@@ -222,6 +222,37 @@
   gap: 10px;
 }
 
+@media (max-width: 767px) {
+  .question-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .primary-actions,
+  .navigation-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .primary-actions .button {
+    flex: 1 1 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .navigation-actions .button {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
 
 /* Time Display */
 .time-display {
