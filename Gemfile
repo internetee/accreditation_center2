@@ -22,7 +22,7 @@ gem 'mustache', '~> 1.0'
 gem 'omniauth', '>=2.0.0'
 gem 'omniauth_openid_connect'
 gem 'omniauth-rails_csrf_protection'
-gem 'pagy', '~> 9.3' # omit patch digit
+gem 'pagy', '~> 43.5' # omit patch digit
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.6'
 gem 'positioning'
