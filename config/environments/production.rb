@@ -46,8 +46,11 @@ Rails.application.configure do
   if ENV['USE_JSON_LOGGING'].present?
     config.log_formatter = JsonLogFormatter.new
   else
-    # Keep default logging format for development
-    config.log_formatter = ::Logger::Formatter.new
+    # Keep plain-text logs readable when shipped to syslog/journalctl.
+    config.log_formatter = proc do |severity, timestamp, _progname, msg|
+      message = msg.is_a?(String) ? msg : msg.inspect
+      "#{timestamp.utc.iso8601} #{severity.ljust(5)} pid=#{Process.pid} #{message}\n"
+    end
   end
 
   # Configure logging destination:
