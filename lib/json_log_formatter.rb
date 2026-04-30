@@ -1,12 +1,22 @@
 # Custom formatter for logging output in JSON format
 class JsonLogFormatter < Logger::Formatter
+  SYSLOG_SEVERITY_MAP = {
+    0 => 'DEBUG',
+    1 => 'INFO',
+    2 => 'WARN',
+    3 => 'ERROR',
+    4 => 'FATAL',
+    5 => 'ANY'
+  }.freeze
+
   def call(severity, timestamp, progname, msg)
     tags = current_tags_list
-    message = msg.is_a?(String) ? msg : msg.inspect
+    raw_message = msg.is_a?(String) ? msg : msg.inspect
+    message = strip_tag_prefix(raw_message)
 
     {
       timestamp: timestamp.utc.iso8601,
-      severity: severity,
+      severity: normalize_severity(severity),
       program_name: progname,
       message: message,
       tags: tags,
@@ -31,5 +41,15 @@ class JsonLogFormatter < Logger::Formatter
 
   def extract_remote_ip(tags)
     tags.find { |tag| tag.match?(/\A(?:\d{1,3}\.){3}\d{1,3}\z/) || tag.include?(':') }
+  end
+
+  def normalize_severity(severity)
+    return SYSLOG_SEVERITY_MAP[severity] || severity.to_s if severity.is_a?(Integer)
+
+    severity.to_s.upcase
+  end
+
+  def strip_tag_prefix(message)
+    message.sub(/\A(?:\[[^\]]+\]\s*)+/, '').strip
   end
 end
