@@ -74,7 +74,7 @@ RSpec.describe TestAttempt, type: :model do
       expect(attempt.completed?).to be(true)
     end
 
-    it 'syncs accreditation when registrar has both theory and practical passes' do
+    it 'syncs when practical attempt completes the missing pass type and no prior practical pass exists' do
       teammate = create(:user)
       teammate.update!(registrar: user.registrar)
 
@@ -88,6 +88,29 @@ RSpec.describe TestAttempt, type: :model do
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
       expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+    end
+
+    it 'syncs accreditation when theoretical attempt completes the missing pass type' do
+      teammate = create(:user)
+      teammate.update!(registrar: user.registrar)
+
+      # Practical pass by teammate, theoretical pass by current user.
+      create(:test_attempt, :passed, user: teammate, test: practical_test, completed_at: 1.day.ago)
+
+      theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
+      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+
+      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+    end
+
+    it 'syncs when theoretical attempt is passed and registrar is already accredited' do
+      create(:test_attempt, :passed, user: user, test: theoretical_test, completed_at: 2.days.ago)
+      create(:test_attempt, :passed, user: user, test: practical_test, completed_at: 1.day.ago)
+
+      another_theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
+      create(:question_response, test_attempt: another_theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+
+      expect { another_theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
     end
 
     it 'does not sync when test is not passed' do
@@ -108,6 +131,19 @@ RSpec.describe TestAttempt, type: :model do
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
       expect { practical_attempt.complete! }.not_to have_enqueued_job(AccreditationSyncJob)
+    end
+
+    it 'does not sync when practical attempt is passed and registrar is already accredited' do
+      create(:test_attempt, :passed, user: user, test: theoretical_test, completed_at: 2.days.ago)
+      create(:test_attempt, :passed, user: user, test: practical_test, completed_at: 1.day.ago)
+
+      another_practical_attempt = create(:test_attempt, user: user, test: practical_test)
+      task1 = create(:practical_task, test: practical_test)
+      task2 = create(:practical_task, test: practical_test)
+      create(:practical_task_result, test_attempt: another_practical_attempt, practical_task: task1, status: 'passed')
+      create(:practical_task_result, test_attempt: another_practical_attempt, practical_task: task2, status: 'passed')
+
+      expect { another_practical_attempt.complete! }.not_to have_enqueued_job(AccreditationSyncJob)
     end
   end
 

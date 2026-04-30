@@ -1,6 +1,6 @@
 class Admin::DashboardController < Admin::BaseController
   def index
-    @recent_activity = TestAttempt.includes(:user, :test).order(created_at: :desc).limit(10)
+    @recent_activity = TestAttempt.includes(:user, :test).order(updated_at: :desc).limit(10)
     expire_date_range = Time.zone.today..ENV.fetch('ACCR_EXPIRY_NOTIFICATION_DAYS', '14').to_i.days.from_now
     @expiring_accreditations = Registrar.joins(users: :test_attempts)
                                         .where(test_attempts: { passed: true })

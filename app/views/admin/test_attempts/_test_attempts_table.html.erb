@@ -55,11 +55,10 @@
             <%= icon_link_to 'fas fa-clock', extend_time_admin_test_test_attempt_path(@test, attempt), 
                 class: 'simple_tooltip', 
                 data: { 'tippy-content': t('.extend_time'), turbo: true, turbo_method: :patch, turbo_confirm: t('.confirm_extend_time') } %>
-          <% else %>
-            <%= icon_link_to 'fas fa-eye', admin_test_test_attempt_path(@test, attempt), 
-                class: 'simple_tooltip', 
-                data: { 'tippy-content': t('.view_attempt'), turbo: false } %>
           <% end %>
+          <%= icon_link_to 'fas fa-eye', admin_test_test_attempt_path(@test, attempt), 
+            class: 'simple_tooltip', 
+            data: { 'tippy-content': t('.view_attempt'), turbo: false } %>
         </td>
       </tr>
     <% end %>

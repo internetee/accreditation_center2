@@ -49,6 +49,10 @@
                 </span>
               </div>
               <div class="stat-item">
+                <span class="stat-label"><%= t('.accreditation_date') %></span>
+                <span class="stat-value"><%= @registrar.accreditation_date ? l(@registrar.accreditation_date.to_date) : '-' %></span>
+              </div>
+              <div class="stat-item">
                 <span class="stat-label"><%= t('.accreditation_expires_at') %></span>
                 <span class="stat-value"><%= @registrar.accreditation_expire_date ? l(@registrar.accreditation_expire_date.to_date) : '-' %></span>
               </div>

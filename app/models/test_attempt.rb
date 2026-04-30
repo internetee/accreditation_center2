@@ -283,9 +283,20 @@ class TestAttempt < ApplicationRecord
 
     registrar = user.registrar
     return if registrar.blank?
-
     return unless RegistrarAccreditationEligibility.accredited?(registrar)
+    return AccreditationSyncJob.perform_later(registrar) if test.theoretical?
+    return if practical_pass_exists_without_current_attempt?(registrar)
 
     AccreditationSyncJob.perform_later(registrar)
+  end
+
+  def practical_pass_exists_without_current_attempt?(registrar)
+    registrar.test_attempts
+            .where.not(id: id)
+            .passed
+            .completed
+            .joins(:test)
+            .where(tests: { test_type: :practical })
+            .exists?
   end
 end

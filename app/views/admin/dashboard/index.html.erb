@@ -65,9 +65,20 @@
       <tbody>
         <% @recent_activity.each do |attempt| %>
           <tr>
-            <td><strong><%= link_to attempt.user.display_name, admin_user_path(attempt.user) %></strong> <%= t('admin.dashboard.attempted') %> <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong></td>
+            <td>
+              <%= t("admin.dashboard.#{if attempt.completed_at.present?
+                                         'activity_completed'
+                                       elsif attempt.started_at.present?
+                                         'activity_started'
+                                       else
+                                         'activity_assigned'
+                                       end}") %>:
+              <strong><%= link_to attempt.user.display_name, admin_user_path(attempt.user) %></strong>
+              -
+              <strong><%= link_to attempt.test.title, admin_test_path(attempt.test) %></strong>
+            </td>
             <td><%= attempt.score_percentage %>%</td>
-            <td><%= l(attempt.created_at, format: :long) %></td>
+            <td><%= l(attempt.updated_at, format: :long) %></td>
             <td>
               <%= icon_link_to 'fas fa-eye',
                   admin_test_test_attempt_path(attempt.test, attempt),
