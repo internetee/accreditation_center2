@@ -40,6 +40,7 @@ gem 'solid_cache'
 gem 'solid_queue'
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem 'stimulus-rails'
+gem 'syslog'
 # gem 'surveyor', path: 'vendor/gems/surveyor'
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem 'thruster', require: false

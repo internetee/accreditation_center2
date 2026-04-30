@@ -41,7 +41,7 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
-  config.log_tags = [:request_id, :remote_ip]
+  config.log_tags = %i[request_id remote_ip]
   # Use default logging formatter so that PID and timestamp are not suppressed.
   if ENV['USE_JSON_LOGGING'].present?
     config.log_formatter = JsonLogFormatter.new
@@ -50,8 +50,23 @@ Rails.application.configure do
     config.log_formatter = ::Logger::Formatter.new
   end
 
-  # Configure logging to use both file and STDOUT
-  if ENV['RAILS_LOG_TO_STDOUT'].present?
+  # Configure logging destination:
+  # - RAILS_LOG_TO_SYSLOG=true  -> Syslog
+  # - RAILS_LOG_TO_STDOUT=true  -> STDOUT
+  # - default                   -> production log file
+  if ActiveModel::Type::Boolean.new.cast(ENV.fetch('RAILS_LOG_TO_SYSLOG', false))
+    begin
+      require 'syslog/logger'
+      syslog_logger = Syslog::Logger.new('accreditation_center')
+      syslog_logger.formatter = config.log_formatter
+      config.logger = ActiveSupport::TaggedLogging.new(syslog_logger)
+    rescue LoadError
+      # Fallback when syslog logger library is unavailable in runtime.
+      logger = ActiveSupport::Logger.new($stdout)
+      logger.formatter = config.log_formatter
+      config.logger = ActiveSupport::TaggedLogging.new(logger)
+    end
+  elsif ENV['RAILS_LOG_TO_STDOUT'].present?
     # Containerized environments - log to STDOUT
     logger = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
@@ -59,7 +74,7 @@ Rails.application.configure do
   else
     # File-based logging for traditional deployments
     config.logger = ActiveSupport::TaggedLogging.new(
-      ActiveSupport::Logger.new(Rails.root.join('log', "#{ENV['RAILS_ENV']}.log"))
+     ActiveSupport::Logger.new(Rails.root.join('log', "#{ENV['RAILS_ENV']}.log"))
     )
   end
 
