@@ -8,7 +8,7 @@ gem 'devise'
 gem 'faker'
 gem 'faraday'
 gem 'figaro'
-gem 'font-awesome-sass', '~> 5.15.1'
+gem 'font-awesome-sass', '~> 6.7.0'
 gem 'friendly_id', '~> 5.6.0'
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem 'importmap-rails'
