@@ -9,8 +9,8 @@
   <thead>
     <tr>
       <th><%= sort_link(@search, "name_#{I18n.locale}", t('admin.test_categories.index.test_category_name')  ) %></th>
-      <th><%= sort_link(@search, "description_#{I18n.locale}", t('admin.test_categories.index.test_category_description')) %></th>
-      <th><%= sort_link(@search, "questions_per_category", t('admin.test_categories.index.test_category_questions')) %></th>
+      <th><%= sort_link(@search, "questions_count", t('admin.test_categories.index.total_questions')) %></th>
+      <th><%= sort_link(@search, "questions_per_category", t('admin.test_categories.index.test_category_questions_per_category')) %></th>
       <th><%= sort_link(@search, "domain_rule_reference", t('admin.test_categories.index.test_category_domain_rule_reference')) %></th>
       <th><%= sort_link(@search, "active", t('admin.test_categories.index.test_category_status')) %></th>
       <th class="table--action"></th>
@@ -20,7 +20,7 @@
     <% @test_categories.each do |category| %>
       <tr>
         <td><%= link_to category.name, admin_test_category_path(category) %></td>
-        <td><%= category.description %></td>
+        <td><%= category.questions.count %></td>
         <td><%= category.questions_per_category %></td>
         <td><%= link_to_if category.domain_rule_url, category.domain_rule_reference, category.domain_rule_url, target: '_blank' %></td>
         <td>

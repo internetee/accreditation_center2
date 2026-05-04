@@ -23,10 +23,6 @@
           </div>
         <% end %>
         <div class="stat-item">
-          <span class="stat-label"><%= t('admin.tests.show.total_components') %></span>
-          <span class="stat-value"><%= test.total_components %></span>
-        </div>
-        <div class="stat-item">
           <span class="stat-label"><%= t('admin.tests.show.total_attempts') %></span>
           <span class="stat-value"><%= link_to_if test.test_attempts.count.positive?, test.test_attempts.count, admin_test_test_attempts_path(test) %></span>
         </div>

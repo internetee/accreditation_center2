@@ -67,7 +67,7 @@
     <div class="wrapper">
       <div class="row between-xs">
         <div class="col-xs-auto">
-          <h2><%= t('.questions') %></h2>
+          <h2><%= t('.questions') %> (<%= @questions.count %>)</h2>
         </div>
         <div class="col-xs-auto">
           <%= link_to t(:add_new), new_admin_test_category_question_path(@test_category), 
