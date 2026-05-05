@@ -40,6 +40,22 @@ RSpec.describe 'Admin::TestAttemptsController', type: :request do
       expect(response).to render_template(:show)
       expect(assigns(:question_responses)).to eq(test_attempt.question_responses.includes(:question, :answers))
     end
+
+    it 'assigns practical task results in creation order matching practical task sequence' do
+      practical_test = create(:test, :practical)
+      practical_attempt = create(:test_attempt, test: practical_test, user: user)
+      first_task = create(:practical_task, test: practical_test, display_order: 1)
+      second_task = create(:practical_task, test: practical_test, display_order: 2)
+
+      first_result = create(:practical_task_result, test_attempt: practical_attempt, practical_task: first_task, status: 'passed')
+      second_result = create(:practical_task_result, test_attempt: practical_attempt, practical_task: second_task, status: 'failed')
+
+      get admin_test_test_attempt_path(practical_test, practical_attempt)
+
+      expect(response).to have_http_status(:ok)
+      expect(assigns(:practical_task_results).pluck(:id)).to eq([first_result.id, second_result.id])
+      expect(assigns(:practical_task_results).pluck(:practical_task_id)).to eq([first_task.id, second_task.id])
+    end
   end
 
   describe 'POST /admin/tests/:test_id/test_attempts' do

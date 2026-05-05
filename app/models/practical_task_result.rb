@@ -5,6 +5,8 @@ class PracticalTaskResult < ApplicationRecord
   enum :status, { pending: 'pending', running: 'running', passed: 'passed', failed: 'failed' }
   before_validation :sync_validated_at_with_status, if: :will_save_change_to_status?
 
+  default_scope { order(created_at: :asc) }
+
   def correct?
     status == 'passed'
   end
