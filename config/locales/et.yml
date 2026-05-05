@@ -249,7 +249,7 @@ et:
               blank: "Registreerija nimi ei tohi olla tühi"
 
   errors:
-    invalid_credentials: "Vale kasutajanimi või parool"
+    invalid_credentials: "Valed autentimisandmed või kasutaja ei leitud"
     access_denied: "Pole juurdepääsu"
     object_not_found: "Objekt ei leitud"
     invalid_data_format: "Vale andmete formaat"

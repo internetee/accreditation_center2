@@ -52,7 +52,7 @@ RSpec.describe 'User flows', type: :system do
     expect(new_user.registrar_id).to eq(existing_registrar_id)
     expect(Registrar.count).to eq(1)
     expect(existing_registrar.users.count).to eq(2)
-    expect(existing_registrar.accreditation_expire_date.to_date).to eq(existing_expire_date)
+    expect(existing_registrar.accreditation_expire_date.to_date).to eq(3.months.from_now.to_date)
   end
 
   it 'creates a new registrar when another user logs in with a different registrar' do

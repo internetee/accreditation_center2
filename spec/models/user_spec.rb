@@ -70,6 +70,39 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '.from_omniauth' do
+    it 'builds or finds user from oidc payload without saving' do
+      auth = OmniAuth::AuthHash.new(
+        provider: :oidc,
+        uid: 'EE49901012239',
+        info: { given_name: 'Normal', family_name: 'User', email: 'u@test' }
+      )
+
+      user = described_class.from_omniauth(auth)
+
+      expect(user).not_to be_persisted
+      expect(user.provider).to eq('oidc')
+      expect(user.uid).to eq('EE49901012239')
+      expect(user.email).to eq('u@test')
+      expect(user.name).to eq('Normal User')
+      expect(user.role).to eq('user')
+    end
+
+    it 'keeps existing user name when present' do
+      user = create(:user, provider: 'oidc', uid: 'EE49901012239', name: 'Existing Name')
+      auth = OmniAuth::AuthHash.new(
+        provider: :oidc,
+        uid: user.uid,
+        info: { given_name: 'New', family_name: 'Name', email: 'u@test' }
+      )
+
+      result = described_class.from_omniauth(auth)
+
+      expect(result.id).to eq(user.id)
+      expect(result.name).to eq('Existing Name')
+    end
+  end
+
   describe 'auth helpers' do
     it 'detects first_sign_in?' do
       user = create(:user)
@@ -142,39 +175,6 @@ RSpec.describe User, type: :model do
       u.update!(role: :admin)
       expect(u.admin?).to be(true)
       expect(u.user?).to be(false)
-    end
-  end
-
-  describe '.from_omniauth' do
-    let(:auth) do
-      OmniAuth::AuthHash.new(
-        provider: :oidc,
-        uid: 'EE39901012239',
-        info: OmniAuth::AuthHash::InfoHash.new(
-          email: 'oidc@example.test',
-          name: nil,
-          given_name: 'Ok',
-          family_name: 'Test'
-        )
-      )
-    end
-
-    it 'creates user from provider and uid' do
-      user = described_class.from_omniauth(auth)
-
-      expect(user).to be_persisted
-      expect(user.provider).to eq('oidc')
-      expect(user.uid).to eq('EE39901012239')
-      expect(user.email).to eq('oidc@example.test')
-      expect(user.name).to eq('Ok Test')
-    end
-
-    it 'returns existing user when provider and uid already exist' do
-      existing = create(:user, provider: 'oidc', uid: 'EE39901012239', name: 'Existing User')
-
-      user = described_class.from_omniauth(auth)
-
-      expect(user.id).to eq(existing.id)
     end
   end
 end
