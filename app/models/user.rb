@@ -25,6 +25,36 @@ class User < ApplicationRecord
   scope :not_admin, -> { where.not(role: :admin) }
   scope :admin, -> { where(role: :admin) }
 
+  def self.from_omniauth(auth, provider: 'oidc')
+    uid = auth.uid.to_s
+    info = auth_info(auth)
+    find_or_initialize_by(provider: provider.to_s, uid: uid).tap do |user|
+      user.role ||= 'user'
+      user.email = info[:email] if info[:email].present?
+      user.name = resolved_omniauth_name(user: user, info: info)
+    end
+  end
+
+  def self.resolved_omniauth_name(user:, info:)
+    user.name.presence || omniauth_full_name(info).presence || info[:name]
+  end
+  private_class_method :resolved_omniauth_name
+
+  def self.omniauth_full_name(info)
+    [info[:given_name], info[:family_name]].compact.join(' ').strip
+  end
+  private_class_method :omniauth_full_name
+
+  def self.auth_info(auth)
+    {
+      email: auth.dig('info', 'email'),
+      name: auth.dig('info', 'name'),
+      given_name: auth.dig('info', 'given_name'),
+      family_name: auth.dig('info', 'family_name')
+    }
+  end
+  private_class_method :auth_info
+
   def self.ransackable_attributes(auth_object = nil)
     %w[name uid registrar_id registrar_name username role]
   end
@@ -121,13 +151,5 @@ class User < ApplicationRecord
 
   def user?
     role == 'user'
-  end
-
-  def self.from_omniauth(auth)
-    find_or_create_by(provider: auth.provider, uid: auth.uid) do |user|
-      user.email = auth.info.email
-      full_name = [auth.info.given_name, auth.info.family_name].compact.join(' ').strip
-      user.name = full_name.presence || auth.info.name
-    end
   end
 end

@@ -10,10 +10,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     sign_out(current_user) if user_signed_in?
 
-    user = User.from_omniauth(auth)
-    return redirect_auth_error(user.errors.full_messages.join(', ')) unless user&.persisted?
-    return redirect_admin_to_password_login if user.admin?
-
     api_authenticate_user(auth)
   end
 
@@ -55,7 +51,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     return handle_failed_auth(response) unless response[:success]
 
     user = begin
-      find_or_create_api_user(response, uid)
+      persist_oidc_user(auth, response)
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.warn("OIDC user persistence failed uid=#{uid}: #{e.record.errors.full_messages.join(', ')}")
       return redirect_auth_error(e.record.errors.full_messages.to_sentence)
@@ -75,19 +71,34 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     redirect_auth_error(response[:message] || t('errors.unexpected_response'))
   end
 
-  def find_or_create_api_user(response, uid)
-    User.find_or_initialize_by(provider: 'oidc', uid: uid).tap do |user|
-      user.role ||= 'user'
-      user.username = response[:username]
-      user.name = user.name || response[:username]
-      user.assign_registrar_from_api!(
-        registrar_name: response[:registrar_name],
-        registrar_email: response[:registrar_email],
-        accreditation_date: response[:accreditation_date],
-        accreditation_expire_date: response[:accreditation_expire_date]
+  def persist_oidc_user(auth, response)
+    User.from_omniauth(auth, provider: 'oidc').tap do |user|
+      user.assign_attributes(
+        username: resolved_username(user: user, auth: auth, response: response),
+        name: user.name.presence || response[:username]
       )
-      user.save!
+      user.assign_registrar_from_api!(**registrar_attributes(response))
+      persist_user_and_registrar!(user)
     end
+  end
+
+  def resolved_username(user:, auth:, response:)
+    response[:username].presence || user.username.presence || auth.uid.to_s
+  end
+
+  def persist_user_and_registrar!(user)
+    registrar = user.registrar
+    registrar.save! if registrar&.changed?
+    user.save! if user.new_record? || user.changed?
+  end
+
+  def registrar_attributes(response)
+    {
+      registrar_name: response[:registrar_name],
+      registrar_email: response[:registrar_email],
+      accreditation_date: response[:accreditation_date],
+      accreditation_expire_date: response[:accreditation_expire_date]
+    }
   end
 
   def redirect_auth_error(message)

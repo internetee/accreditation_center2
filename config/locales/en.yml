@@ -23,7 +23,7 @@ en:
   access_denied_admin: "Admin users cannot access user pages"
   no_translation: "Sorry, no translation available for this language"
   errors:
-    invalid_credentials: "Invalid credentials"
+    invalid_credentials: "Invalid credentials or user not found"
     access_denied: "Access denied"
     object_not_found: "Object not found"
     invalid_data_format: "Invalid data format."
@@ -46,7 +46,7 @@ en:
     sessions:
       assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
       new:
-        title: "Eesti Interneti SA Accreditation Center"
+        title: "Estonian Internet Foundation Accreditation Center"
         login: "Sign in"
         login_with_password_title: "Sign in"
         login_with_id_title: "Sign in"
