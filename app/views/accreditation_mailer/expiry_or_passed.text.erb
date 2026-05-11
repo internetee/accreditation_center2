@@ -1,6 +1,6 @@
 <%= t('mailers.accreditation.shared.greeting') %>
 
-<%= t('mailers.accreditation.expiry_or_passed.intro_text', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :default)) %>
+<%= t('mailers.accreditation.expiry_or_passed.intro_text', registrar: @registrar.name, expiry_date: l(@registrar.accreditation_expire_date.to_date, format: :short)) %>
 
 <%= t('mailers.accreditation.expiry_or_passed.renewal_notice_text') %>
 

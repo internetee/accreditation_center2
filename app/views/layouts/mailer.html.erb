@@ -31,43 +31,45 @@
     <div class="content-wrapper" style="background:#fff;padding:20px 10px;font-family: Arial, sans-serif;">
       <%= yield %>
 
-      <div class="footer-text" style="margin-top:40px;">
-        <p><%= t('mailers.accreditation.shared.contact_html') %></p>
-        <p><%= t('mailers.accreditation.shared.sincerely') %></p>
-        <br>
-      </div>
-      
-      <!-- EIS Footer -->
-      <div class="eis-footer" style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e0e0;">
-        <% if content_for?(:footer) %>
-          <%= yield(:footer) %>
-        <% else %>
-          <table class="eis-footer-container" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:800px;">
-            <tr>
-              <td class="eis-logo-cell" style="width:120px;padding-right:20px;vertical-align:top;">
-                <%= image_tag "https://accreditation.internet.ee/eis_logo_#{I18n.locale}.png",
-                              alt: 'Estonian Internet Foundation',
-                              class: 'eis-logo',
-                              style: 'width:180px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none;' %>
-              </td>
-              <td class="eis-content-cell" style="padding-left:20px;padding-top:10px;border-left:2px solid #2F67F6;vertical-align:top;">
-                <div class="eis-tagline" style="line-height:16px;color:#525252;margin-bottom:8px;">
-                    <%= t('mailers.accreditation.shared.eis_tagline_html') %>
-                </div>
-                <div class="eis-contact" style="font-size:11px;line-height:18px;color:#8a8a8a;">
-                    <%= t('mailers.accreditation.shared.eis_contact_html') %>
-                </div>
-                <div class="eis-org-name" style="font-size:14px;font-weight:600;color:#8a8a8a;margin-top:8px;margin-bottom:8px;">
-                    <%= t('mailers.accreditation.shared.eis_org_name_html') %>
-                </div>
-                <div class="eis-social" style="font-size:12px;line-height:16px;color:#8a8a8a;margin-top:8px;">
-                    <%= t('mailers.accreditation.shared.eis_social_html') %>
-                </div>
-              </td>
-            </tr>
-          </table>
-        <% end %>
-      </div>
+      <% unless @skip_mail_footer %>
+        <div class="footer-text" style="margin-top:40px;">
+          <p><%= t('mailers.accreditation.shared.contact_html') %></p>
+          <p><%= t('mailers.accreditation.shared.sincerely') %></p>
+          <br>
+        </div>
+
+        <!-- EIS Footer -->
+        <div class="eis-footer" style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e0e0;">
+          <% if content_for?(:footer) %>
+            <%= yield(:footer) %>
+          <% else %>
+            <table class="eis-footer-container" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:800px;">
+              <tr>
+                <td class="eis-logo-cell" style="width:120px;padding-right:20px;vertical-align:top;">
+                  <%= image_tag "https://accreditation.internet.ee/eis_logo_#{I18n.locale}.png",
+                                alt: 'Estonian Internet Foundation',
+                                class: 'eis-logo',
+                                style: 'width:180px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none;' %>
+                </td>
+                <td class="eis-content-cell" style="padding-left:20px;padding-top:10px;border-left:2px solid #2F67F6;vertical-align:top;">
+                  <div class="eis-tagline" style="line-height:16px;color:#525252;margin-bottom:8px;">
+                      <%= t('mailers.accreditation.shared.eis_tagline_html') %>
+                  </div>
+                  <div class="eis-contact" style="font-size:11px;line-height:18px;color:#8a8a8a;">
+                      <%= t('mailers.accreditation.shared.eis_contact_html') %>
+                  </div>
+                  <div class="eis-org-name" style="font-size:14px;font-weight:600;color:#8a8a8a;margin-top:8px;margin-bottom:8px;">
+                      <%= t('mailers.accreditation.shared.eis_org_name_html') %>
+                  </div>
+                  <div class="eis-social" style="font-size:12px;line-height:16px;color:#8a8a8a;margin-top:8px;">
+                      <%= t('mailers.accreditation.shared.eis_social_html') %>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </body>
 </html>

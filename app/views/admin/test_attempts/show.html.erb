@@ -46,7 +46,7 @@
               <div class="stat-item">
                 <span class="stat-label"><%= t('.completed_at') %></span>
                 <span class="stat-value">
-                  <%= l(@test_attempt.completed_at, format: :short) if @test_attempt.completed_at %>
+                  <%= l(@test_attempt.completed_at, format: :long) if @test_attempt.completed_at %>
                 </span>
               </div>
               <div class="stat-item">
