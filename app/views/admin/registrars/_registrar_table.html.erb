@@ -31,7 +31,7 @@
             <span class="badge badge-success"><%= t('admin.registrars.index.accredited') %></span>
           <% end %>
         </td>
-        <td><%= registrar.accreditation_expire_date ? l(registrar.accreditation_expire_date.to_date) : '-' %></td>
+        <td><%= registrar.accreditation_expire_date ? l(registrar.accreditation_expire_date.to_date, format: :long) : '-' %></td>
         <td><%= registrar.users.size %></td>
       </tr>
     <% end %>
