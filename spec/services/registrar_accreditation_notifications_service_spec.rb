@@ -41,7 +41,7 @@ RSpec.describe RegistrarAccreditationNotificationsService do
 
   describe "#notify_accreditation_sync" do
     let(:service) { described_class.new }
-    let(:registrar) { create(:registrar, accreditation_date: Time.zone.parse("2026-04-10 10:00:00"), accreditation_expire_date: Time.zone.parse("2028-04-10 10:00:00")) }
+    let(:registrar) { create(:registrar, accreditation_date: Time.zone.parse('2026-04-10 10:00:00'), accreditation_expire_date: Time.zone.parse('2028-04-10 10:00:00')) }
 
     it 'sends first-accreditation confirmation once' do
       expect {
@@ -68,6 +68,24 @@ RSpec.describe RegistrarAccreditationNotificationsService do
           previous_accreditation_expire_date: nil
         )
       }.not_to have_enqueued_mail(AccreditationMailer, :admin_accreditation_window_notice)
+    end
+
+    it 'uses the current accreditation expiry date as the first-accreditation cycle key' do
+      registrar.update!(
+        accreditation_date: Time.zone.parse('2026-05-05 12:00:00'),
+        accreditation_expire_date: Time.zone.parse('2028-05-05 12:00:00')
+      )
+
+      service.notify_accreditation_sync(
+        registrar: registrar,
+        previous_accreditation_date: nil,
+        previous_accreditation_expire_date: nil
+      )
+
+      expect(registrar.registrar_notification_events.pluck(:event_type, :cycle_key)).to include(
+        [described_class::EVENT_TYPES[:accreditation_granted], '2028-05-05'],
+        [described_class::EVENT_TYPES[:admin_accreditation_window_notice], '2028-05-05']
+      )
     end
 
     it 'sends reaccreditation confirmation and admin notice in window, once per cycle' do

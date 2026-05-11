@@ -41,12 +41,13 @@ RSpec.describe AccreditationMailer, type: :mailer do
       expected_subject = I18n.t(
         'mailers.accreditation.expiry_30_days.subject',
         registrar: registrar.name,
-        expiry_date: I18n.l(registrar.accreditation_expire_date.to_date, format: :default)
+        expiry_date: I18n.l(registrar.accreditation_expire_date.to_date, format: :short)
       )
 
       expect(mail.to).to eq([registrar.email])
       expect(mail.subject).to eq(expected_subject)
       expect(mail.body.encoded).to include(registrar.name)
+      expect(mail.html_part.body.decoded).to include('support@internet.ee')
     end
   end
 
@@ -120,6 +121,10 @@ RSpec.describe AccreditationMailer, type: :mailer do
       expect(mail.to).to match_array([admin1.email, admin2.email])
       expect(mail.subject).to eq(I18n.t('mailers.accreditation.admin_accreditation_window_notice.subject', registrar: registrar.name))
       expect(mail.body.encoded).to include(registrar.name)
+      expect(mail.body.encoded).to include(I18n.l(registrar.accreditation_date.to_date, format: :short))
+      expect(mail.body.encoded).to include(I18n.l(registrar.accreditation_expire_date.to_date, format: :short))
+      expect(mail.html_part.body.decoded).not_to include('support@internet.ee')
+      expect(mail.text_part.body.decoded).not_to include('support@internet.ee')
     end
   end
 
@@ -148,6 +153,11 @@ RSpec.describe AccreditationMailer, type: :mailer do
       expect(mail.body.encoded).to include('No tests available')
       expect(mail.body.encoded).to include('Practical')
       expect(mail.body.encoded).to include('Provisioning failed')
+    end
+
+    it 'does not include the shared mail footer' do
+      expect(mail.html_part.body.decoded).not_to include('support@internet.ee')
+      expect(mail.text_part.body.decoded).not_to include('support@internet.ee')
     end
   end
 end

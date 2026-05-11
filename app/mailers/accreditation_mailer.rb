@@ -51,6 +51,7 @@ class AccreditationMailer < ApplicationMailer
 
   def admin_accreditation_window_notice(registrar)
     @registrar = registrar
+    @skip_mail_footer = true
 
     mail(
       to: User.admin.pluck(:email),
@@ -61,6 +62,7 @@ class AccreditationMailer < ApplicationMailer
   def assignment_failed(user, failures)
     @user = user
     @failures = failures
+    @skip_mail_footer = true
 
     mail(
       to: User.admin.pluck(:email),
@@ -73,6 +75,6 @@ class AccreditationMailer < ApplicationMailer
   def localized_expiry_date(registrar)
     return '' if registrar.accreditation_expire_date.blank?
 
-    I18n.l(registrar.accreditation_expire_date.to_date, format: :default)
+    I18n.l(registrar.accreditation_expire_date.to_date, format: :short)
   end
 end

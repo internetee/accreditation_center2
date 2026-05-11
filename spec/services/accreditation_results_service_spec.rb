@@ -69,6 +69,21 @@ RSpec.describe AccreditationResultsService do
         allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
       end
 
+      it 'syncs the last theoretical test pass time to REPP' do
+        allow(service).to receive(:update_accreditation).and_return(
+          {
+            success: true,
+            registrar_name: registrar.name,
+            accreditation_date: accreditation_date,
+            accreditation_expire_date: accreditation_expire_date
+          }
+        )
+
+        service.sync_registrar_accreditation(registrar)
+
+        expect(service).to have_received(:update_accreditation).with(registrar.name, last_theory_test_passed_at: last_theory_test_passed_at)
+      end
+
       it 'updates registrar accreditation dates after successful sync' do
         allow(service).to receive(:update_accreditation).and_return(
           {

@@ -30,6 +30,7 @@ et:
     abbr_month_names:
       [~, Jaan, Veeb, Märts, Apr, Mai, Juuni, Juuli, Aug, Sep, Okt, Nov, Det]
     formats:
+      short: "%d.%m.%Y"
       default: "%d.%m.%Y"
       month_year: "%d. %B %Y"
       month_year_short: "%b, %Y"

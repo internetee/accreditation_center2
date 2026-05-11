@@ -1,4 +1,7 @@
 en:
+  date:
+    formats:
+      short: "%d.%m.%Y"
   search: "Search"
   language: "in English"
   minutes: "minutes"
