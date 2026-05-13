@@ -42,6 +42,7 @@ Rails.application.routes.draw do
 
     resources :theoretical_tests, only: [], controller: 'theoretical_tests', concerns: :test_actions
     resources :practical_tests,   only: [], controller: 'practical_tests', concerns: :test_actions
+    resource :registrar, only: %i[show], controller: 'registrar'
 
     # Admin routes
     namespace :admin do

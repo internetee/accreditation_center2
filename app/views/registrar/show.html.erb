@@ -1,0 +1,141 @@
+<% content_for(:title) { @registrar ? "EIS | #{t('.title')} - #{@registrar.name}" : "EIS | #{t('.title')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <% if @registrar %>
+      <div class="monospace">
+        <%= @registrar.name %><% if @registrar.email.present? %> - <%= @registrar.email %><% end %>
+      </div>
+    <% end %>
+    <%= back_link(text: t('.back_to_dashboard'), path: root_path) %>
+  </div>
+<% end %>
+
+<div class="page page--registrar-colleagues">
+  <div class="page--header">
+    <div class="wrapper">
+      <div class="row center-xs">
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <% if @registrar.blank? %>
+      <div class="page--message"><%= t('.no_registrar') %></div>
+    <% else %>
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.registrar_information') %></h3>
+            </div>
+            <div class="paper--content">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.name') %></span>
+                  <span class="stat-value"><%= @registrar.name %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.email') %></span>
+                  <span class="stat-value" style="word-break: break-all;">
+                    <%= @registrar.email.presence || t('.not_applicable') %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_status') %></span>
+                  <span class="stat-value">
+                    <% if @registrar.accreditation_expire_date.blank? %>
+                      <span class="badge badge-default"><%= t('admin.registrars.index.no_accreditation') %></span>
+                    <% elsif @registrar.accreditation_expired? %>
+                      <span class="badge badge-danger"><%= t('admin.registrars.index.expired') %></span>
+                    <% elsif @registrar.accreditation_expires_soon? %>
+                      <span class="badge badge-warning"><%= t('admin.registrars.index.expires_soon') %></span>
+                    <% else %>
+                      <span class="badge badge-success"><%= t('admin.registrars.index.accredited') %></span>
+                    <% end %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_date') %></span>
+                  <span class="stat-value">
+                    <%= @registrar.accreditation_date ? l(@registrar.accreditation_date.to_date, format: :short) : t('.not_applicable') %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_expires_at') %></span>
+                  <span class="stat-value">
+                    <%= @registrar.accreditation_expire_date ? l(@registrar.accreditation_expire_date.to_date, format: :short) : t('.not_applicable') %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.colleagues_section') %> (<%= @registrar_users.size %>)</h3>
+            </div>
+            <div class="paper--content">
+              <% if @registrar_users.any? %>
+                <table class="table table--striped">
+                  <thead>
+                    <tr>
+                      <th><%= t('.col_name') %></th>
+                      <th><%= t('.col_latest_test') %></th>
+                      <th><%= t('.col_status') %></th>
+                      <th><%= t('.col_result') %></th>
+                      <th><%= t('.col_completed_at') %></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @registrar_users.each do |user| %>
+                      <% projection = @latest_result_by_user_id[user] || {} %>
+                      <% attempt = projection[:latest_attempt] %>
+                      <% result = projection[:result] %>
+                      <tr>
+                        <td><%= user.display_name %></td>
+                        <td><%= attempt&.test&.title.presence || t('.not_applicable') %></td>
+                        <td>
+                          <% case result
+                             when :in_progress %>
+                            <%= t('.workflow_in_progress') %>
+                          <% when :passed, :failed %>
+                            <%= t('.workflow_completed') %>
+                          <% else %>
+                            <%= t('.workflow_not_started') %>
+                          <% end %>
+                        </td>
+                        <td>
+                          <% if result == :passed %>
+                            <span class="badge badge-success"><%= t('admin.test_attempts.test_attempts_table.passed') %></span>
+                          <% elsif result == :failed %>
+                            <span class="badge badge-danger"><%= t('admin.test_attempts.test_attempts_table.failed') %></span>
+                          <% elsif result == :in_progress %>
+                            <span class="badge badge-warning"><%= t('admin.test_attempts.test_attempts_table.in_progress') %></span>
+                          <% else %>
+                            <span class="badge badge-default"><%= t('admin.test_attempts.test_attempts_table.not_started') %></span>
+                          <% end %>
+                        </td>
+                        <td>
+                          <% if projection[:completed_at].present? %>
+                            <%= l(projection[:completed_at], format: :short) %>
+                          <% else %>
+                            <%= t('.not_applicable') %>
+                          <% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% else %>
+                <p><%= t('.empty_colleagues') %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
