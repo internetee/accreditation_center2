@@ -134,6 +134,38 @@ RSpec.describe 'RegistrarController', type: :request do
           expect(response.body).to include(I18n.t('registrar.show.workflow_completed'))
         end
 
+        it 'prefers a completed attempt over a newer time-expired attempt' do
+          # An older passed attempt and a newer attempt that ran out of time
+          # without being completed: completed should still win.
+          create(:test_attempt, :passed, user: colleague_same_registrar, test: theoretical_test,
+                                         completed_at: 10.days.ago)
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: (theoretical_test.time_limit_minutes + 10).minutes.ago,
+                                completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('badge-success')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.passed'))
+          expect(response.body).not_to include(I18n.t('admin.test_attempts.test_attempts_table.time_expired'))
+        end
+
+        it 'prefers an active in-progress attempt over a time-expired one' do
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: (theoretical_test.time_limit_minutes + 10).minutes.ago,
+                                completed_at: nil, passed: false)
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: 5.minutes.ago, completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('badge-warning')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.in_progress'))
+          expect(response.body).not_to include(I18n.t('admin.test_attempts.test_attempts_table.time_expired'))
+        end
+
         it 'prefers a time-expired attempt over a newer not-started attempt' do
           create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
                                 started_at: (theoretical_test.time_limit_minutes + 10).minutes.ago,
@@ -211,6 +243,8 @@ RSpec.describe 'RegistrarController', type: :request do
           expect(response.body).not_to include('badge-danger')
           expect(response.body).not_to include('badge-warning')
           expect(response.body).to include('badge-default')
+          # The assigned (but not started) test is still shown in the table.
+          expect(response.body).to include('Theory Test')
         end
 
         it 'ignores attempts that belong to users from other registrars' do
