@@ -33,15 +33,29 @@ class RegistrarController < ApplicationController
   end
 
   def latest_attempt_for(user)
-    user.test_attempts.max_by do |attempt|
-      attempt.completed_at || attempt.started_at || attempt.created_at
+    attempts = user.test_attempts.to_a
+    return nil if attempts.empty?
+
+    finished = attempts.select { |attempt| attempt.completed? || time_expired_only?(attempt) }
+    if finished.any?
+      return finished.max_by { |attempt| attempt.completed_at || attempt.started_at || attempt.created_at }
     end
+
+    active = attempts.select { |attempt| attempt.in_progress? && !attempt.time_expired? }
+    return active.max_by { |attempt| attempt.started_at || attempt.created_at } if active.any?
+
+    nil
+  end
+
+  def time_expired_only?(attempt)
+    !attempt.completed? && attempt.time_expired?
   end
 
   def attempt_status(attempt)
     return :not_started unless attempt
     return :passed if attempt.passed?
     return :failed if attempt.failed?
+    return :time_expired if time_expired_only?(attempt)
     return :in_progress if attempt.in_progress?
 
     :not_started

@@ -120,6 +120,33 @@ RSpec.describe 'RegistrarController', type: :request do
           expect(response.body).to include(I18n.t('registrar.show.workflow_in_progress'))
         end
 
+        it 'shows a time-expired badge for an attempt whose time limit lapsed without completion' do
+          # Started well before the test's time limit elapsed, never completed.
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: (theoretical_test.time_limit_minutes + 10).minutes.ago,
+                                completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('badge-danger')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.time_expired'))
+          expect(response.body).to include(I18n.t('registrar.show.workflow_completed'))
+        end
+
+        it 'prefers a time-expired attempt over a newer not-started attempt' do
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: (theoretical_test.time_limit_minutes + 10).minutes.ago,
+                                completed_at: nil, passed: false)
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: nil, completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.time_expired'))
+        end
+
         it 'shows a not-started badge for users without any attempts' do
           get registrar_path
 
@@ -140,6 +167,50 @@ RSpec.describe 'RegistrarController', type: :request do
           expect(response).to have_http_status(:ok)
           expect(response.body).to include('badge-success')
           expect(response.body).not_to include('badge-danger')
+        end
+
+        it 'prefers a completed attempt over a newer not-started attempt' do
+          # An older completed attempt and a newer assigned-but-untouched one.
+          create(:test_attempt, :passed, user: colleague_same_registrar, test: theoretical_test,
+                                         completed_at: 10.days.ago)
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: nil, completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('badge-success')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.passed'))
+        end
+
+        it 'prefers an in-progress attempt over a newer not-started attempt' do
+          # Must stay within theoretical_test.time_limit_minutes (factory default 60)
+          # or the attempt is time-expired, not in progress.
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: 10.minutes.ago, completed_at: nil, passed: false)
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: nil, completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('badge-warning')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.in_progress'))
+        end
+
+        it 'falls back to not-started when only not-started attempts exist for the colleague' do
+          create(:test_attempt, user: colleague_same_registrar, test: theoretical_test,
+                                started_at: nil, completed_at: nil, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          # Neither colleague has a started or completed attempt, so no
+          # success/danger/warning badges should be rendered.
+          expect(response.body).not_to include('badge-success')
+          expect(response.body).not_to include('badge-danger')
+          expect(response.body).not_to include('badge-warning')
+          expect(response.body).to include('badge-default')
         end
 
         it 'ignores attempts that belong to users from other registrars' do

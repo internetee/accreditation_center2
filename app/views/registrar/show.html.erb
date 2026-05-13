@@ -101,7 +101,7 @@
                           <% case result
                              when :in_progress %>
                             <%= t('.workflow_in_progress') %>
-                          <% when :passed, :failed %>
+                          <% when :passed, :failed, :time_expired %>
                             <%= t('.workflow_completed') %>
                           <% else %>
                             <%= t('.workflow_not_started') %>
@@ -112,6 +112,8 @@
                             <span class="badge badge-success"><%= t('admin.test_attempts.test_attempts_table.passed') %></span>
                           <% elsif result == :failed %>
                             <span class="badge badge-danger"><%= t('admin.test_attempts.test_attempts_table.failed') %></span>
+                          <% elsif result == :time_expired %>
+                            <span class="badge badge-danger"><%= t('admin.test_attempts.test_attempts_table.time_expired') %></span>
                           <% elsif result == :in_progress %>
                             <span class="badge badge-warning"><%= t('admin.test_attempts.test_attempts_table.in_progress') %></span>
                           <% else %>
