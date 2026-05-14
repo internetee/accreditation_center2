@@ -45,6 +45,7 @@ en:
     users: "Users"
     registrars: "Registrars"
     jobs: "Jobs"
+    registrar_colleagues: "Registrar & colleagues"
   users:
     sessions:
       assignment_failed: "Automatic test assignment failed. Coordinators have been notified."
@@ -118,6 +119,11 @@ en:
       colleagues_section: "Users"
       name: "Name"
       email: "Email"
+      users_label: "users"
+      rows_label: "rows"
+      search_placeholder: "Search by name, test, or status…"
+      search_aria_label: "Search colleagues"
+      search_no_results: "No rows match your search. Try a different keyword."
       accreditation_status: "Accreditation status"
       accreditation_date: "Accreditation date"
       accreditation_expires_at: "Accreditation expires at"

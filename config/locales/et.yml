@@ -64,6 +64,7 @@ et:
     users: "Kasutajad"
     registrars: "Registripidajad"
     jobs: "Tegevused"
+    registrar_colleagues: "Registripidaja ja kolleegid"
   users:
     sessions:
       assignment_failed: "Automaatne testide määramine ebaõnnestus. Koordinaatoritele saadeti teavitus."
@@ -136,6 +137,11 @@ et:
       colleagues_section: "Kasutajad"
       name: "Nimi"
       email: "E-post"
+      users_label: "kasutajat"
+      rows_label: "rida"
+      search_placeholder: "Otsi nime, testi või oleku järgi…"
+      search_aria_label: "Otsi kolleege"
+      search_no_results: "Otsingule vastavaid ridu pole. Proovi teist märksõna."
       accreditation_status: "Akrediteeringu olek"
       accreditation_date: "Akrediteeringu kuupäev"
       accreditation_expires_at: "Akrediteering aegub"

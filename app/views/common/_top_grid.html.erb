@@ -3,10 +3,11 @@
     <div class="bills">
       <h2><%= t('home.index.accreditation_status') %></h2>
       <p>
+        <strong><%= t('home.index.registrar_name', default: 'Registrar') %>:</strong>
         <% if registrar.present? %>
-          <span class="bills-colleagues-wrap"><%= link_to registrar.name, registrar_path, class: 'bills-colleagues-link' %></span>
+          <%= link_to registrar.name, registrar_path, class: 'bills-colleagues-link' %>
         <% else %>
-          <span class="bills-colleagues-wrap"> - </span>
+          <span class="bills-colleagues-wrap">—</span>
         <% end %>
       </p>
       <% if registrar&.accreditation_expire_date %>

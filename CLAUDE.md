@@ -7,7 +7,7 @@
 ## Stack
 - Database: static_parse — 12 tables
 - Models: 12
-- Routes: 122 across 19 controllers
+- Routes: 123 across 20 controllers
 - Async: 2 jobs
 - Migrations: 31 total, 0 pending
 - Auth: Devise + Pundit

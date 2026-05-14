@@ -48,6 +48,13 @@ RSpec.describe 'RegistrarController', type: :request do
         expect(response.body).to include(I18n.t('registrar.show.no_registrar'))
         expect(response.body).not_to include('table--striped')
       end
+
+      it 'does not include the registrar colleagues link in the main menu' do
+        get root_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include(I18n.t('nav.registrar_colleagues'))
+      end
     end
 
     context 'when signed in as a regular user with a registrar' do
@@ -62,6 +69,14 @@ RSpec.describe 'RegistrarController', type: :request do
 
       before { sign_in(current_user, scope: :user) }
 
+      it 'includes a main navigation link to the registrar colleagues page' do
+        get root_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(ERB::Util.html_escape(I18n.t('nav.registrar_colleagues')))
+        expect(response.body).to include(registrar_path)
+      end
+
       it 'renders colleagues from the same registrar only and excludes admins' do
         get registrar_path
 
@@ -75,12 +90,73 @@ RSpec.describe 'RegistrarController', type: :request do
         expect(response.body).not_to include(admin_same_registrar.email)
       end
 
+      describe 'sorting' do
+        def colleague_first_column_cells(html)
+          doc = Nokogiri::HTML(html)
+          doc.css('table.table--registrar-colleagues tbody tr').filter_map { |tr| tr.at_css('td')&.text&.strip }
+        end
+
+        it 'renders sortable column headers like admin tables' do
+          get registrar_path
+
+          expect(response.body).to include('sort_link')
+          expect(response.body).to include('sort=name')
+          expect(response.body).to include('sort=test_type')
+        end
+
+        it 'sorts by name descending' do
+          get registrar_path, params: { sort: 'name', direction: 'desc' }
+
+          expect(response).to have_http_status(:ok)
+          names = colleague_first_column_cells(response.body)
+          expect(names).to eq([
+                                'Bob Colleague', 'Bob Colleague',
+                                'Alice Colleague', 'Alice Colleague'
+                              ])
+        end
+
+        it 'ignores an unknown sort parameter' do
+          get registrar_path
+
+          default_names = colleague_first_column_cells(response.body)
+
+          get registrar_path, params: { sort: 'not_a_column', direction: 'desc' }
+
+          expect(colleague_first_column_cells(response.body)).to eq(default_names)
+        end
+
+        it 'preserves sort and direction in the search form' do
+          get registrar_path, params: { sort: 'test_type', direction: 'desc' }
+
+          doc = Nokogiri::HTML(response.body)
+          sort_field = doc.at_css('input[type="hidden"][name="sort"]')
+          direction_field = doc.at_css('input[type="hidden"][name="direction"]')
+          expect(sort_field['value']).to eq('test_type')
+          expect(direction_field['value']).to eq('desc')
+        end
+      end
+
       describe 'latest test attempt projection' do
         let(:theoretical_test) { create(:test, :theoretical, title_en: 'Theory Test', title_et: 'Teooria Test') }
+        let(:practical_test) { create(:test, :practical, title_en: 'Practical Exam', title_et: 'Praktiline eksam') }
 
         before do
           # Avoid invariants on test_attempt creation that depend on real questions/answers.
           allow_any_instance_of(TestAttempt).to receive(:questions_have_answers).and_return(true)
+        end
+
+        it 'shows latest theoretical and practical attempts independently' do
+          create(:test_attempt, :passed, user: colleague_same_registrar, test: theoretical_test,
+                                         completed_at: 2.days.ago)
+          create(:test_attempt, :completed, user: colleague_same_registrar, test: practical_test, passed: false)
+
+          get registrar_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('Theory Test')
+          expect(response.body).to include('Practical Exam')
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.passed'))
+          expect(response.body).to include(I18n.t('admin.test_attempts.test_attempts_table.failed'))
         end
 
         it 'shows a passed badge and completed-at date for the latest attempt' do
@@ -255,6 +331,43 @@ RSpec.describe 'RegistrarController', type: :request do
 
           expect(response).to have_http_status(:ok)
           expect(response.body).not_to include('Other Test')
+        end
+      end
+
+      describe 'search' do
+        let(:search_test) { create(:test, :theoretical, title_en: 'ZetaUniqueTitle', title_et: 'Zeta') }
+
+        before do
+          allow_any_instance_of(TestAttempt).to receive(:questions_have_answers).and_return(true)
+        end
+
+        it 'returns only rows matching the query' do
+          create(:test_attempt, :passed, user: colleague_same_registrar, test: search_test)
+
+          get registrar_path, params: { q: 'ZetaUniqueTitle' }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('ZetaUniqueTitle')
+          expect(response.body).to include('Bob Colleague')
+          expect(response.body).not_to include(I18n.t('registrar.show.search_no_results'))
+        end
+
+        it 'shows a no-results message when the query matches nothing' do
+          get registrar_path, params: { q: 'no_such_match_xyz_12345' }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(I18n.t('registrar.show.search_no_results'))
+          expect(response.body).not_to include('table--registrar-colleagues')
+        end
+
+        it 'matches status keywords' do
+          create(:test_attempt, :passed, user: colleague_same_registrar, test: search_test)
+
+          get registrar_path, params: { q: 'passed' }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('Bob Colleague')
+          expect(response.body).not_to include(I18n.t('registrar.show.search_no_results'))
         end
       end
     end

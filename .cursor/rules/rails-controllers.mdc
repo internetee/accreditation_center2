@@ -4,7 +4,7 @@ globs:
 alwaysApply: false
 ---
 
-# Controllers (25)
+# Controllers (26)
 
 - Admin::AnswersController (5 actions)
 - Admin::BaseController (2 actions)
@@ -25,11 +25,12 @@ alwaysApply: false
 - DeviseController (2 actions)
 - HomeController (1 actions)
 - PracticalTestsController (4 actions)
+- RegistrarController (1 actions)
 - TestsController (4 actions)
 - TheoreticalTestsController (4 actions)
 - Users::Admin::PasswordsController (3 actions)
 - Users::Admin::SessionsController (2 actions)
 - Users::OmniauthCallbacksController (2 actions)
-- Users::SessionsController (1 actions)
+- ...1 more
 
 Use `rails_get_controllers` MCP tool with controller:"Name" for full detail.

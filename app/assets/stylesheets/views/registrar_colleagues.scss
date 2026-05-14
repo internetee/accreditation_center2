@@ -1,0 +1,12 @@
+@use "../general/variables";
+
+// Flat colleagues table: one row per user × test type; subtle type indicator on rows.
+.table.table--registrar-colleagues {
+  tbody tr.registrar-colleagues__row--theoretical td:first-child {
+    box-shadow: inset 4px 0 0 0 variables.$darkblue3;
+  }
+
+  tbody tr.registrar-colleagues__row--practical td:first-child {
+    box-shadow: inset 4px 0 0 0 variables.$darkgreen2;
+  }
+}

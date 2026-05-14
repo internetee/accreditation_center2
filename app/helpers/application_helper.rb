@@ -15,7 +15,7 @@ module ApplicationHelper
       if current_user&.admin?
         links(administrator_link_list)
       else
-        links(user_link_list)
+        links(user_link_list(current_user))
       end
     end
   end
@@ -93,8 +93,12 @@ module ApplicationHelper
     end
   end
 
-  def user_link_list
-    [{ name: I18n.t('nav.dashboard'), path: root_path }]
+  def user_link_list(current_user)
+    list = [{ name: I18n.t('nav.dashboard'), path: root_path }]
+    if current_user&.registrar.present?
+      list << { name: I18n.t('nav.registrar_colleagues'), path: registrar_path }
+    end
+    list
   end
 
   def administrator_link_list
