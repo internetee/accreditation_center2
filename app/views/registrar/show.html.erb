@@ -1,0 +1,118 @@
+<% content_for(:title) { @registrar ? "EIS | #{t('.title')} - #{@registrar.name}" : "EIS | #{t('.title')}" } %>
+<% content_for :hero do %>
+  <div class="layout--hero">
+    <h1><%= t('.title') %></h1>
+    <% if @registrar %>
+      <div class="monospace">
+        <%= @registrar.name %><% if @registrar.email.present? %> - <%= @registrar.email %><% end %>
+      </div>
+    <% end %>
+    <%= back_link(text: t('.back_to_dashboard'), path: root_path) %>
+  </div>
+<% end %>
+
+<div class="page page--registrar-colleagues">
+  <div class="page--header">
+    <div class="wrapper">
+      <% if @registrar.present? && @registrar_users.any? %>
+        <%= render 'registrar/search_form' %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <% if @registrar.blank? %>
+      <div class="page--message"><%= t('.no_registrar') %></div>
+    <% else %>
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3><%= t('.registrar_information') %></h3>
+            </div>
+            <div class="paper--content">
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.name') %></span>
+                  <span class="stat-value"><%= @registrar.name %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.email') %></span>
+                  <span class="stat-value" style="word-break: break-all;">
+                    <%= @registrar.email.presence || t('.not_applicable') %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_status') %></span>
+                  <span class="stat-value">
+                    <% if @registrar.accreditation_expire_date.blank? %>
+                      <span class="badge badge-default"><%= t('admin.registrars.index.no_accreditation') %></span>
+                    <% elsif @registrar.accreditation_expired? %>
+                      <span class="badge badge-danger"><%= t('admin.registrars.index.expired') %></span>
+                    <% elsif @registrar.accreditation_expires_soon? %>
+                      <span class="badge badge-warning"><%= t('admin.registrars.index.expires_soon') %></span>
+                    <% else %>
+                      <span class="badge badge-success"><%= t('admin.registrars.index.accredited') %></span>
+                    <% end %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_date') %></span>
+                  <span class="stat-value">
+                    <%= @registrar.accreditation_date ? l(@registrar.accreditation_date.to_date, format: :short) : t('.not_applicable') %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label"><%= t('.accreditation_expires_at') %></span>
+                  <span class="stat-value">
+                    <%= @registrar.accreditation_expire_date ? l(@registrar.accreditation_expire_date.to_date, format: :short) : t('.not_applicable') %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+          <div class="paper">
+            <div class="paper--header">
+              <h3>
+                <%= t('.colleagues_section') %>
+                <% if @registrar_users.any? %>
+                  (<%= @registrar_users.size %>)
+                <% end %>
+              </h3>
+            </div>
+            <div class="paper--content">
+              <% if @registrar_users.any? %>
+                <% if @colleague_rows.any? %>
+                  <table class="table table--striped table--registrar-colleagues">
+                    <thead>
+                      <tr>
+                        <th><%= registrar_colleagues_sort_link('name', t('.col_name')) %></th>
+                        <th><%= registrar_colleagues_sort_link('test_type', t('admin.tests.index.test_type')) %></th>
+                        <th><%= registrar_colleagues_sort_link('test_title', t('.col_latest_test')) %></th>
+                        <th><%= registrar_colleagues_sort_link('workflow', t('.col_status')) %></th>
+                        <th><%= registrar_colleagues_sort_link('result', t('.col_result')) %></th>
+                        <th><%= registrar_colleagues_sort_link('completed_at', t('.col_completed_at')) %></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% @colleague_rows.each do |row| %>
+                        <%= render 'registrar/colleague_row', row: row %>
+                      <% end %>
+                    </tbody>
+                  </table>
+                <% else %>
+                  <p class="page--message"><%= t('.search_no_results') %></p>
+                <% end %>
+              <% else %>
+                <p><%= t('.empty_colleagues') %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

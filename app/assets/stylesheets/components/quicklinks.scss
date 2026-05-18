@@ -39,6 +39,21 @@
                 color: #ffd6d6;
             }
         }
+
+        .bills-colleagues-wrap {
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        a.bills-colleagues-link {
+            color: #b6ffb6;
+            font-weight: 700;
+            text-decoration: underline;
+
+            &:hover {
+                color: #fff;
+            }
+        }
     }
     .quicklinks--link {
         display: block;

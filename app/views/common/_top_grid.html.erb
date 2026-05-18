@@ -1,30 +1,34 @@
 <div class="quicklinks">
-    <div class="wrapper">
-        <div class="bills">
-            <h2><%= t('home.index.accreditation_status') %></h2>
-            <p>
-                <strong><%= t('home.index.registrar_name', default: 'Registrar') %>:</strong>
-                <%= registrar&.name.presence || '-' %>
-            </p>
-            <% if registrar&.accreditation_expire_date %>
-                <p>
-                    <strong><%= t('home.index.expiry_date') %>:</strong>
-                    <%= l(registrar.accreditation_expire_date, format: :long) %>
-                </p>
-                <% if registrar.days_until_accreditation_expiry > 0 %>
-                    <p class="status status--ok">
-                        <%= t('home.index.days_remaining', count: registrar.days_until_accreditation_expiry) %>
-                    </p>
-                <% else %>
-                    <p class="status status--expired">
-                        <strong><%= t('home.index.accreditation_expired') %></strong>
-                    </p>
-                <% end %>
-            <% else %>
-                <p class="status status--expired">
-                    <strong><%= t('home.index.accreditation_expired') %></strong>
-                </p>
-            <% end %>
-        </div>
+  <div class="wrapper">
+    <div class="bills">
+      <h2><%= t('home.index.accreditation_status') %></h2>
+      <p>
+        <strong><%= t('home.index.registrar_name', default: 'Registrar') %>:</strong>
+        <% if registrar.present? %>
+          <%= link_to registrar.name, registrar_path, class: 'bills-colleagues-link' %>
+        <% else %>
+          <span class="bills-colleagues-wrap">—</span>
+        <% end %>
+      </p>
+      <% if registrar&.accreditation_expire_date %>
+        <p>
+          <strong><%= t('home.index.expiry_date') %>:</strong>
+          <%= l(registrar.accreditation_expire_date, format: :long) %>
+        </p>
+        <% if registrar.days_until_accreditation_expiry > 0 %>
+          <p class="status status--ok">
+            <%= t('home.index.days_remaining', count: registrar.days_until_accreditation_expiry) %>
+          </p>
+        <% else %>
+          <p class="status status--expired">
+            <strong><%= t('home.index.accreditation_expired') %></strong>
+          </p>
+        <% end %>
+      <% else %>
+        <p class="status status--expired">
+          <strong><%= t('home.index.accreditation_expired') %></strong>
+        </p>
+      <% end %>
     </div>
+  </div>
 </div>
