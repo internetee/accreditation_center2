@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Match Ruby 3.4 default gem; avoids Gem::LoadError when Passenger loads before Bundler.setup
-gem 'stringio', '3.1.7'
+gem 'stringio', '3.2.0'
 
 gem 'action_policy'
 gem 'bootsnap', require: false
