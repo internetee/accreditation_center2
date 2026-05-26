@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Match Ruby 3.4 default gem; avoids Gem::LoadError when Passenger loads before Bundler.setup
-gem 'stringio', '3.2.0'
+gem 'stringio', '3.1.7'
 
 gem 'action_policy'
 gem 'bootsnap', require: false
@@ -57,6 +57,8 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 # gem 'bcrypt', '~> 3.1.7'
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem 'image_processing', '~> 1.2'
+
+gem 'voog_footer', github: 'internetee/voog_footer'
 
 group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
