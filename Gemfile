@@ -1,8 +1,5 @@
 source 'https://rubygems.org'
 
-# Match Ruby 3.4 default gem; avoids Gem::LoadError when Passenger loads before Bundler.setup
-gem 'stringio', '3.1.7'
-
 gem 'action_policy'
 gem 'bootsnap', require: false
 gem 'coderay', '~> 1.1', '>= 1.1.2'
