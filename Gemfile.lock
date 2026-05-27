@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/internetee/voog_footer.git
+  revision: ddbaeef72f380d8798a4df69cc93039a343b66fd
+  specs:
+    voog_footer (0.1.0)
+      nokogiri (~> 1.10)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -594,12 +601,12 @@ DEPENDENCIES
   solid_cache
   solid_queue
   stimulus-rails
-  stringio (= 3.2.0)
   syslog
   thruster
   traco
   turbo-rails
   tzinfo-data
+  voog_footer!
   web-console
   webmock
 

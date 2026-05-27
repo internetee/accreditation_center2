@@ -1,56 +1,50 @@
 <footer class="layout--footer">
     <div class="layout--footer-top">
-        <a class="layout--footer-logo" href="https://internet.ee">
+        <a class="layout--footer-logo" href="<%= footer_logo_url %>" target="_blank" rel="noopener">
             <img src="/eis-logo-white.svg" alt="Eesti Interneti SA">
         </a>
         <div class="layout--footer-contacts">
             <div class="address">
-                <h3><%= t('.copyright', year: Date.current.year) %></h3>
-                <p><%= t('.address') %></p>
-                <p><%= t('.registration_code') %></p>
+                <h3><%= footer_highlight_title %></h3>
+                <p><%= footer_highlight_info %></p>
             </div>
             <ul class="quickinfo">
-                <li><i aria-hidden="true" class="fas fa-envelope"></i><a href="mailto:info@internet.ee">info@internet.ee</a></li>
-                <li><i aria-hidden="true" class="fas fa-phone"></i>727 1000</li>
+                <li>
+                    <i aria-hidden="true" class="fas fa-envelope"></i>
+                    <a href="<%= footer_email_href %>" target="_blank" rel="noopener"><%= footer_email_text %></a>
+                </li>
+                <li>
+                    <i aria-hidden="true" class="fas fa-phone"></i>
+                    <%= footer_phone_text %>
+                </li>
             </ul>
         </div>
     </div>
     <div class="layout--footer-bottom">
         <nav class="menu--footer">
-            <div class="column">
-                <h3><%= t('.help_and_info') %></h3>
-                <ul>
-                    <li><a title="<%= t('.links.domain_regulation') %>" href="<%= t('.links.domain_regulation') %>" target="_blank"><%= t('.domain_regulation') %></a></li>
-                    <li><a title="<%= t('.links.faq') %>" href="<%= t('.links.faq') %>" target="_blank"><%= t('.faq') %></a></li>
-                    <li><a title="<%= t('.links.statistics') %>" href="<%= t('.links.statistics') %>" target="_blank"><%= t('.statistics') %></a></li>
-                    <li><a title="<%= t('.links.dispute_committee') %>" href="<%= t('.links.dispute_committee') %>" target="_blank"><%= t('.dispute_committee') %></a></li>
-                    <li><a href="javascript:void(0)" title="Cookie Settings" data-cc="show-preferencesModal" aria-haspopup="dialog"><%= t('.cookie_settings') %></a></li>
-                </ul>
-            </div>
-            <div class="column">
-                <h3><%= t('.registrars') %></h3>
-                <ul>
-                    <li><a title="<%= t('.links.list_of_accredited_registrars') %>" href="<%= t('.links.list_of_accredited_registrars') %>" target="_blank"><%= t('.list_of_accredited_registrars') %></a></li>
-                    <li><a title="<%= t('.links.terms_and_conditions_for_registrars') %>" href="<%= t('.links.terms_and_conditions_for_registrars') %>" target="_blank"><%= t('.terms_and_conditions_for_registrars') %></a></li>
-                    <li><a title="<%= t('.links.partner_programme') %>" href="<%= t('.links.partner_programme') %>" target="_blank"><%= t('.partner_programme') %></a></li>
-                </ul>
-            </div>
-            <div class="column">
-                <h3><%= t('.estonian_internet') %></h3>
-                <ul>
-                    <li><a title="<%= t('.links.contact_us') %>" href="<%= t('.links.contact_us') %>" target="_blank"><%= t('.contact_us') %></a></li>
-                    <li><a title="<%= t('.links.management') %>" href="<%= t('.links.management') %>" target="_blank"><%= t('.management') %></a></li>
-                    <li><a title="<%= t('.links.documents') %>" href="<%= t('.links.documents') %>" target="_blank"><%= t('.documents') %></a></li>
-                </ul>
-            </div>
+            <% footer_navigation_columns.each do |column| %>
+                <div class="column">
+                    <h3><%= column[:name] %></h3>
+                    <ul>
+                        <% column[:links].each do |link| %>
+                            <li>
+                                <%= link_to link[:label], link[:url], link[:html_options] %>
+                            </li>
+                        <% end %>
+                    </ul>
+                </div>
+            <% end %>
         </nav>
         <nav class="menu--social">
-            <h3><%= t('.social_media') %></h3>
+            <h3><%= footer_social_column_title %></h3>
             <ul>
-                <li><a href="https://www.facebook.com/EE-748656818569233/" title="Facebook"><i aria-hidden="true" class="fab fa-facebook-square"></i></a></li>
-                <li><a href="https://twitter.com/Eesti_Internet" title="Twitter"><i aria-hidden="true" class="fab fa-twitter"></i></a></li>
-                <li><a href="https://www.youtube.com/channel/UC7nTB6zIwZYPFarlbKuEPRA" title="Youtube"><i aria-hidden="true" class="fab fa-youtube-square"></i></a></li>
-                <li><a href="https://internet.ee/index.rss" title="RSS"><i aria-hidden="true" class="fas fa-rss-square"></i></a></li>
+                <% footer_social_links.each do |social| %>
+                    <li>
+                        <a href="<%= social[:url] %>" title="<%= social[:title] %>" target="_blank" rel="noopener">
+                            <i aria-hidden="true" class="<%= social[:icon_class] %>"></i>
+                        </a>
+                    </li>
+                <% end %>
             </ul>
         </nav>
     </div>

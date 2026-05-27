@@ -23,6 +23,13 @@ mailer_authentication: 'plain'
 mailer_domain: ''
 mailer_openssl_verify_mode: 'none'
 
+voog_site_url: "https://www.internet.ee"
+voog_api_key: ""
+voog_site_fetching_enabled: true
+voog_footer_cache_ttl: "3600"
+# Optional; default is verify in production/staging, skip in development/test (like auction_center HttpRequester)
+# voog_ssl_verify: "false"
+
 # OIDC configuration
 # OIDC_HOST: 'test-auth.eeid.ee'
 OIDC_ISSUER: 'https://test-auth.eeid.ee/hydra-public/'
