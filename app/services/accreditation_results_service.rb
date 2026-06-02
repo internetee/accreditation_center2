@@ -28,7 +28,7 @@ class AccreditationResultsService < BotAuthService
     return { success: false, message: 'Registrar is required' } unless registrar.is_a?(Registrar)
 
     eligibility = RegistrarAccreditationEligibility.new(registrar)
-    return { success: false, message: 'Registrar not accredited' } unless eligibility.accredited?
+    return { success: false, message: 'Registrar not accredited' } unless sync_eligible?(registrar, eligibility)
 
     previous_dates = previous_accreditation_dates(registrar)
     result = perform_sync(registrar, eligibility)
@@ -99,6 +99,12 @@ class AccreditationResultsService < BotAuthService
       registrar.name,
       last_theory_test_passed_at: eligibility.last_theory_passed_at
     )
+  end
+
+  def sync_eligible?(registrar, eligibility)
+    return true if eligibility.accredited?
+
+    registrar.accreditation_date.present? && eligibility.last_theory_passed_at.present?
   end
 
   def sync_successful?(result)

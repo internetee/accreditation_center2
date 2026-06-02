@@ -283,11 +283,19 @@ class TestAttempt < ApplicationRecord
 
     registrar = user.registrar
     return if registrar.blank?
+    return AccreditationSyncJob.perform_later(registrar) if test.theoretical? && can_sync_from_theoretical?(registrar)
     return unless RegistrarAccreditationEligibility.accredited?(registrar)
-    return AccreditationSyncJob.perform_later(registrar) if test.theoretical?
     return if practical_pass_exists_without_current_attempt?(registrar)
 
     AccreditationSyncJob.perform_later(registrar)
+  end
+
+  def can_sync_from_theoretical?(registrar)
+    registrar_accredited_in_system?(registrar) || RegistrarAccreditationEligibility.accredited?(registrar)
+  end
+
+  def registrar_accredited_in_system?(registrar)
+    registrar.accreditation_date.present?
   end
 
   def practical_pass_exists_without_current_attempt?(registrar)

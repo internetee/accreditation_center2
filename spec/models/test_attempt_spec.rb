@@ -113,6 +113,15 @@ RSpec.describe TestAttempt, type: :model do
       expect { another_theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
     end
 
+    it 'syncs from theoretical pass when registrar has manual accreditation date in database' do
+      user.registrar.update!(accreditation_date: 1.year.ago, accreditation_expire_date: 1.day.ago)
+
+      theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
+      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+
+      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+    end
+
     it 'does not sync when test is not passed' do
       attempt = create(:test_attempt, user: user, test: theoretical_test)
       # Setup to fail - no question responses means 0% score, which is below 60% threshold
