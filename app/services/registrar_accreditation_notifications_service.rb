@@ -19,7 +19,9 @@ class RegistrarAccreditationNotificationsService
 
     registrar = test_attempt.user&.registrar
     return if registrar.blank?
-    return if RegistrarAccreditationEligibility.accredited?(registrar)
+
+    eligibility = RegistrarAccreditationEligibility.new(registrar)
+    return if eligibility.skip_partial_accreditation_notice?
 
     event_type = test_attempt.test.theoretical? ? EVENT_TYPES[:theoretical_passed_not_accredited] : EVENT_TYPES[:practical_passed_not_accredited]
     cycle_key = pending_cycle_key(registrar)
@@ -35,9 +37,10 @@ class RegistrarAccreditationNotificationsService
 
   def notify_accreditation_sync(registrar:, previous_accreditation_date:, previous_accreditation_expire_date:)
     return unless registrar.is_a?(Registrar)
-    return if registrar.accreditation_date.blank?
+    had_prior_accreditation = previous_accreditation_date.present? || previous_accreditation_expire_date.present?
+    return unless had_prior_accreditation || registrar.accreditation_date.present?
 
-    if previous_accreditation_date.blank?
+    unless had_prior_accreditation
       send_accreditation_granted(registrar)
       send_admin_window_notice(registrar, registrar.accreditation_expire_date || registrar.accreditation_date)
       return

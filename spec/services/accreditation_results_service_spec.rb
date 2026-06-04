@@ -40,7 +40,7 @@ RSpec.describe AccreditationResultsService do
     context 'when registrar is not accredited' do
       before do
         allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
-        allow(eligibility).to receive(:accredited?).and_return(false)
+        allow(eligibility).to receive(:sync_eligible?).and_return(false)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(nil)
       end
 
@@ -56,12 +56,16 @@ RSpec.describe AccreditationResultsService do
     context 'when registrar is already accredited in system and has a theoretical pass' do
       let(:accreditation_date) { Time.zone.parse('2026-01-15 10:00:00') }
       let(:accreditation_expire_date) { Time.zone.parse('2028-01-15 10:00:00') }
+      let(:registrar_user) { create(:user, registrar: registrar) }
+      let!(:theoretical_test) { create(:test, :theoretical) }
+      let!(:test_category) { create(:test_category) }
+      let!(:question) { create(:question, test_category: test_category) }
+      let!(:answer) { create(:answer, :correct, question: question) }
+      let!(:test_categories_test) { create(:test_categories_test, test: theoretical_test, test_category: test_category) }
 
       before do
         registrar.update!(accreditation_date: 6.months.ago)
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
-        allow(eligibility).to receive(:accredited?).and_return(false)
-        allow(eligibility).to receive(:last_theory_passed_at).and_return(last_theory_test_passed_at)
+        create(:test_attempt, :passed, user: registrar_user, test: theoretical_test, completed_at: last_theory_test_passed_at)
         allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
       end
 
@@ -82,12 +86,41 @@ RSpec.describe AccreditationResultsService do
       end
     end
 
+    context 'when registrar only has expiry date imported from REPP and has a theoretical pass' do
+      let(:accreditation_date) { Time.zone.parse('2026-01-15 10:00:00') }
+      let(:accreditation_expire_date) { Time.zone.parse('2028-01-15 10:00:00') }
+      let(:registrar_user) { create(:user, registrar: registrar) }
+      let!(:theoretical_test) { create(:test, :theoretical) }
+      let!(:test_category) { create(:test_category) }
+      let!(:question) { create(:question, test_category: test_category) }
+      let!(:answer) { create(:answer, :correct, question: question) }
+      let!(:test_categories_test) { create(:test_categories_test, test: theoretical_test, test_category: test_category) }
+
+      before do
+        registrar.update!(accreditation_date: nil, accreditation_expire_date: 1.month.from_now)
+        create(:test_attempt, :passed, user: registrar_user, test: theoretical_test, completed_at: last_theory_test_passed_at)
+        allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
+      end
+
+      it 'allows sync for reaccreditation without accreditation_date in portal database' do
+        allow(service).to receive(:update_accreditation).and_return(
+          {
+            success: true,
+            registrar_name: registrar.name,
+            accreditation_date: accreditation_date,
+            accreditation_expire_date: accreditation_expire_date
+          }
+        )
+
+        result = service.sync_registrar_accreditation(registrar)
+
+        expect(result).to eq({ success: true, message: 'Accreditation synced successfully' })
+      end
+    end
+
     context 'when registrar is already accredited in system but has no theoretical pass' do
       before do
         registrar.update!(accreditation_date: 6.months.ago)
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
-        allow(eligibility).to receive(:accredited?).and_return(false)
-        allow(eligibility).to receive(:last_theory_passed_at).and_return(nil)
       end
 
       it 'returns error response without making API call' do
@@ -111,7 +144,7 @@ RSpec.describe AccreditationResultsService do
 
       before do
         allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
-        allow(eligibility).to receive(:accredited?).and_return(true)
+        allow(eligibility).to receive(:sync_eligible?).and_return(true)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(last_theory_test_passed_at)
         allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)
       end
