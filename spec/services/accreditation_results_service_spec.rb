@@ -39,7 +39,7 @@ RSpec.describe AccreditationResultsService do
 
     context 'when registrar is not accredited' do
       before do
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
+        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar, triggering_attempt: nil).and_return(eligibility)
         allow(eligibility).to receive(:sync_eligible?).and_return(false)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(nil)
       end
@@ -143,7 +143,7 @@ RSpec.describe AccreditationResultsService do
       let(:accreditation_expire_date) { Time.zone.parse('2028-01-15 10:00:00') }
 
       before do
-        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar).and_return(eligibility)
+        allow(RegistrarAccreditationEligibility).to receive(:new).with(registrar, triggering_attempt: nil).and_return(eligibility)
         allow(eligibility).to receive(:sync_eligible?).and_return(true)
         allow(eligibility).to receive(:last_theory_passed_at).and_return(last_theory_test_passed_at)
         allow(RegistrarAccreditationNotificationsService).to receive(:new).and_return(notifications_service)

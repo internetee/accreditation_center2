@@ -15,12 +15,22 @@ RSpec.describe AccreditationSyncJob, type: :job do
 
     it 'delegates syncing to AccreditationResultsService' do
       expect(service).to receive(:sync_registrar_accreditation)
-        .with(registrar)
+        .with(registrar, triggering_attempt: nil)
         .and_return({ success: true, message: 'Accreditation synced successfully' })
 
       described_class.perform_now(registrar)
 
       expect(Rails.logger).to have_received(:info).with("Successfully synced accreditation for registrar #{registrar.name}")
+    end
+
+    it 'passes the completing attempt to the service when provided' do
+      attempt = instance_double(TestAttempt, id: 42)
+      allow(TestAttempt).to receive(:find_by).with(id: 42).and_return(attempt)
+      expect(service).to receive(:sync_registrar_accreditation)
+        .with(registrar, triggering_attempt: attempt)
+        .and_return({ success: true, message: 'Accreditation synced successfully' })
+
+      described_class.perform_now(registrar, 42)
     end
 
     it 'logs error when service reports failure' do

@@ -24,10 +24,10 @@ class AccreditationResultsService < BotAuthService
   # Sync accreditation for a registrar if they're newly accredited
   # @param registrar [Registrar]
   # @return [Hash] Response from API
-  def sync_registrar_accreditation(registrar)
+  def sync_registrar_accreditation(registrar, triggering_attempt: nil)
     return { success: false, message: 'Registrar is required' } unless registrar.is_a?(Registrar)
 
-    eligibility = RegistrarAccreditationEligibility.new(registrar)
+    eligibility = RegistrarAccreditationEligibility.new(registrar, triggering_attempt: triggering_attempt)
     return { success: false, message: 'Registrar not accredited' } unless eligibility.sync_eligible?
 
     previous_dates = previous_accreditation_dates(registrar)

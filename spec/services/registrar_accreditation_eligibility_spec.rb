@@ -78,6 +78,23 @@ RSpec.describe RegistrarAccreditationEligibility do
 
       expect(described_class.new(registrar).sync_eligible?).to be(false)
     end
+
+    it 'returns true for reaccreditation using the completing attempt before it is visible in queries' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
+      completing_attempt = build(
+        :test_attempt,
+        user: registrar_user,
+        test: theoretical_test,
+        started_at: 1.hour.ago,
+        completed_at: Time.current,
+        passed: true
+      )
+
+      expect(described_class.new(registrar).sync_eligible?).to be(false)
+      expect(
+        described_class.new(registrar, triggering_attempt: completing_attempt).sync_eligible?
+      ).to be(true)
+    end
   end
 
   describe '#last_theory_passed_at' do

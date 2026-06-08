@@ -14,15 +14,16 @@ class RegistrarAccreditationEligibility
     new(registrar).can_sync_from_theoretical?
   end
 
-  def initialize(registrar)
+  def initialize(registrar, triggering_attempt: nil)
     @registrar = registrar
+    @triggering_attempt = triggering_attempt
   end
 
   # Initial accreditation in the portal: both test types passed.
   def accredited?
     return false unless @registrar
 
-    theory_attempts.exists? && practical_attempts.exists?
+    theory_satisfied? && practical_satisfied?
   end
 
   # Registrar already known as accredited from REPP (imported on login or prior sync).
@@ -52,7 +53,7 @@ class RegistrarAccreditationEligibility
   def last_theory_passed_at
     return nil unless @registrar
 
-    theory_attempts.maximum(:completed_at)
+    [theory_attempts.maximum(:completed_at), triggering_theory_completed_at].compact.max
   end
 
   private
@@ -67,5 +68,32 @@ class RegistrarAccreditationEligibility
 
   def practical_attempts
     attempts.where(tests: { test_type: :practical })
+  end
+
+  def theory_satisfied?
+    theory_attempts.exists? || triggering_theory_pass?
+  end
+
+  def practical_satisfied?
+    practical_attempts.exists? || triggering_practical_pass?
+  end
+
+  def triggering_theory_pass?
+    triggering_pass?(:theoretical)
+  end
+
+  def triggering_practical_pass?
+    triggering_pass?(:practical)
+  end
+
+  def triggering_theory_completed_at
+    triggering_theory_pass? ? @triggering_attempt.completed_at : nil
+  end
+
+  def triggering_pass?(test_type)
+    attempt = @triggering_attempt
+    return false unless attempt&.passed? && attempt.completed_at.present? && attempt.started_at.present?
+
+    attempt.test&.public_send("#{test_type}?")
   end
 end

@@ -6,15 +6,17 @@ class AccreditationSyncJob < ApplicationJob
 
   # Sync accreditation for a specific registrar and update local dates.
   # @param registrar [Registrar]
-  def perform(registrar)
+  # @param triggering_attempt_id [Integer, nil] completing attempt, passed when sync was enqueued
+  def perform(registrar, triggering_attempt_id = nil)
     unless registrar.is_a?(Registrar)
       Rails.logger.error "Accreditation sync skipped: Registrar instance required, got #{registrar.class}"
       return
     end
 
+    triggering_attempt = TestAttempt.find_by(id: triggering_attempt_id) if triggering_attempt_id.present?
     service = AccreditationResultsService.new
 
-    result = service.sync_registrar_accreditation(registrar)
+    result = service.sync_registrar_accreditation(registrar, triggering_attempt: triggering_attempt)
     message = result&.dig(:message).presence || 'Unknown error'
 
     unless result&.dig(:success)
