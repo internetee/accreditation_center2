@@ -5,7 +5,8 @@ This document describes how registrar accreditation and reaccreditation work in 
 Implementation lives mainly in:
 
 - `app/services/registrar_accreditation_eligibility.rb`
-- `app/models/test_attempt.rb` (`sync_accreditation_if_complete`)
+- `app/models/test_attempt.rb` (`enqueue_accreditation_sync_if_complete`, `after_commit`)
+- `app/jobs/accreditation_sync_job.rb`
 - `app/services/accreditation_results_service.rb`
 - `app/services/registrar_accreditation_notifications_service.rb`
 
@@ -25,7 +26,15 @@ Implementation lives mainly in:
 
 ## 1) When is `AccreditationSyncJob` enqueued?
 
-Triggered after a **passed** attempt completes (`TestAttempt#complete!` → `sync_accreditation_if_complete`).
+Triggered when a **passed** attempt is first completed:
+
+1. `TestAttempt#complete!` saves `completed_at` and `passed`
+2. `after_commit` runs `enqueue_accreditation_sync_if_complete` (only when `completed_at` changed)
+3. Job is enqueued as `AccreditationSyncJob.perform_later(registrar, test_attempt.id)`
+
+The attempt id is passed so the job can evaluate eligibility using the **completing attempt** (`triggering_attempt`), even if Solid Queue runs inline inside the same Puma request before a fresh DB query would see the new pass.
+
+**Enqueue rules** (unchanged):
 
 | # | Prior portal dates (A) | Portal tests (B) | Attempt just passed | Job enqueued? |
 |---|------------------------|------------------|---------------------|---------------|
@@ -42,11 +51,15 @@ Triggered after a **passed** attempt completes (`TestAttempt#complete!` → `syn
 | 11 | **Yes** | **Both** | Theoretical | **Yes** |
 | 12 | **Yes** | **Both** | Practical (extra pass) | No (deduped) |
 
+At enqueue time, eligibility is built with `triggering_attempt: self` so the row being completed counts toward `accredited?` and `last_theory_passed_at`.
+
 ---
 
 ## 2) When does REPP sync actually run?
 
-`AccreditationResultsService#sync_registrar_accreditation` runs when `RegistrarAccreditationEligibility#sync_eligible?` is true.
+`AccreditationSyncJob` loads the registrar and (when provided) the completing attempt, then calls `AccreditationResultsService#sync_registrar_accreditation(registrar, triggering_attempt:)`.
+
+Sync proceeds when `RegistrarAccreditationEligibility#sync_eligible?` is true. For jobs enqueued from test completion, eligibility again receives `triggering_attempt` so the just-finished pass is included.
 
 | # | Portal dates (A) | Portal theory pass | Portal practical pass | `sync_eligible?` | REPP updated? |
 |---|------------------|--------------------|-----------------------|------------------|---------------|
@@ -157,7 +170,7 @@ These are renewal reminders; they do **not** perform accreditation sync.
 
 ### D) Manual admin sync
 
-Admin → Jobs → “Accreditation sync” runs `AccreditationResultsService` directly — same rules as [section 2](#2-when-does-repp-sync-actually-run).
+Admin → Jobs → “Accreditation sync” enqueues `AccreditationSyncJob.perform_later(registrar)` with **no** `triggering_attempt_id`. Eligibility is evaluated from DB state only — same rules as [section 2](#2-when-does-repp-sync-actually-run).
 
 ---
 
@@ -190,20 +203,24 @@ Based on `Registrar#accreditation_expire_date` (not test history):
 If reaccreditation does not work in production, check in order:
 
 1. Portal registrar has `accreditation_date` or `accreditation_expire_date` after login.
-2. Theoretical attempt is `passed`, `completed`, and has `started_at` set.
-3. Application logs / job queue for `AccreditationSyncJob`.
-4. REPP `POST /repp/v1/registrar/accreditation/push_results` response.
-5. Whether reaccreditation **emails** were expected but blocked by the 30-day window (sync may still succeed).
+2. Theoretical attempt is `passed`, `completed`, and has `started_at` set (`completed` scope requires both `started_at` and `completed_at`).
+3. Application logs / job queue for `AccreditationSyncJob` — look for `"Registrar not accredited"` vs a successful REPP call.
+4. **Puma actually restarted after deploy.** A long-running Puma process may still run old code in memory while `rails runner` loads the current release. Restart the same process that serves HTTP (not only `touch tmp/restart.txt` if that does not reach it).
+5. **Solid Queue in Puma** (`SOLID_QUEUE_IN_PUMA=true`) runs jobs inside the web process; sync after test completion depends on `triggering_attempt` being passed from the enqueue path.
+6. REPP `POST /repp/v1/registrar/accreditation/push_results` response.
+7. Whether reaccreditation **emails** were expected but blocked by the 30-day window (sync may still succeed).
 
 ---
 
 ## Eligibility API summary
 
+`RegistrarAccreditationEligibility.new(registrar, triggering_attempt: nil)` — optional `triggering_attempt` is the completing `TestAttempt` passed from the sync job. When set, that attempt counts toward `accredited?` and `last_theory_passed_at` even if association queries in the same request would not yet return it.
+
 | Method | True when |
 |--------|-----------|
-| `accredited?` | Both theoretical and practical passed attempts exist on registrar |
+| `accredited?` | Both theoretical and practical passed attempts exist on registrar (including `triggering_attempt` when applicable) |
 | `previously_accredited_in_system?` | `accreditation_date` or `accreditation_expire_date` present |
-| `reaccreditation_eligible?` | Previously accredited in system **and** at least one theoretical pass |
+| `reaccreditation_eligible?` | Previously accredited in system **and** at least one theoretical pass (`last_theory_passed_at` present) |
 | `sync_eligible?` | `accredited?` **or** `reaccreditation_eligible?` |
 | `can_sync_from_theoretical?` | Previously accredited in system **or** `accredited?` |
 | `skip_partial_accreditation_notice?` | `accredited?` **or** previously accredited in system |
