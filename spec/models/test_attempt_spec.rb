@@ -87,7 +87,7 @@ RSpec.describe TestAttempt, type: :model do
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task1, status: 'passed')
       create(:practical_task_result, test_attempt: practical_attempt, practical_task: task2, status: 'passed')
 
-      expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+      expect { practical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar, practical_attempt.id)
     end
 
     it 'syncs accreditation when theoretical attempt completes the missing pass type' do
@@ -100,7 +100,7 @@ RSpec.describe TestAttempt, type: :model do
       theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
       create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
 
-      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar, theoretical_attempt.id)
     end
 
     it 'syncs when theoretical attempt is passed and registrar is already accredited' do
@@ -110,7 +110,25 @@ RSpec.describe TestAttempt, type: :model do
       another_theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
       create(:question_response, test_attempt: another_theoretical_attempt, question: question, selected_answer_ids: [answer.id])
 
-      expect { another_theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar)
+      expect { another_theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar, another_theoretical_attempt.id)
+    end
+
+    it 'syncs from theoretical pass when registrar has accreditation date in database' do
+      user.registrar.update!(accreditation_date: 1.year.ago, accreditation_expire_date: 1.day.ago)
+
+      theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
+      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+
+      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar, theoretical_attempt.id)
+    end
+
+    it 'syncs from theoretical pass when registrar only has expiry date imported from REPP' do
+      user.registrar.update!(accreditation_date: nil, accreditation_expire_date: 1.month.from_now)
+
+      theoretical_attempt = create(:test_attempt, user: user, test: theoretical_test)
+      create(:question_response, test_attempt: theoretical_attempt, question: question, selected_answer_ids: [answer.id])
+
+      expect { theoretical_attempt.complete! }.to have_enqueued_job(AccreditationSyncJob).with(user.registrar, theoretical_attempt.id)
     end
 
     it 'does not sync when test is not passed' do

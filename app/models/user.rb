@@ -76,8 +76,8 @@ class User < ApplicationRecord
 
     self.registrar = Registrar.find_or_initialize_by(name: normalized_name)
     registrar.email = registrar_email if registrar_email.present?
-    registrar.accreditation_date = accreditation_date if accreditation_date.present?
-    registrar.accreditation_expire_date = accreditation_expire_date if accreditation_expire_date.present?
+    registrar.accreditation_date = accreditation_date
+    registrar.accreditation_expire_date = accreditation_expire_date
   end
 
   def set_default_role

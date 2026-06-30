@@ -12,8 +12,6 @@ RSpec.describe RegistrarAccreditationNotificationsService do
       practical_test = create(:test, :practical, passing_score_percentage: 100)
       test_attempt = create(:test_attempt, :passed, user: user, test: practical_test)
 
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar).and_return(false)
-
       expect {
         service.notify_test_completion(test_attempt)
       }.to have_enqueued_mail(AccreditationMailer, :practical_passed_not_accredited)
@@ -23,7 +21,8 @@ RSpec.describe RegistrarAccreditationNotificationsService do
       }.not_to have_enqueued_mail(AccreditationMailer, :practical_passed_not_accredited)
     end
 
-    it 'suppresses test-pass notices when registrar became accredited in same flow' do
+    it 'suppresses test-pass notices when registrar is already accredited in system from REPP' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
       theoretical_test = create(:test, :theoretical)
       test_category = create(:test_category)
       create(:test_categories_test, test: theoretical_test, test_category: test_category)
@@ -31,7 +30,20 @@ RSpec.describe RegistrarAccreditationNotificationsService do
       create(:answer, question: question, correct: true)
       test_attempt = create(:test_attempt, :passed, user: user, test: theoretical_test)
 
-      allow(RegistrarAccreditationEligibility).to receive(:accredited?).with(registrar).and_return(true)
+      expect {
+        service.notify_test_completion(test_attempt)
+      }.not_to have_enqueued_mail(AccreditationMailer, :theoretical_passed_not_accredited)
+    end
+
+    it 'suppresses test-pass notices when registrar became accredited in same flow' do
+      theoretical_test = create(:test, :theoretical)
+      practical_test = create(:test, :practical)
+      test_category = create(:test_category)
+      create(:test_categories_test, test: theoretical_test, test_category: test_category)
+      question = create(:question, test_category: test_category)
+      create(:answer, question: question, correct: true)
+      create(:test_attempt, :passed, user: user, test: practical_test, completed_at: 1.day.ago)
+      test_attempt = create(:test_attempt, :passed, user: user, test: theoretical_test)
 
       expect {
         service.notify_test_completion(test_attempt)
