@@ -9,6 +9,8 @@ class TestAttempt < ApplicationRecord
   validates :access_code, presence: true, uniqueness: true
   validate :questions_have_answers, if: -> { test.theoretical? }, on: :create
 
+  after_commit :enqueue_accreditation_sync_if_complete, on: :update, if: :should_enqueue_accreditation_sync?
+
   def questions_have_answers
     # Validate that there is at least one question with at least one correct answer in the test.
     count = test.questions.joins(:answers)
@@ -78,9 +80,6 @@ class TestAttempt < ApplicationRecord
     save!
 
     notify_registrar_for_test_completion
-
-    # Sync accreditation to REPP if registrar is fully accredited
-    sync_accreditation_if_complete
   end
 
   def score_percentage
@@ -278,25 +277,32 @@ class TestAttempt < ApplicationRecord
     RegistrarAccreditationNotificationsService.new.notify_test_completion(self)
   end
 
-  def sync_accreditation_if_complete
-    return unless passed?
+  def should_enqueue_accreditation_sync?
+    saved_change_to_completed_at? && passed? && completed_at.present?
+  end
 
+  def enqueue_accreditation_sync_if_complete
     registrar = user.registrar
     return if registrar.blank?
-    return unless RegistrarAccreditationEligibility.accredited?(registrar)
-    return AccreditationSyncJob.perform_later(registrar) if test.theoretical?
+
+    eligibility = RegistrarAccreditationEligibility.new(registrar, triggering_attempt: self)
+    if test.theoretical? && eligibility.can_sync_from_theoretical?
+      AccreditationSyncJob.perform_later(registrar, id)
+      return
+    end
+    return unless eligibility.accredited?
     return if practical_pass_exists_without_current_attempt?(registrar)
 
-    AccreditationSyncJob.perform_later(registrar)
+    AccreditationSyncJob.perform_later(registrar, id)
   end
 
   def practical_pass_exists_without_current_attempt?(registrar)
     registrar.test_attempts
-            .where.not(id: id)
-            .passed
-            .completed
-            .joins(:test)
-            .where(tests: { test_type: :practical })
-            .exists?
+             .where.not(id: id)
+             .passed
+             .completed
+             .joins(:test)
+             .where(tests: { test_type: :practical })
+             .exists?
   end
 end

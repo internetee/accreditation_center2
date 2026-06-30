@@ -166,6 +166,45 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#assign_registrar_from_api!' do
+    let(:user) { create(:user) }
+
+    it 'clears local accreditation dates when API returns nil values' do
+      registrar = create(
+        :registrar,
+        name: 'Registrar Ltd',
+        accreditation_date: 2.years.ago,
+        accreditation_expire_date: 1.year.from_now
+      )
+      user.update!(registrar: registrar)
+
+      user.assign_registrar_from_api!(
+        registrar_name: 'Registrar Ltd',
+        registrar_email: 'registrar@example.test',
+        accreditation_date: nil,
+        accreditation_expire_date: nil
+      )
+      user.registrar.save!
+
+      expect(user.registrar.reload.accreditation_date).to be_nil
+      expect(user.registrar.accreditation_expire_date).to be_nil
+    end
+
+    it 'updates local accreditation dates when API returns values' do
+      user.assign_registrar_from_api!(
+        registrar_name: 'Registrar Ltd',
+        registrar_email: 'registrar@example.test',
+        accreditation_date: Date.new(2026, 1, 1),
+        accreditation_expire_date: Date.new(2028, 1, 1)
+      )
+      user.registrar.save!
+
+      registrar = user.registrar.reload
+      expect(registrar.accreditation_date.to_date).to eq(Date.new(2026, 1, 1))
+      expect(registrar.accreditation_expire_date.to_date).to eq(Date.new(2028, 1, 1))
+    end
+  end
+
   describe 'role helpers' do
     it 'returns admin? and user? predicates' do
       u = create(:user, registrar_name: 'R')

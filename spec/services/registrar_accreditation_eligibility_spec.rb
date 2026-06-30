@@ -47,6 +47,56 @@ RSpec.describe RegistrarAccreditationEligibility do
     end
   end
 
+  describe '#previously_accredited_in_system?' do
+    it 'returns false for missing registrar' do
+      expect(described_class.new(nil).previously_accredited_in_system?).to be(false)
+    end
+
+    it 'returns true when accreditation_date is present' do
+      registrar.update!(accreditation_date: 1.year.ago)
+
+      expect(described_class.new(registrar).previously_accredited_in_system?).to be(true)
+    end
+
+    it 'returns true when only accreditation_expire_date is present' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
+
+      expect(described_class.new(registrar).previously_accredited_in_system?).to be(true)
+    end
+  end
+
+  describe '#sync_eligible?' do
+    it 'returns true for reaccreditation when imported from REPP and theoretical pass exists' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
+      create(:test_attempt, :passed, user: registrar_user, test: theoretical_test)
+
+      expect(described_class.new(registrar).sync_eligible?).to be(true)
+    end
+
+    it 'returns false when imported from REPP but no theoretical pass exists' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
+
+      expect(described_class.new(registrar).sync_eligible?).to be(false)
+    end
+
+    it 'returns true for reaccreditation using the completing attempt before it is visible in queries' do
+      registrar.update!(accreditation_expire_date: 1.month.from_now)
+      completing_attempt = build(
+        :test_attempt,
+        user: registrar_user,
+        test: theoretical_test,
+        started_at: 1.hour.ago,
+        completed_at: Time.current,
+        passed: true
+      )
+
+      expect(described_class.new(registrar).sync_eligible?).to be(false)
+      expect(
+        described_class.new(registrar, triggering_attempt: completing_attempt).sync_eligible?
+      ).to be(true)
+    end
+  end
+
   describe '#last_theory_passed_at' do
     it 'returns nil for missing registrar' do
       eligibility = described_class.new(nil)
