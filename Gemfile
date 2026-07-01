@@ -76,7 +76,7 @@ end
 
 group :development do
   gem 'listen'
-  gem 'rails-ai-context'
+  gem 'rails-ai-context', '>= 5.12.0'
 
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'
