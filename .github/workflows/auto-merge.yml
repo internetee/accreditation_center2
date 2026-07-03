@@ -20,7 +20,7 @@ jobs:
       github.event.pull_request.user.login == 'renovate'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install GitHub CLI and jq
         run: |
