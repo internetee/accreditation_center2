@@ -35,7 +35,7 @@ gem 'rails', '~> 8.1.3'
 gem 'ransack'
 gem 'simpleidn'
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem 'solid_cable'
+gem 'solid_cable', '>= 4.0.0'
 gem 'solid_cache'
 gem 'solid_queue'
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
