@@ -22,13 +22,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install GitHub CLI and jq
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install -y gh jq
-
       - name: Auto approve PR
         uses: hmarr/auto-approve-action@v4
         with:
@@ -88,12 +81,12 @@ jobs:
 
       - name: Wait for CI checks
         if: steps.check_auto_merge.outputs.auto_merge == 'true'
+        timeout-minutes: 30
         uses: lewagon/wait-on-check-action@v1.9.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
-          timeout-minutes: 30
           check-regexp: 'test'
 
       - name: Mark PR as auto-merge enabled
@@ -127,11 +120,14 @@ jobs:
 
       - name: Enable GitHub auto-merge
         if: steps.check_auto_merge.outputs.auto_merge == 'true'
-        run: |
-          echo "Enabling GitHub auto-merge for PR #${{ github.event.pull_request.number }}"
-          gh pr merge --auto --merge "${{ github.event.pull_request.number }}" || {
-            echo "Auto-merge enable failed, continuing..."
-            exit 0
-          }
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "Enabling GitHub auto-merge for PR #$PR_NUMBER"
+          if gh pr merge --auto --merge "$PR_NUMBER"; then
+            echo "GitHub auto-merge enabled"
+            exit 0
+          fi
+          echo "Native auto-merge unavailable; merging after green CI"
+          gh pr merge --merge "$PR_NUMBER"
