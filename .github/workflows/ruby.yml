@@ -1,9 +1,17 @@
 name: Github Testing
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  BUNDLE_DEPLOYMENT: "1"
+  BUNDLE_WITHOUT: "development:staging:production"
 
 jobs:
   test:
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:18
@@ -13,28 +21,23 @@ jobs:
           POSTGRES_USERNAME: postgres
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04]
-        ruby: ['3.4.4']
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
     steps:
       - uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          ruby-version: ruby
+          bundler-cache: true
 
-      - name: Config bundler
-        run:  |
-          bundle config set without 'development staging production'
-          bundle config set deployment 'true'
+      - name: Verify gems match this PR lockfile
+        run: |
+          echo "Ruby: $(ruby -v)"
+          echo "Bundler: $(bundle -v)"
           bundle env
-          head -n1 $(which bundle)
+          bundle check
+          echo "Installed gems from Gemfile.lock:"
+          bundle list
 
       - name: Run Tests
         env:
@@ -98,23 +101,17 @@ jobs:
 
   security_scan:
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: ['3.4.4']
     steps:
       - uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: ruby
           bundler-cache: true
-      - name: Config bundler
-        run:  |
-          bundle config set without 'development staging production'
-          bundle config set deployment 'true'
-          bundle env
-          head -n1 $(which bundle)
+      - name: Verify gems match this PR lockfile
+        run: |
+          bundle check
+          bundle list
       - name: Scan for security vulnerabilities
         run: |
           cp config/application.yml.sample config/application.yml
