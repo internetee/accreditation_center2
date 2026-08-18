@@ -32,17 +32,26 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: ruby
           bundler-cache: true
 
       - name: Verify gems match this PR lockfile
         run: |
-          echo "Ruby: $(ruby -v)"
+          expected=$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')
+          actual=$(ruby -e 'print RUBY_VERSION')
+          echo "Ruby from .ruby-version: $expected"
+          echo "Installed Ruby: $actual"
+          test "$expected" = "$actual"
           echo "Bundler: $(bundle -v)"
           bundle env
           bundle check
-          echo "Installed gems from Gemfile.lock:"
+          echo "Installed gems from this PR Gemfile.lock:"
           bundle list
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --depth=1 origin "${{ github.base_ref }}"
+            echo "Gemfile.lock changes vs ${{ github.base_ref }}:"
+            git diff "origin/${{ github.base_ref }}" -- Gemfile.lock || true
+          fi
 
       - name: Run Tests
         env:
@@ -115,10 +124,13 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: ruby
           bundler-cache: true
       - name: Verify gems match this PR lockfile
         run: |
+          expected=$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')
+          actual=$(ruby -e 'print RUBY_VERSION')
+          test "$expected" = "$actual"
           bundle check
           bundle list
       - name: Scan for security vulnerabilities
