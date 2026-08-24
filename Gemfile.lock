@@ -267,7 +267,7 @@ GEM
       stimulus-rails
       turbo-rails
     msgpack (1.8.4)
-    mustache (1.1.2)
+    mustache (1.1.3)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.6)
@@ -583,7 +583,7 @@ DEPENDENCIES
   kramdown
   listen
   mission_control-jobs
-  mustache (~> 1.0)
+  mustache (~> 1.1)
   omniauth (>= 2.0.0)
   omniauth-rails_csrf_protection
   omniauth_openid_connect
