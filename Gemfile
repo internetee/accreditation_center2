@@ -18,7 +18,7 @@ gem 'jbuilder'
 gem 'kamal', require: false
 gem 'kramdown'
 gem 'mission_control-jobs'
-gem 'mustache', '~> 1.0'
+gem 'mustache', '~> 1.1'
 gem 'omniauth', '>=2.0.0'
 gem 'omniauth_openid_connect'
 gem 'omniauth-rails_csrf_protection'
