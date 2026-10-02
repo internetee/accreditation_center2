@@ -378,7 +378,7 @@ GEM
       activesupport (= 8.1.4)
       bundler (>= 1.15.0)
       railties (= 8.1.4)
-    rails-ai-context (5.30.0)
+    rails-ai-context (5.30.1)
       concurrent-ruby (>= 1.2, < 3.0)
       mcp (>= 0.13, < 2.0)
       prism (>= 1.4, < 2.0)
