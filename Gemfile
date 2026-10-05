@@ -18,7 +18,7 @@ gem 'jbuilder'
 gem 'kamal', require: false
 gem 'kramdown'
 gem 'mission_control-jobs'
-gem 'mustache', '~> 1.0'
+gem 'mustache', '~> 1.1'
 gem 'omniauth', '>=2.0.0'
 gem 'omniauth_openid_connect'
 gem 'omniauth-rails_csrf_protection'
@@ -31,7 +31,7 @@ gem 'propshaft'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 8.1.3'
+gem 'rails', '~> 8.1.4'
 gem 'ransack'
 gem 'simpleidn'
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
