@@ -24,7 +24,7 @@ gem 'omniauth_openid_connect'
 gem 'omniauth-rails_csrf_protection'
 gem 'pagy', '~> 9.3' # omit patch digit
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.6'
+gem 'pg', '~> 1.7'
 gem 'positioning'
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem 'propshaft'
