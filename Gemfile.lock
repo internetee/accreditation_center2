@@ -208,7 +208,7 @@ GEM
     jbuilder (2.15.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (3.0.2)
+    json (3.1.0)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -378,7 +378,7 @@ GEM
       activesupport (= 8.1.4)
       bundler (>= 1.15.0)
       railties (= 8.1.4)
-    rails-ai-context (5.32.0)
+    rails-ai-context (5.32.2)
       concurrent-ruby (>= 1.2, < 3.0)
       mcp (>= 0.13, < 2.0)
       prism (>= 1.4, < 2.0)
