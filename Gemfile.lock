@@ -346,7 +346,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.5.0)
     racc (1.8.1)
-    rack (3.2.7)
+    rack (3.2.8)
     rack-oauth2 (2.3.0)
       activesupport
       attr_required
@@ -379,7 +379,7 @@ GEM
       activesupport (= 8.1.4)
       bundler (>= 1.15.0)
       railties (= 8.1.4)
-    rails-ai-context (5.37.0)
+    rails-ai-context (5.38.0)
       concurrent-ruby (>= 1.2, < 3.0)
       mcp (>= 0.13, < 2.0)
       prism (>= 1.4, < 2.0)
